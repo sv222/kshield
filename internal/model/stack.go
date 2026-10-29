@@ -4,6 +4,8 @@ import (
 	"path"
 	"slices"
 	"strings"
+
+	corev1 "k8s.io/api/core/v1"
 )
 
 func ImageRepo(image string) []string {
@@ -24,7 +26,7 @@ func Classify(w *Workload) {
 	for i := range w.Containers {
 		c := &w.Containers[i]
 		c.Commands = ResolveCommands(c.Spec)
-		c.Stack = stackOf(ImageRepo(c.Spec.Image), c.Commands)
+		c.Stack = stackOf(c.Spec, c.Commands)
 		if c.Stack != Generic {
 			stacks = append(stacks, c.Stack)
 		}
@@ -39,13 +41,15 @@ func Classify(w *Workload) {
 	w.Stacks = slices.Compact(stacks)
 }
 
-func stackOf(repo []string, cmds []Command) Stack {
+func stackOf(spec corev1.Container, cmds []Command) Stack {
+	repo := ImageRepo(spec.Image)
 	switch {
 	case slices.ContainsFunc(repo, func(s string) bool { return strings.Contains(s, "vllm") }),
 		slices.ContainsFunc(cmds, runsVLLM):
 		return VLLM
 	case slices.Contains(repo, "ollama"),
-		slices.ContainsFunc(cmds, func(c Command) bool { return program(c) == "ollama" }):
+		slices.ContainsFunc(cmds, func(c Command) bool { return program(c) == "ollama" }),
+		ollamaSignal(spec):
 		return Ollama
 	case slices.Contains(repo, "qdrant"):
 		return Qdrant
@@ -55,6 +59,31 @@ func stackOf(repo []string, cmds []Command) Stack {
 		return Ray
 	}
 	return Generic
+}
+
+const ollamaPort int32 = 11434
+
+// ollamaSignal reports a container signal that marks a custom image (no
+// ollama name segment, no ollama command) as Ollama: the default port, an
+// OLLAMA_ env name, or a .ollama mount path. Owner ruling of 2026-10-26:
+// any-of rule; detection only widens the AI set.
+func ollamaSignal(c corev1.Container) bool {
+	for _, p := range c.Ports {
+		if p.ContainerPort == ollamaPort || strings.EqualFold(p.Name, "ollama") {
+			return true
+		}
+	}
+	for _, e := range c.Env {
+		if strings.HasPrefix(e.Name, "OLLAMA_") {
+			return true
+		}
+	}
+	for _, m := range c.VolumeMounts {
+		if strings.Contains(m.MountPath, ".ollama") {
+			return true
+		}
+	}
+	return false
 }
 
 func runsVLLM(c Command) bool {

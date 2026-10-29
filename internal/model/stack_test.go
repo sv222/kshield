@@ -292,3 +292,59 @@ spec:
 		t.Errorf("predictor commands = %q, want %q", cmds, wantCmds)
 	}
 }
+
+func TestClassifyOllamaSignals(t *testing.T) {
+	base := func() corev1.Container {
+		return corev1.Container{Image: "registry.internal/my-llm:v2"}
+	}
+	withPort := func(p int32, name string) corev1.Container {
+		c := base()
+		c.Ports = []corev1.ContainerPort{{ContainerPort: p, Name: name}}
+		return c
+	}
+	cases := []struct {
+		name string
+		c    corev1.Container
+		want Stack
+	}{
+		{"custom image with port 11434", withPort(11434, ""), Ollama},
+		{"custom image with port named ollama", withPort(8080, "ollama"), Ollama},
+		{"custom image with other port", withPort(8080, "http"), Generic},
+		{"custom image with OLLAMA_ env", func() corev1.Container {
+			c := base()
+			c.Env = []corev1.EnvVar{{Name: "OLLAMA_MODELS", Value: "/models"}}
+			return c
+		}(), Ollama},
+		{"custom image with unrelated env", func() corev1.Container {
+			c := base()
+			c.Env = []corev1.EnvVar{{Name: "MODEL_DIR", Value: "/models"}}
+			return c
+		}(), Generic},
+		{"custom image with .ollama mount", func() corev1.Container {
+			c := base()
+			c.VolumeMounts = []corev1.VolumeMount{{Name: "data", MountPath: "/data/.ollama"}}
+			return c
+		}(), Ollama},
+		{"custom image with other mount", func() corev1.Container {
+			c := base()
+			c.VolumeMounts = []corev1.VolumeMount{{Name: "data", MountPath: "/data/ollama"}}
+			return c
+		}(), Generic},
+		{"vllm command wins over OLLAMA_ env", func() corev1.Container {
+			c := base()
+			c.Image = "python:3.12"
+			c.Command = []string{"vllm", "serve", "m"}
+			c.Env = []corev1.EnvVar{{Name: "OLLAMA_MODELS", Value: "/models"}}
+			return c
+		}(), VLLM},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			w := wl("Deployment", c.c)
+			Classify(w)
+			if got := w.Containers[0].Stack; got != c.want {
+				t.Fatalf("Stack = %q, want %q", got, c.want)
+			}
+		})
+	}
+}
