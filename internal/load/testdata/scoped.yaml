@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-inference
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-limits
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: watch-exec
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: x
+spec:
+  replicas: 1
