@@ -1,0 +1,9 @@
+id: dummy
+version: 1
+title: Dummy second profile
+checks:
+  KS-T-001:
+    display: DUMMY-001
+    severity: warn
+    refs:
+      - dummy-1
