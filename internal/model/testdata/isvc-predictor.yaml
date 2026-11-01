@@ -1,0 +1,22 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: llm
+  namespace: ai
+  labels:
+    team: ml
+    component: from-isvc
+spec:
+  predictor:
+    minReplicas: 1
+    maxReplicas: 3
+    labels:
+      tier: gold
+      serving.kserve.io/inferenceservice: spoofed
+    annotations:
+      note: predictor
+    serviceAccountName: llm-sa
+    containers:
+      - name: kserve-container
+        image: kserve/huggingfaceserver:v0.14.0
+        args: ["--model_name=llm"]

@@ -1,0 +1,16 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: hf
+  namespace: ai
+  labels:
+    runtime: hf
+spec:
+  supportedModelFormats:
+    - name: huggingface
+      autoSelect: true
+  multiModel: false
+  containers:
+    - name: kserve-container
+      image: kserve/huggingfaceserver:v0.14.0
+      args: ["--model_name={{.Name}}"]

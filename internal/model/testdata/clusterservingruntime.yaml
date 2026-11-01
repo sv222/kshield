@@ -1,0 +1,11 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ClusterServingRuntime
+metadata:
+  name: vllm-rt
+spec:
+  supportedModelFormats:
+    - name: vllm
+      autoSelect: true
+  containers:
+    - name: kserve-container
+      image: vllm/vllm-openai:v0.6.0

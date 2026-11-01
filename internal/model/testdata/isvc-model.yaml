@@ -1,0 +1,12 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: hf
+  namespace: ai
+spec:
+  predictor:
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: huggingface
+      storageUri: hf://facebook/opt-125m

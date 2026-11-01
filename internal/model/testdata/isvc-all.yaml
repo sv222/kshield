@@ -1,0 +1,18 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: full
+  namespace: ai
+spec:
+  explainer:
+    containers:
+      - name: kserve-container
+        image: example/explainer:1.0
+  transformer:
+    containers:
+      - name: kserve-container
+        image: example/transformer:1.0
+  predictor:
+    containers:
+      - name: kserve-container
+        image: example/predictor:1.0

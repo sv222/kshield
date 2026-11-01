@@ -1,0 +1,9 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: attach
+  namespace: ai
+spec:
+  entrypoint: python /home/ray/train.py
+  clusterSelector:
+    ray.io/cluster: rc
