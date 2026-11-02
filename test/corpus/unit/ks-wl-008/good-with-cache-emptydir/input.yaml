@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      initContainers:
+        - name: fetch-model
+          image: busybox:1.36
+          command: ["sh", "-c", "echo fetch"]
+          securityContext:
+            readOnlyRootFilesystem: true
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /root/.cache/huggingface
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: hf-cache
+          emptyDir:
+            sizeLimit: 50Gi
+        - name: tmp
+          emptyDir: {}

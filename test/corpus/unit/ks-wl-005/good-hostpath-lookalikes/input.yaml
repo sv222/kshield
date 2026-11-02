@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: shmem
+              mountPath: /mnt/shmem
+            - name: devices
+              mountPath: /mnt/devices
+            - name: gpu
+              mountPath: /dev/nvidia0
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/models
+        - name: shmem
+          hostPath:
+            path: /dev/shmem
+        - name: devices
+          hostPath:
+            path: /devices
+        - name: gpu
+          hostPath:
+            path: /dev/nvidia0

@@ -1,0 +1,4 @@
+namespace: "ai-inference"
+checks: ["KS-NET-003", "KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004"]
+expect: []
+na: ["KS-NET-003", "KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004"]

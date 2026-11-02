@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "meta-llama/Llama-3.1-8B-Instruct", "--load-format", "safetensors"]
+          ports:
+            - containerPort: 8000
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: kshield-shell-exec
+  namespace: ai-inference
+  labels:
+    kshield.io/guard: "shell-exec"
+spec:
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      selectors:
+        - matchActions:
+            - action: Sigkill

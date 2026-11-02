@@ -1,0 +1,69 @@
+---
+# Source: ray-cluster/templates/raycluster-cluster.yaml
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-cluster-kuberay
+  namespace: ai-inference
+  labels:
+    helm.sh/chart: ray-cluster-1.7.1
+    app.kubernetes.io/instance: ray-cluster
+    app.kubernetes.io/managed-by: Helm
+spec:
+  headGroupSpec:
+    serviceType: ClusterIP
+    template:
+      metadata:
+        labels:
+          helm.sh/chart: ray-cluster-1.7.1
+          app.kubernetes.io/instance: ray-cluster
+          app.kubernetes.io/managed-by: Helm
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.52.0
+          imagePullPolicy: IfNotPresent
+          
+          volumeMounts:
+          - mountPath: /tmp/ray
+            name: log-volume
+          resources:
+            limits:
+              cpu: "1"
+              memory: 5Gi
+            requests:
+              cpu: "1"
+              memory: 5Gi
+        volumes:
+          - emptyDir: {}
+            name: log-volume
+  workerGroupSpecs:
+  - groupName: workergroup
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 5
+    numOfHosts: 1
+    template:
+      metadata:
+        labels:
+          helm.sh/chart: ray-cluster-1.7.1
+          app.kubernetes.io/instance: ray-cluster
+          app.kubernetes.io/managed-by: Helm
+      spec:
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:2.52.0
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: /tmp/ray
+            name: log-volume
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "1"
+              memory: 1Gi
+        volumes:
+        - emptyDir: {}
+          name: log-volume

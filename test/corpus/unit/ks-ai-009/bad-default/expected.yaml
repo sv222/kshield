@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-009"]
+expect:
+  - {check: "KS-AI-009", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}
+na: []

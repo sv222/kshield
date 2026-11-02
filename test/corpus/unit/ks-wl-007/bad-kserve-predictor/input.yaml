@@ -1,0 +1,12 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: llm
+  namespace: ai-inference
+spec:
+  predictor:
+    shareProcessNamespace: true
+    containers:
+      - name: kserve-container
+        image: kserve/huggingfaceserver:v0.14.0
+        args: ["--model_name=llm"]

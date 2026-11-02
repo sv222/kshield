@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-007"]
+expect:
+  - {check: "KS-AI-007", object: "Service/ai-inference/ollama-public", verdict: "FAIL"}
+na: []

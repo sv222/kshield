@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-005"]
+expect:
+  - {check: "KS-AI-005", object: "Service/ai-inference/ray-dashboard", verdict: "FAIL"}
+na: []

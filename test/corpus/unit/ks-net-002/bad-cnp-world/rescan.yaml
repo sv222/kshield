@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-NET-002, object: CiliumNetworkPolicy/ai-inference/vllm-egress-world, mode: audit}

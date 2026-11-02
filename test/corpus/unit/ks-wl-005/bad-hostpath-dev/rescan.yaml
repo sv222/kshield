@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-WL-005, object: Deployment/ai-inference/vllm, mode: both}

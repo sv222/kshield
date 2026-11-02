@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "meta-llama/Llama-3.1-8B-Instruct", "--load-format", "safetensors"]
+          env:
+            - name: DB_PASSWORD
+              value: "Pa$sw0rd"
+            - name: SERVICE_API_KEY
+              value: "pa$$word"
+            - name: HF_TOKEN
+              value: "Bearer $(HF_TOKEN_FROM_SECRET)"
+            - name: HF_TOKEN_FROM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hf
+                  key: token

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: milvus
+  namespace: ai-inference
+data:
+  default.yaml: |
+    etcd:
+      endpoints:
+        - milvus-etcd-0.milvus-etcd-headless.ai-inference.svc.cluster.local:2379
+    metastore:
+      type: etcd
+    proxy:
+      port: 19530
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: milvus-standalone
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: milvus
+  template:
+    metadata:
+      labels:
+        app: milvus
+    spec:
+      containers:
+        - name: standalone
+          image: milvusdb/milvus:v3.0.3
+          args: ["milvus", "run", "standalone"]
+          ports:
+            - name: milvus
+              containerPort: 19530
+          volumeMounts:
+            - name: milvus-config
+              mountPath: /milvus/configs/default.yaml
+              subPath: default.yaml
+      volumes:
+        - name: milvus-config
+          configMap:
+            name: milvus

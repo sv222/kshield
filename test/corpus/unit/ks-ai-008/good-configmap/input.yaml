@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qdrant
+  namespace: ai-inference
+data:
+  production.yaml: |
+    service:
+      api_key: test-only-key
+      enable_tls: true
+    tls:
+      cert: /qdrant/tls/cert.pem
+      key: /qdrant/tls/key.pem
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: qdrant
+  namespace: ai-inference
+spec:
+  serviceName: qdrant
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:v1.19.2
+          ports:
+            - name: http
+              containerPort: 6333
+          volumeMounts:
+            - name: qdrant-config
+              mountPath: /qdrant/config/production.yaml
+              subPath: production.yaml
+      volumes:
+        - name: qdrant-config
+          configMap:
+            name: qdrant

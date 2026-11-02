@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-AI-005, object: Ingress/ai-inference/ray-dashboard, mode: both}

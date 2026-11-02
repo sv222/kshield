@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-NET-002"]
+expect:
+  - {check: "KS-NET-002", object: "NetworkPolicy/ai-inference/vllm-egress-open", verdict: "FAIL"}
+na: []

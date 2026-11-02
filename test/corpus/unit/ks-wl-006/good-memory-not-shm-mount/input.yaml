@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          volumeMounts:
+            - name: scratch
+              mountPath: /scratch
+            - name: unused
+              mountPath: /dev/shm2
+      volumes:
+        - name: scratch
+          emptyDir:
+            medium: Memory
+        - name: unused
+          emptyDir:
+            medium: Memory
+        - name: disk
+          emptyDir: {}
