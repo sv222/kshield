@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "kshield.report/v1",
+  "tool": {
+    "name": "kshield",
+    "version": "0.0.0-deterministic"
+  },
+  "profile": {
+    "id": "dora",
+    "version": 1,
+    "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
+    "sha256": "abababababababababababababababababababababababababababababababab"
+  },
+  "scan": {
+    "mode": "manifest",
+    "inputs": [
+      "deploy/vllm.yaml"
+    ],
+    "inputDigests": [
+      {
+        "path": "deploy/vllm.yaml",
+        "sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+      }
+    ],
+    "namespace": "ai-inference",
+    "startedAt": "1970-01-01T00:00:00Z",
+    "objects": 4,
+    "aiWorkloads": 1
+  },
+  "summary": {
+    "pass": 1,
+    "fail": 1,
+    "warn": 0,
+    "info": 0,
+    "na": 1,
+    "incomplete": false
+  },
+  "checks": [
+    {
+      "id": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "title": "Container may run as root",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "deploy/vllm.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "title": "Privileged container or privilege escalation allowed",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-PRE-001",
+      "display": "DORA-CH2-030",
+      "title": "Tetragon missing or unhealthy",
+      "verdict": "N/A",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art10-1",
+          "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "errors": []
+}
