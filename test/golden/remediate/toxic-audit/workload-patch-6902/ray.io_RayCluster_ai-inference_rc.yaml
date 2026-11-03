@@ -1,0 +1,141 @@
+- op: test
+  path: /spec/workerGroupSpecs/0/groupName
+  value: cpu
+- op: test
+  path: /spec/workerGroupSpecs/0/template/spec/containers/0/name
+  value: ray-worker
+- op: test
+  path: /spec/workerGroupSpecs/1/groupName
+  value: gpu
+- op: test
+  path: /spec/workerGroupSpecs/1/template/spec/containers/0/name
+  value: ray-worker
+- op: test
+  path: /spec/headGroupSpec/template/spec/containers/0/name
+  value: ray-head
+- op: add
+  path: /spec/workerGroupSpecs/0/template/spec/containers/0/securityContext
+  value:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/containers/0/securityContext
+  value:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+- op: add
+  path: /spec/headGroupSpec/template/spec/containers/0/securityContext
+  value:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsGroup: 1000
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+- op: add
+  path: /spec/workerGroupSpecs/0/template/spec/volumes
+  value:
+  - emptyDir: {}
+    name: kshield-tmp
+  - emptyDir: {}
+    name: kshield-cache
+- op: add
+  path: /spec/workerGroupSpecs/0/template/spec/containers/0/volumeMounts
+  value:
+  - mountPath: /tmp
+    name: kshield-tmp
+  - mountPath: /kshield/cache
+    name: kshield-cache
+- op: add
+  path: /spec/workerGroupSpecs/0/template/spec/containers/0/env
+  value:
+  - name: HOME
+    value: /kshield/cache
+  - name: HF_HOME
+    value: /kshield/cache/huggingface
+  - name: XDG_CACHE_HOME
+    value: /kshield/cache/xdg
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/volumes/-
+  value:
+    emptyDir: {}
+    name: kshield-tmp
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/containers/0/volumeMounts/-
+  value:
+    mountPath: /tmp
+    name: kshield-tmp
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/volumes/-
+  value:
+    emptyDir: {}
+    name: kshield-cache
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/containers/0/volumeMounts/-
+  value:
+    mountPath: /kshield/cache
+    name: kshield-cache
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/containers/0/env
+  value:
+  - name: HOME
+    value: /kshield/cache
+  - name: HF_HOME
+    value: /kshield/cache/huggingface
+  - name: XDG_CACHE_HOME
+    value: /kshield/cache/xdg
+- op: add
+  path: /spec/headGroupSpec/template/spec/volumes
+  value:
+  - emptyDir: {}
+    name: kshield-tmp
+  - emptyDir: {}
+    name: kshield-cache
+- op: add
+  path: /spec/headGroupSpec/template/spec/containers/0/volumeMounts
+  value:
+  - mountPath: /tmp
+    name: kshield-tmp
+  - mountPath: /kshield/cache
+    name: kshield-cache
+- op: add
+  path: /spec/headGroupSpec/template/spec/containers/0/env
+  value:
+  - name: HOME
+    value: /kshield/cache
+  - name: HF_HOME
+    value: /kshield/cache/huggingface
+  - name: XDG_CACHE_HOME
+    value: /kshield/cache/xdg
+- op: add
+  path: /spec/workerGroupSpecs/0/template/spec/automountServiceAccountToken
+  value: false
+- op: add
+  path: /spec/workerGroupSpecs/1/template/spec/automountServiceAccountToken
+  value: false
+- op: add
+  path: /spec/headGroupSpec/template/spec/automountServiceAccountToken
+  value: false
+- op: replace
+  path: /spec/headGroupSpec/serviceType
+  value: ClusterIP

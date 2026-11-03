@@ -1,0 +1,1882 @@
+{
+  "schemaVersion": "kshield.report/v1",
+  "tool": {
+    "name": "kshield",
+    "version": "0.0.0-deterministic"
+  },
+  "profile": {
+    "id": "dora",
+    "version": 1,
+    "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
+    "sha256": "a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90"
+  },
+  "scan": {
+    "mode": "manifest",
+    "inputs": [
+      "test/corpus/baseline/toxic/input.yaml"
+    ],
+    "inputDigests": [
+      {
+        "path": "test/corpus/baseline/toxic/input.yaml",
+        "sha256": "9d98c3b878d9151d2aabb98890ef826e434f714fa2c1b6da042a315838acc469"
+      }
+    ],
+    "namespace": "ai-inference",
+    "startedAt": "1970-01-01T00:00:00Z",
+    "objects": 5,
+    "aiWorkloads": 5
+  },
+  "summary": {
+    "pass": 7,
+    "fail": 17,
+    "warn": 4,
+    "info": 0,
+    "na": 5,
+    "incomplete": false
+  },
+  "checks": [
+    {
+      "id": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "title": "Container may run as root (no runAsNonRoot: true, or UID 0)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "container may run as root: runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "container may run as root: runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "container may run as root: runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "container may run as root: runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/runAsNonRoot",
+          "message": "container may run as root: runAsNonRoot is not true and runAsUser is not set",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "title": "privileged: true or allowPrivilegeEscalation not false",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+          "message": "allowPrivilegeEscalation is not set to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+          "message": "allowPrivilegeEscalation is not set to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+          "message": "allowPrivilegeEscalation is not set to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+          "message": "allowPrivilegeEscalation is not set to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+          "message": "allowPrivilegeEscalation is not set to false",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "title": "Capabilities not dropped (drop: [ALL] missing)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/securityContext/capabilities",
+          "message": "capabilities.drop does not contain ALL",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/capabilities",
+          "message": "capabilities.drop does not contain ALL",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/capabilities",
+          "message": "capabilities.drop does not contain ALL",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/capabilities",
+          "message": "capabilities.drop does not contain ALL",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/capabilities",
+          "message": "capabilities.drop does not contain ALL",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-004",
+      "display": "DORA-CH2-004",
+      "title": "hostIPC, hostPID or hostNetwork true",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-WL-005",
+      "display": "DORA-CH2-005",
+      "title": "/dev/shm from hostPath (or hostPath /dev)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/spec/template/spec/volumes/1",
+          "message": "volume \"shm\" mounts hostPath /dev/shm",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-006",
+      "display": "DORA-CH2-006",
+      "title": "Memory emptyDir for shm without sizeLimit",
+      "verdict": "PASS",
+      "severity": "warn",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-2",
+          "label": "DORA Art. 9(2)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-WL-007",
+      "display": "DORA-CH2-007",
+      "title": "shareProcessNamespace: true on AI workload",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "title": "Root filesystem writable",
+      "verdict": "WARN",
+      "severity": "warn",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-b",
+          "label": "DORA Art. 9(3)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+          "message": "readOnlyRootFilesystem is not set to true",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+          "message": "readOnlyRootFilesystem is not set to true",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+          "message": "readOnlyRootFilesystem is not set to true",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+          "message": "readOnlyRootFilesystem is not set to true",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+          "message": "readOnlyRootFilesystem is not set to true",
+          "verdict": "WARN"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "title": "No seccompProfile: RuntimeDefault",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "rts-art11-2-b",
+          "label": "RTS 2024/1774 Art. 11(2)(b)",
+          "source": "rts-2024-1774",
+          "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/securityContext/seccompProfile",
+          "message": "seccompProfile is not set: the container runs without a seccomp profile",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/securityContext/seccompProfile",
+          "message": "seccompProfile is not set: the container runs without a seccomp profile",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/seccompProfile",
+          "message": "seccompProfile is not set: the container runs without a seccomp profile",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/seccompProfile",
+          "message": "seccompProfile is not set: the container runs without a seccomp profile",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/seccompProfile",
+          "message": "seccompProfile is not set: the container runs without a seccomp profile",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "title": "Service account token auto-mounted",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/spec/template/spec/automountServiceAccountToken",
+          "message": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/spec/template/spec/automountServiceAccountToken",
+          "message": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/spec/workerGroupSpecs/0/template/spec/automountServiceAccountToken",
+          "message": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/spec/workerGroupSpecs/1/template/spec/automountServiceAccountToken",
+          "message": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/spec/headGroupSpec/template/spec/automountServiceAccountToken",
+          "message": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-011",
+      "display": "DORA-CH2-011",
+      "title": "Secret values in plain env (HF_TOKEN, API keys)",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "title": "Image not pinned by digest",
+      "verdict": "WARN",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-e",
+          "label": "DORA Art. 9(4)(e)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "rts-art16-1-c",
+          "label": "RTS 2024/1774 Art. 16(1)(c)",
+          "source": "rts-2024-1774",
+          "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/image",
+          "message": "image \"qdrant/qdrant:v1.19.2\" has no @sha256: digest",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/image",
+          "message": "image \"vllm/vllm-openai:v0.31.0\" has no @sha256: digest",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/image",
+          "message": "image \"rayproject/ray:2.50.0\" has no @sha256: digest",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/image",
+          "message": "image \"rayproject/ray:2.50.0-gpu\" has no @sha256: digest",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/image",
+          "message": "image \"rayproject/ray:2.50.0\" has no @sha256: digest",
+          "verdict": "WARN"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "title": "No memory limit on AI workload",
+      "verdict": "WARN",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-2",
+          "label": "DORA Art. 9(2)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/resources/limits/memory",
+          "message": "resources.limits.memory is not set",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/resources/limits/memory",
+          "message": "resources.limits.memory is not set",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/resources/limits/memory",
+          "message": "resources.limits.memory is not set",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/resources/limits/memory",
+          "message": "resources.limits.memory is not set",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/resources/limits/memory",
+          "message": "resources.limits.memory is not set",
+          "verdict": "WARN"
+        }
+      ]
+    },
+    {
+      "id": "KS-WL-014",
+      "display": "DORA-CH2-014",
+      "title": "GPU access via hostPath /dev/nvidia* or privileged, not device plugin",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/spec/workerGroupSpecs/1/template/spec/volumes/0",
+          "message": "volume \"nvidia0\" mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits)",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-001",
+      "display": "DORA-CH2-015",
+      "title": "vLLM API without auth (--api-key / VLLM_API_KEY unset)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-d",
+          "label": "DORA Art. 9(4)(d)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/args",
+          "message": "vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-002",
+      "display": "DORA-CH2-016",
+      "title": "vLLM --trust-remote-code set",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-b",
+          "label": "DORA Art. 9(3)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/args",
+          "message": "vLLM runs with --trust-remote-code: it executes code from the model repository",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-003",
+      "display": "DORA-CH2-017",
+      "title": "Model load may use pickle",
+      "verdict": "WARN",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-3-b",
+          "label": "DORA Art. 9(3)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "container": "vllm",
+          "path": "/spec/template/spec/containers/0/args",
+          "message": "no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors)",
+          "verdict": "WARN"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-004",
+      "display": "DORA-CH2-018",
+      "title": "Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "v1",
+            "kind": "Service",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 43
+          },
+          "path": "/spec/type",
+          "message": "Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-005",
+      "display": "DORA-CH2-019",
+      "title": "Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "patch",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/spec/headGroupSpec/serviceType",
+          "message": "head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-006",
+      "display": "DORA-CH2-020",
+      "title": "Ray TLS off (RAY_USE_TLS not 1)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-3-a",
+          "label": "DORA Art. 9(3)(a)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/env",
+          "message": "RAY_USE_TLS is not set: Ray traffic is not encrypted",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "container": "ray-worker",
+          "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/env",
+          "message": "RAY_USE_TLS is not set: Ray traffic is not encrypted",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "container": "ray-head",
+          "path": "/spec/headGroupSpec/template/spec/containers/0/env",
+          "message": "RAY_USE_TLS is not set: Ray traffic is not encrypted",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-007",
+      "display": "DORA-CH2-021",
+      "title": "Ollama 11434 exposed without an auth proxy",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-d",
+          "label": "DORA Art. 9(4)(d)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-AI-008",
+      "display": "DORA-CH2-022",
+      "title": "Qdrant without API key or TLS",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-d",
+          "label": "DORA Art. 9(4)(d)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-3-a",
+          "label": "DORA Art. 9(3)(a)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/env",
+          "message": "Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "container": "qdrant",
+          "path": "/spec/template/spec/containers/0/env",
+          "message": "Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-AI-009",
+      "display": "DORA-CH2-023",
+      "title": "Milvus authorization disabled",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-d",
+          "label": "DORA Art. 9(4)(d)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "title": "AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "policy",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-NET-002",
+      "display": "DORA-CH2-025",
+      "title": "Egress allow-list too broad (world, 0.0.0.0/0)",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "policy",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-NET-003",
+      "display": "DORA-CH2-026",
+      "title": "Pod-to-pod encryption off (Cilium WireGuard/IPsec)",
+      "verdict": "N/A",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-3-a",
+          "label": "DORA Art. 9(3)(a)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "title": "No runtime shell-exec guard on AI namespace (Tetragon)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "policy",
+      "refs": [
+        {
+          "id": "dora-art10-1",
+          "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/metadata/namespace",
+          "message": "no Tetragon shell-exec guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/metadata/namespace",
+          "message": "no Tetragon shell-exec guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon shell-exec guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon shell-exec guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon shell-exec guard covers this workload",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "title": "No runtime egress-connect guard on AI namespace (Tetragon)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "policy",
+      "refs": [
+        {
+          "id": "dora-art10-1",
+          "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/metadata/namespace",
+          "message": "no Tetragon egress-connect guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/metadata/namespace",
+          "message": "no Tetragon egress-connect guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon egress-connect guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon egress-connect guard covers this workload",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/metadata/namespace",
+          "message": "no Tetragon egress-connect guard covers this workload",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "title": "No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)",
+      "verdict": "FAIL",
+      "severity": "fail",
+      "fix": "policy",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "rts-art11-2-b",
+          "label": "RTS 2024/1774 Art. 11(2)(b)",
+          "source": "rts-2024-1774",
+          "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/metadata/namespace",
+          "message": "no kshield admission guard (Kyverno) covers this namespace",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/metadata/namespace",
+          "message": "no kshield admission guard (Kyverno) covers this namespace",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/metadata/namespace",
+          "message": "no kshield admission guard (Kyverno) covers this namespace",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/metadata/namespace",
+          "message": "no kshield admission guard (Kyverno) covers this namespace",
+          "verdict": "FAIL"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/metadata/namespace",
+          "message": "no kshield admission guard (Kyverno) covers this namespace",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    {
+      "id": "KS-PRE-001",
+      "display": "DORA-CH2-030",
+      "title": "Tetragon missing or unhealthy",
+      "verdict": "N/A",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art10-1",
+          "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-PRE-002",
+      "display": "DORA-CH2-031",
+      "title": "CNI is not Cilium (L7/FQDN egress not possible)",
+      "verdict": "N/A",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-PRE-003",
+      "display": "DORA-CH2-032",
+      "title": "Kyverno missing or unhealthy",
+      "verdict": "N/A",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "rts-art11-2-b",
+          "label": "RTS 2024/1774 Art. 11(2)(b)",
+          "source": "rts-2024-1774",
+          "url": "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-PRE-004",
+      "display": "DORA-CH2-033",
+      "title": "Node kernel lacks BPF LSM (--node-probe)",
+      "verdict": "N/A",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art10-1",
+          "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "errors": []
+}

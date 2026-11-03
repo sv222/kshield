@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qdrant
+  namespace: ai-inference
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: HOME
+          value: /kshield/cache
+        - name: HF_HOME
+          value: /kshield/cache/huggingface
+        - name: XDG_CACHE_HOME
+          value: /kshield/cache/xdg
+        name: qdrant
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /qdrant/storage
+        - mountPath: /tmp
+          name: kshield-tmp
+        - mountPath: /kshield/cache
+          name: kshield-cache
+        - mountPath: /qdrant/snapshots
+          name: kshield-qdrant-snapshots
+      securityContext:
+        fsGroup: 1000
+      volumes:
+      - name: storage
+      - emptyDir: {}
+        name: kshield-tmp
+      - emptyDir: {}
+        name: kshield-cache
+      - emptyDir: {}
+        name: kshield-qdrant-snapshots
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  template:
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - env:
+        - name: HOME
+          value: /kshield/cache
+        - name: HF_HOME
+          value: /kshield/cache/huggingface
+        - name: XDG_CACHE_HOME
+          value: /kshield/cache/xdg
+        - name: VLLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: api-key
+              name: vllm-vllm-api-key
+        name: vllm
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /models
+        - mountPath: /dev/shm
+        - mountPath: /tmp
+          name: kshield-tmp
+        - mountPath: /kshield/cache
+          name: kshield-cache
+      securityContext:
+        fsGroup: 1000
+      volumes:
+      - name: models
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 8Gi
+        hostPath: null
+        name: shm
+      - emptyDir: {}
+        name: kshield-tmp
+      - emptyDir: {}
+        name: kshield-cache

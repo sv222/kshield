@@ -1,0 +1,34 @@
+DISPLAY       CHECK       SEVERITY  TIER              FIX     TITLE
+DORA-CH2-001  KS-WL-001   fail      manifest+cluster  patch   Container may run as root (no runAsNonRoot: true, or UID 0)
+DORA-CH2-002  KS-WL-002   fail      manifest+cluster  patch   privileged: true or allowPrivilegeEscalation not false
+DORA-CH2-003  KS-WL-003   fail      manifest+cluster  patch   Capabilities not dropped (drop: [ALL] missing)
+DORA-CH2-004  KS-WL-004   fail      manifest+cluster  patch   hostIPC, hostPID or hostNetwork true
+DORA-CH2-005  KS-WL-005   fail      manifest+cluster  patch   /dev/shm from hostPath (or hostPath /dev)
+DORA-CH2-006  KS-WL-006   warn      manifest+cluster  patch   Memory emptyDir for shm without sizeLimit
+DORA-CH2-007  KS-WL-007   fail      manifest+cluster  patch   shareProcessNamespace: true on AI workload
+DORA-CH2-008  KS-WL-008   warn      manifest+cluster  patch   Root filesystem writable
+DORA-CH2-009  KS-WL-009   fail      manifest+cluster  patch   No seccompProfile: RuntimeDefault
+DORA-CH2-010  KS-WL-010   fail      manifest+cluster  patch   Service account token auto-mounted
+DORA-CH2-011  KS-WL-011   fail      manifest          manual  Secret values in plain env (HF_TOKEN, API keys)
+DORA-CH2-012  KS-WL-012   warn      manifest          manual  Image not pinned by digest
+DORA-CH2-013  KS-WL-013   warn      manifest          manual  No memory limit on AI workload
+DORA-CH2-014  KS-WL-014   fail      manifest+cluster  manual  GPU access via hostPath /dev/nvidia* or privileged, not device plugin
+DORA-CH2-015  KS-AI-001   fail      manifest          manual  vLLM API without auth (--api-key / VLLM_API_KEY unset)
+DORA-CH2-016  KS-AI-002   fail      manifest          patch   vLLM --trust-remote-code set
+DORA-CH2-017  KS-AI-003   fail      manifest          patch   Model load may use pickle
+DORA-CH2-018  KS-AI-004   fail      manifest+cluster  manual  Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth
+DORA-CH2-019  KS-AI-005   fail      manifest+cluster  patch   Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP
+DORA-CH2-020  KS-AI-006   fail      manifest+cluster  manual  Ray TLS off (RAY_USE_TLS not 1)
+DORA-CH2-021  KS-AI-007   fail      manifest+cluster  manual  Ollama 11434 exposed without an auth proxy
+DORA-CH2-022  KS-AI-008   fail      manifest+cluster  manual  Qdrant without API key or TLS
+DORA-CH2-023  KS-AI-009   fail      manifest+cluster  manual  Milvus authorization disabled
+DORA-CH2-024  KS-NET-001  fail      manifest+cluster  policy  AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)
+DORA-CH2-025  KS-NET-002  fail      manifest+cluster  policy  Egress allow-list too broad (world, 0.0.0.0/0)
+DORA-CH2-026  KS-NET-003  fail      cluster           manual  Pod-to-pod encryption off (Cilium WireGuard/IPsec)
+DORA-CH2-027  KS-RT-001   fail      manifest+cluster  policy  No runtime shell-exec guard on AI namespace (Tetragon)
+DORA-CH2-028  KS-RT-002   fail      manifest+cluster  policy  No runtime egress-connect guard on AI namespace (Tetragon)
+DORA-CH2-029  KS-RT-003   fail      manifest+cluster  policy  No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)
+DORA-CH2-030  KS-PRE-001  fail      cluster           manual  Tetragon missing or unhealthy
+DORA-CH2-031  KS-PRE-002  fail      cluster           manual  CNI is not Cilium (L7/FQDN egress not possible)
+DORA-CH2-032  KS-PRE-003  fail      cluster           manual  Kyverno missing or unhealthy
+DORA-CH2-033  KS-PRE-004  warn      cluster           manual  Node kernel lacks BPF LSM (--node-probe)

@@ -1,0 +1,2468 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "kshield",
+          "version": "0.0.0-deterministic",
+          "rules": [
+            {
+              "id": "KS-WL-001",
+              "name": "DORA-CH2-001",
+              "shortDescription": {
+                "text": "Container may run as root (no runAsNonRoot: true, or UID 0)"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-002",
+              "name": "DORA-CH2-002",
+              "shortDescription": {
+                "text": "privileged: true or allowPrivilegeEscalation not false"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-003",
+              "name": "DORA-CH2-003",
+              "shortDescription": {
+                "text": "Capabilities not dropped (drop: [ALL] missing)"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-004",
+              "name": "DORA-CH2-004",
+              "shortDescription": {
+                "text": "hostIPC, hostPID or hostNetwork true"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-005",
+              "name": "DORA-CH2-005",
+              "shortDescription": {
+                "text": "/dev/shm from hostPath (or hostPath /dev)"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-006",
+              "name": "DORA-CH2-006",
+              "shortDescription": {
+                "text": "Memory emptyDir for shm without sizeLimit"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "warn"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-007",
+              "name": "DORA-CH2-007",
+              "shortDescription": {
+                "text": "shareProcessNamespace: true on AI workload"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-008",
+              "name": "DORA-CH2-008",
+              "shortDescription": {
+                "text": "Root filesystem writable"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "warn"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-009",
+              "name": "DORA-CH2-009",
+              "shortDescription": {
+                "text": "No seccompProfile: RuntimeDefault"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-010",
+              "name": "DORA-CH2-010",
+              "shortDescription": {
+                "text": "Service account token auto-mounted"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-011",
+              "name": "DORA-CH2-011",
+              "shortDescription": {
+                "text": "Secret values in plain env (HF_TOKEN, API keys)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-012",
+              "name": "DORA-CH2-012",
+              "shortDescription": {
+                "text": "Image not pinned by digest"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-013",
+              "name": "DORA-CH2-013",
+              "shortDescription": {
+                "text": "No memory limit on AI workload"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
+            },
+            {
+              "id": "KS-WL-014",
+              "name": "DORA-CH2-014",
+              "shortDescription": {
+                "text": "GPU access via hostPath /dev/nvidia* or privileged, not device plugin"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-001",
+              "name": "DORA-CH2-015",
+              "shortDescription": {
+                "text": "vLLM API without auth (--api-key / VLLM_API_KEY unset)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-002",
+              "name": "DORA-CH2-016",
+              "shortDescription": {
+                "text": "vLLM --trust-remote-code set"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-003",
+              "name": "DORA-CH2-017",
+              "shortDescription": {
+                "text": "Model load may use pickle"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-004",
+              "name": "DORA-CH2-018",
+              "shortDescription": {
+                "text": "Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-005",
+              "name": "DORA-CH2-019",
+              "shortDescription": {
+                "text": "Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-006",
+              "name": "DORA-CH2-020",
+              "shortDescription": {
+                "text": "Ray TLS off (RAY_USE_TLS not 1)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-007",
+              "name": "DORA-CH2-021",
+              "shortDescription": {
+                "text": "Ollama 11434 exposed without an auth proxy"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-008",
+              "name": "DORA-CH2-022",
+              "shortDescription": {
+                "text": "Qdrant without API key or TLS"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-AI-009",
+              "name": "DORA-CH2-023",
+              "shortDescription": {
+                "text": "Milvus authorization disabled"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-NET-001",
+              "name": "DORA-CH2-024",
+              "shortDescription": {
+                "text": "AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)"
+              },
+              "properties": {
+                "tags": [
+                  "policy",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-NET-002",
+              "name": "DORA-CH2-025",
+              "shortDescription": {
+                "text": "Egress allow-list too broad (world, 0.0.0.0/0)"
+              },
+              "properties": {
+                "tags": [
+                  "policy",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-NET-003",
+              "name": "DORA-CH2-026",
+              "shortDescription": {
+                "text": "Pod-to-pod encryption off (Cilium WireGuard/IPsec)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-RT-001",
+              "name": "DORA-CH2-027",
+              "shortDescription": {
+                "text": "No runtime shell-exec guard on AI namespace (Tetragon)"
+              },
+              "properties": {
+                "tags": [
+                  "policy",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-RT-002",
+              "name": "DORA-CH2-028",
+              "shortDescription": {
+                "text": "No runtime egress-connect guard on AI namespace (Tetragon)"
+              },
+              "properties": {
+                "tags": [
+                  "policy",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-RT-003",
+              "name": "DORA-CH2-029",
+              "shortDescription": {
+                "text": "No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)"
+              },
+              "properties": {
+                "tags": [
+                  "policy",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-PRE-001",
+              "name": "DORA-CH2-030",
+              "shortDescription": {
+                "text": "Tetragon missing or unhealthy"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-PRE-002",
+              "name": "DORA-CH2-031",
+              "shortDescription": {
+                "text": "CNI is not Cilium (L7/FQDN egress not possible)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-PRE-003",
+              "name": "DORA-CH2-032",
+              "shortDescription": {
+                "text": "Kyverno missing or unhealthy"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
+              "id": "KS-PRE-004",
+              "name": "DORA-CH2-033",
+              "shortDescription": {
+                "text": "Node kernel lacks BPF LSM (--node-probe)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "KS-WL-001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "container may run as root: runAsNonRoot is not true and runAsUser is not set (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ac3695c33121d1a1535abb8c65599bc9b97f56e98e132ff73f7f09456b5a9e5d"
+          }
+        },
+        {
+          "ruleId": "KS-WL-001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "container may run as root: runAsNonRoot is not true and runAsUser is not set (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "9599aed129a79ba480dd5a2873882c78c8903ca8f513ad9b7d06185ee6110ee9"
+          }
+        },
+        {
+          "ruleId": "KS-WL-001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "container may run as root: runAsNonRoot is not true and runAsUser is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "994231811321035bcc7a5cb3891d55a5e62249cd567f1eed05a4b5cc2c501493"
+          }
+        },
+        {
+          "ruleId": "KS-WL-001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "container may run as root: runAsNonRoot is not true and runAsUser is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ed273d3717400765df8e94de6bad5a3748fe2f54a43eeb491eeebfa53f210ba4"
+          }
+        },
+        {
+          "ruleId": "KS-WL-001",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "container may run as root: runAsNonRoot is not true and runAsUser is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "9d69a3b775d2320b677fd2a84c871c003fc2dfb3207f108bc167c9e96011ca5a"
+          }
+        },
+        {
+          "ruleId": "KS-WL-002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "allowPrivilegeEscalation is not set to false (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "18b4e231c8cd0b683d14815c59bfe19a1f62eb68dfabf3bc8e7c187e614b6652"
+          }
+        },
+        {
+          "ruleId": "KS-WL-002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "allowPrivilegeEscalation is not set to false (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "40c46f6e9367f6a7e7ab8cdabf2e6693b6bf01ad896b32ce7919e7e2ab93835b"
+          }
+        },
+        {
+          "ruleId": "KS-WL-002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "allowPrivilegeEscalation is not set to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "fee66ef0ba9e18db578bfed2c23bb52e61af9a3c813b36f5596cd87ae6084066"
+          }
+        },
+        {
+          "ruleId": "KS-WL-002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "allowPrivilegeEscalation is not set to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "b546cc6acedd4849d1ff59218598a204ec54b4341cc5c051ab6743484741644f"
+          }
+        },
+        {
+          "ruleId": "KS-WL-002",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "allowPrivilegeEscalation is not set to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "bd8453667a1d7dbc59f3fefe5e03fa2ad604802701a203c9093b571a5cd6af5c"
+          }
+        },
+        {
+          "ruleId": "KS-WL-003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "capabilities.drop does not contain ALL (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "735b9f060c6d225ae5989a71f151ee13d27017bd0106c6c7388ff13a91f5efda"
+          }
+        },
+        {
+          "ruleId": "KS-WL-003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "capabilities.drop does not contain ALL (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "00f453a368c333950e4f7304a16ccfd48c8366cbf71bc5a85ce128b158c19020"
+          }
+        },
+        {
+          "ruleId": "KS-WL-003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "capabilities.drop does not contain ALL (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "03f0efdd8ffe76596240c3dbf2af02e6b7d3e31773236104196f9f4e22bf9ece"
+          }
+        },
+        {
+          "ruleId": "KS-WL-003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "capabilities.drop does not contain ALL (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "d33d88ef4a414cd8f3be34e65e2b63f2720c0c0458b8e90ce23dbb2f3d862228"
+          }
+        },
+        {
+          "ruleId": "KS-WL-003",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "capabilities.drop does not contain ALL (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "71003e7d60c1ed2ee2f19863f0de04c4224635be6f70611e155379ea37cb1c15"
+          }
+        },
+        {
+          "ruleId": "KS-WL-005",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "volume \"shm\" mounts hostPath /dev/shm (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "1cefcfa742a717ba5c1ca07154151dca9b6194e96dba00b8e09998a6c7256eb6"
+          }
+        },
+        {
+          "ruleId": "KS-WL-008",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "readOnlyRootFilesystem is not set to true (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "b286f2b1d6ed4c792bad829a3cf9dfa07de68cb262e6e4d9777a5d4e32c61245"
+          }
+        },
+        {
+          "ruleId": "KS-WL-008",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "readOnlyRootFilesystem is not set to true (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "771b3031110f05c6bf2dbf3940b8461d739ab96c33f9c876f45968e94863d3ae"
+          }
+        },
+        {
+          "ruleId": "KS-WL-008",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "readOnlyRootFilesystem is not set to true (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ea1ca09d205b93a8426fcfe5ffcc6560985dcdf9191ddede53d261fdb03f28da"
+          }
+        },
+        {
+          "ruleId": "KS-WL-008",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "readOnlyRootFilesystem is not set to true (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ec84d6393c51b94c4104fc1371d4e34e96c61bd5eaa1971f65a10df147aef50d"
+          }
+        },
+        {
+          "ruleId": "KS-WL-008",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "readOnlyRootFilesystem is not set to true (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "b92850c889479d5d68a5e8a9964dbcc654710702236ac611df25827cac30fafe"
+          }
+        },
+        {
+          "ruleId": "KS-WL-009",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "seccompProfile is not set: the container runs without a seccomp profile (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "385acd87ddbe75b04a0dfac722f3c5363889ae2076a22d952f1497c03c642e7e"
+          }
+        },
+        {
+          "ruleId": "KS-WL-009",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "seccompProfile is not set: the container runs without a seccomp profile (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "e718c2b0cabf676af631eca9109728163a3ab6ee024c46fb02561274ce5405f6"
+          }
+        },
+        {
+          "ruleId": "KS-WL-009",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "seccompProfile is not set: the container runs without a seccomp profile (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ee37f7bf7b05c0807475470a916bcbb7c74106ce0833707c8f851e27308b46cf"
+          }
+        },
+        {
+          "ruleId": "KS-WL-009",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "seccompProfile is not set: the container runs without a seccomp profile (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "c318dd16f154ad04e70072262bc1bb7a9cb79dcb4ae20dd0ea7c750f75c3dfe9"
+          }
+        },
+        {
+          "ruleId": "KS-WL-009",
+          "ruleIndex": 8,
+          "level": "error",
+          "message": {
+            "text": "seccompProfile is not set: the container runs without a seccomp profile (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "d9f842e4273948f611746d2ed7614c4da28d6a8690827e64f427f5ec6e97da68"
+          }
+        },
+        {
+          "ruleId": "KS-WL-010",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "c6f4fea8745f55c5e1f6cd282ab2bbc34905b65aba9a917c2438eba36b94b5eb"
+          }
+        },
+        {
+          "ruleId": "KS-WL-010",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "eec87b6265706aa5680c29e16acd6a96a2dabec03bc85e6d4e49353afbc864af"
+          }
+        },
+        {
+          "ruleId": "KS-WL-010",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "dccb968d0d8bc72426a64130f49e94a31c10baaead804714409c7707d0356008"
+          }
+        },
+        {
+          "ruleId": "KS-WL-010",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "205be64692f03b4f543b8a3377d03e1bce30ccbb81f72672183d7f4b56c0b135"
+          }
+        },
+        {
+          "ruleId": "KS-WL-010",
+          "ruleIndex": 9,
+          "level": "error",
+          "message": {
+            "text": "automountServiceAccountToken is not false on the pod, and ServiceAccount \"default\" in namespace \"ai-inference\" does not set it to false (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "80ce55c4fc6b4dd681da7ec57158a3505db7518c6ea907f6fde2c00f44a6de23"
+          }
+        },
+        {
+          "ruleId": "KS-WL-012",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "image \"qdrant/qdrant:v1.19.2\" has no @sha256: digest (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "31cb722005ba0f0d87113e2bb5dbdee22890f8249146c341952e25b8e7a5b168"
+          }
+        },
+        {
+          "ruleId": "KS-WL-012",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "image \"vllm/vllm-openai:v0.31.0\" has no @sha256: digest (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "eb15394eb470dea222f42fe1cfe55216033d8912749e6c65d2b0db8126e74c61"
+          }
+        },
+        {
+          "ruleId": "KS-WL-012",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "image \"rayproject/ray:2.50.0\" has no @sha256: digest (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "2fd7dbbbb8feb427a3ce516f2c4fb951c28a6580282ec7d7985b17ac686582b1"
+          }
+        },
+        {
+          "ruleId": "KS-WL-012",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "image \"rayproject/ray:2.50.0-gpu\" has no @sha256: digest (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "5d92fe040401b27479f2338814a8aec24784e2c861e375e17c79b2d97ed6ad8b"
+          }
+        },
+        {
+          "ruleId": "KS-WL-012",
+          "ruleIndex": 11,
+          "level": "warning",
+          "message": {
+            "text": "image \"rayproject/ray:2.50.0\" has no @sha256: digest (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "6a642660a6b04a2e17e78105e8c07e176d4307fe6c85ad30ecc4330ce9916608"
+          }
+        },
+        {
+          "ruleId": "KS-WL-013",
+          "ruleIndex": 12,
+          "level": "warning",
+          "message": {
+            "text": "resources.limits.memory is not set (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "d2c32042c522d5b8c6f9141801716add38a975db506c22ec7df6aa88340ed1e8"
+          }
+        },
+        {
+          "ruleId": "KS-WL-013",
+          "ruleIndex": 12,
+          "level": "warning",
+          "message": {
+            "text": "resources.limits.memory is not set (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "bb18de699b36c7af6e025bf53dec5cf33a225004bc44a191685c8d14d1e0353e"
+          }
+        },
+        {
+          "ruleId": "KS-WL-013",
+          "ruleIndex": 12,
+          "level": "warning",
+          "message": {
+            "text": "resources.limits.memory is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "0998383138e096101c87a1de57353a7cef814be7459ae3f3e8e8a132c7e5719d"
+          }
+        },
+        {
+          "ruleId": "KS-WL-013",
+          "ruleIndex": 12,
+          "level": "warning",
+          "message": {
+            "text": "resources.limits.memory is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "2d0fdef1e68d28013b0be92bd9493435b8220d0300aa88f73b28b3c6f2d42b91"
+          }
+        },
+        {
+          "ruleId": "KS-WL-013",
+          "ruleIndex": 12,
+          "level": "warning",
+          "message": {
+            "text": "resources.limits.memory is not set (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "fd8ca3a90f5f3026e5e56f9e3cf8749d25aa5dc826e6a6e21665ed5942178610"
+          }
+        },
+        {
+          "ruleId": "KS-WL-014",
+          "ruleIndex": 13,
+          "level": "error",
+          "message": {
+            "text": "volume \"nvidia0\" mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits) (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "eeb392332eb7ca177996da564fed97ad5b84f30e967eb561f7ea1d6b0b0651bb"
+          }
+        },
+        {
+          "ruleId": "KS-AI-001",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "986bd76f5234c4595d876a1977a58f88d88ffc569f0826a0e8ff448d335101a4"
+          }
+        },
+        {
+          "ruleId": "KS-AI-002",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "vLLM runs with --trust-remote-code: it executes code from the model repository (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "fe2c74dc60716fcb5cd6d966b8f23adfb4b51c6b4e2d72bc474e3e76e7283c4f"
+          }
+        },
+        {
+          "ruleId": "KS-AI-003",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors) (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "4e846a47352a6f666e0722d4be88dd36f64cb143877c3e922a59ac25831c9108"
+          }
+        },
+        {
+          "ruleId": "KS-AI-004",
+          "ruleIndex": 17,
+          "level": "error",
+          "message": {
+            "text": "Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY (Service/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 43
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Service/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "aa21d306f663d1a7ee24d1755b04f8f5ca62cbdaac987cbc7ac430b892107779"
+          }
+        },
+        {
+          "ruleId": "KS-AI-005",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "ad86138e175eb9d812c2088a767c501b20dc661c41bb55c8002940873c39635e"
+          }
+        },
+        {
+          "ruleId": "KS-AI-006",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "RAY_USE_TLS is not set: Ray traffic is not encrypted (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "d9ec1833061e2c230927a66518a50945cb27e19e17fda4fb04ea64b7b80f2808"
+          }
+        },
+        {
+          "ruleId": "KS-AI-006",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "RAY_USE_TLS is not set: Ray traffic is not encrypted (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "3d8bd1729cd03bc60c63c1bb70d2ba22f0cd0da7ee911fa9386720e583498369"
+          }
+        },
+        {
+          "ruleId": "KS-AI-006",
+          "ruleIndex": 19,
+          "level": "error",
+          "message": {
+            "text": "RAY_USE_TLS is not set: Ray traffic is not encrypted (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "cfeba9a8ad6233e96e85e34ddddffac82b40fc3195a8835a9a4b85cd7bb12501"
+          }
+        },
+        {
+          "ruleId": "KS-AI-008",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "61e6142d05082c0067d3e237d8205ff4aaea81960f2a521dfdc4d1c67247068e"
+          }
+        },
+        {
+          "ruleId": "KS-AI-008",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "4ca762f3085e31d9ffafbfde7da4b2bd06235f54799424ed4938dcb91a6a15ef"
+          }
+        },
+        {
+          "ruleId": "KS-NET-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "839a4f401190f9c7ca2025ed9c5b12878f0f9963018cf5bc04b8b6a35e2cc2db"
+          }
+        },
+        {
+          "ruleId": "KS-NET-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "2274191adf63e0696989cacb0e2da2d68fd3aa69e86361110d63bbd6da0f177f"
+          }
+        },
+        {
+          "ruleId": "KS-NET-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "9a96da404d52f6329bc05f04135a747df70ff425c949cace4e92b33b60caf6d1"
+          }
+        },
+        {
+          "ruleId": "KS-NET-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "24f7add87e4e6270099e16dfcd29e9b12c49b82e1e81ba9c9b55c4c9fe077a1f"
+          }
+        },
+        {
+          "ruleId": "KS-NET-001",
+          "ruleIndex": 23,
+          "level": "error",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy puts this workload under egress default-deny (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "fe56a9beaab862cee351bcaee0ceffe3e0c59e06086c2274e608898a4a6f1656"
+          }
+        },
+        {
+          "ruleId": "KS-RT-001",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon shell-exec guard covers this workload (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "6308333e8e99468389a995381356ab2f04c8838d83e4f6fb33237b8c51058bbe"
+          }
+        },
+        {
+          "ruleId": "KS-RT-001",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon shell-exec guard covers this workload (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "818550ae0cf25b1576ad6236323eced352e52c2c25bebc236627110980d5c0fd"
+          }
+        },
+        {
+          "ruleId": "KS-RT-001",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon shell-exec guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "679119ff906e6b6856c86e02c454eb4b805bd2b2afedbd76b5410582b2ec7720"
+          }
+        },
+        {
+          "ruleId": "KS-RT-001",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon shell-exec guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "bf38932c0b819e87ee1d837fb495cd8f317fb133d7dd17a67f88e5046df6519a"
+          }
+        },
+        {
+          "ruleId": "KS-RT-001",
+          "ruleIndex": 26,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon shell-exec guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "b587eadefb917b051c156be00cab8c44caaf9d30041729c58529552f54a38d84"
+          }
+        },
+        {
+          "ruleId": "KS-RT-002",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon egress-connect guard covers this workload (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "43a51c069397665382f901c29038071aac45410adcf200c19d5efd6d2be2e677"
+          }
+        },
+        {
+          "ruleId": "KS-RT-002",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon egress-connect guard covers this workload (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "cfa0f5d27ff30204f8995434eb93c79137d3cf0629110a1a48661800d97bf980"
+          }
+        },
+        {
+          "ruleId": "KS-RT-002",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon egress-connect guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "9a8fe1ce46353c22ba2585bf2f7e0b15d4d4292f03edf37a3036d14d001b5009"
+          }
+        },
+        {
+          "ruleId": "KS-RT-002",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon egress-connect guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "1f3aaf94cf7b270eab6ab34cee32a9a6e3da209c52dc9eaa65e1eb78d3fa996c"
+          }
+        },
+        {
+          "ruleId": "KS-RT-002",
+          "ruleIndex": 27,
+          "level": "error",
+          "message": {
+            "text": "no Tetragon egress-connect guard covers this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "c819d0f83d64c7e65c7ee36f0420e1a6c84666591e95915379a53c5d9858b31c"
+          }
+        },
+        {
+          "ruleId": "KS-RT-003",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "no kshield admission guard (Kyverno) covers this namespace (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "e11a8182d4d1b38dd4157b196007981321bd2266c62cf0ba69feeaa22d99c9d1"
+          }
+        },
+        {
+          "ruleId": "KS-RT-003",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "no kshield admission guard (Kyverno) covers this namespace (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "1c45161c2847b172a9b5c8e160782ed78b0161f80dd2a0132c2c79cd08d8e51e"
+          }
+        },
+        {
+          "ruleId": "KS-RT-003",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "no kshield admission guard (Kyverno) covers this namespace (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "49d80f13ca0aa366fa55a482707ad0a2d02cd2153581c21ee8e0d5c74dca0091"
+          }
+        },
+        {
+          "ruleId": "KS-RT-003",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "no kshield admission guard (Kyverno) covers this namespace (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "4f70231aef8692aa611bb0eab5106b906e2fe9b548637f943f7a923d4a66920b"
+          }
+        },
+        {
+          "ruleId": "KS-RT-003",
+          "ruleIndex": 28,
+          "level": "error",
+          "message": {
+            "text": "no kshield admission guard (Kyverno) covers this namespace (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "e6cbdf14203c4c9f2cb2a5b4b391da530f05cb68e21ba8fd0934f3fa2d2492ad"
+          }
+        }
+      ]
+    }
+  ]
+}

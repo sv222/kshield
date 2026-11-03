@@ -1,0 +1,2 @@
+ID    VERSION  CHECKS  SHA256                                                            TITLE
+dora  1        33      a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90  DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774

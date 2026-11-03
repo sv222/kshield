@@ -1,0 +1,6 @@
+apiVersion: v2
+name: postrender-chart
+description: One vLLM Deployment for the kshield Helm post-renderer check.
+type: application
+version: 0.1.0
+appVersion: v0.31.0

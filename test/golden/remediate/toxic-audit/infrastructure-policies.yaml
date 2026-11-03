@@ -1,0 +1,160 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kshield-egress
+  namespace: ai-inference
+spec:
+  egress:
+  - toEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: kube-system
+        k8s:k8s-app: kube-dns
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: UDP
+      - port: "53"
+        protocol: TCP
+      rules:
+        dns:
+        - matchPattern: '*'
+  - toEndpoints:
+    - {}
+  enableDefaultDeny:
+    egress: false
+    ingress: false
+  endpointSelector: {}
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  labels:
+    kshield.io/guard: shell-exec
+  name: kshield-shell-exec
+  namespace: ai-inference
+spec:
+  kprobes:
+  - args:
+    - index: 0
+      type: linux_binprm
+    call: security_bprm_check
+    message: 'kshield shell-exec guard: a shell started by a process that is not a
+      shell and not PID 1'
+    selectors:
+    - matchActions:
+      - action: Post
+      matchArgs:
+      - index: 0
+        operator: Postfix
+        values:
+        - /sh
+        - /bash
+        - /dash
+        - /ash
+        - /zsh
+        - /ksh
+        - /busybox
+      matchBinaries:
+      - operator: NotPostfix
+        values:
+        - /sh
+        - /bash
+        - /dash
+        - /ash
+        - /zsh
+        - /ksh
+        - /busybox
+      matchPIDs:
+      - isNamespacePID: true
+        operator: NotIn
+        values:
+        - 1
+    syscall: false
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  labels:
+    kshield.io/guard: egress-connect
+  name: kshield-egress-connect
+  namespace: ai-inference
+spec:
+  kprobes:
+  - args:
+    - index: 0
+      type: socket
+    - index: 1
+      type: sockaddr
+    call: security_socket_connect
+    message: 'kshield egress-connect guard: TCP connect to an address outside the
+      private ranges and --allow-cidr'
+    selectors:
+    - matchActions:
+      - action: Post
+      matchArgs:
+      - index: 0
+        operator: Protocol
+        values:
+        - IPPROTO_TCP
+      - index: 1
+        operator: NotSAddr
+        values:
+        - 127.0.0.0/8
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - ::1/128
+        - fc00::/7
+        - fe80::/10
+        - 0.0.0.0/32
+        - ::/128
+        - ::ffff:127.0.0.0/104
+        - ::ffff:10.0.0.0/104
+        - ::ffff:172.16.0.0/108
+        - ::ffff:192.168.0.0/112
+        - ::ffff:0.0.0.0/128
+    syscall: false
+  options:
+  - name: disable-kprobe-multi
+    value: "1"
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  labels:
+    kshield.io/guard: admission
+  name: kshield-admission
+  namespace: ai-inference
+spec:
+  background: true
+  rules:
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: kshield-pod-security
+    validate:
+      failureAction: Audit
+      podSecurity:
+        level: restricted
+        version: latest
+  - match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    name: kshield-no-pickle-load
+    validate:
+      failureAction: Audit
+      foreach:
+      - deny:
+          conditions:
+            any:
+            - key: '{{ regex_match(''(^|[^-_[:alnum:]])--trust[-_]remote[-_]code([^-_[:alnum:]]|$)|(^|[^-_[:alnum:]])--load[-_]format([[:space:]]+|=)[[:punct:]]?(?i:pt|npcache)([^-_.[:alnum:]]|$)'',
+                join('' '', [element.command || `[]`, element.args || `[]`][])) }}'
+              operator: Equals
+              value: true
+        list: request.object.spec.[ephemeralContainers, initContainers, containers][]
+      message: 'kshield: a container starts vLLM with --trust-remote-code or a pickle
+        --load-format (pt, npcache)'

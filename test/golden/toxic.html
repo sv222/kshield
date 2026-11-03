@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kshield report - DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774</title>
+<style>
+:root { --fg: #1b1f24; --muted: #57606a; --line: #d0d7de; --soft: #f6f8fa; --fail: #b42318; --warn: #9a6700; --pass: #1a7f37; --info: #0b5cad; --na: #6e7781; }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 1100px; padding: 24px 16px 48px; color: var(--fg); background: #ffffff; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+h1 { font-size: 1.6em; margin: 0 0 8px; }
+h2 { font-size: 1.25em; margin: 32px 0 12px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.1em; margin: 0 0 6px; }
+h4 { font-size: 0.95em; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+code { font: 0.9em/1.4 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; word-break: break-all; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+thead th { background: var(--soft); }
+a { color: var(--info); }
+.disclaimer { margin: 0 0 16px; padding: 10px 12px; border-left: 4px solid var(--info); background: var(--soft); }
+.kv th { width: 180px; color: var(--muted); font-weight: 600; }
+.digests td, .digests th { border: 0; padding: 0 12px 2px 0; }
+.banner { margin: 24px 0 0; padding: 12px 14px; font-weight: 700; border: 2px solid var(--fail); color: var(--fail); background: #fff1f0; }
+.note { color: var(--muted); }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.counts li { min-width: 96px; padding: 8px 12px; border: 1px solid var(--line); border-top-width: 4px; }
+.counts b { display: block; font-size: 1.5em; }
+.counts .v-fail { border-top-color: var(--fail); }
+.counts .v-warn { border-top-color: var(--warn); }
+.counts .v-pass { border-top-color: var(--pass); }
+.counts .v-info { border-top-color: var(--info); }
+.counts .v-na { border-top-color: var(--na); }
+.verdict { display: inline-block; min-width: 48px; padding: 1px 6px; border-radius: 4px; color: #ffffff; font-weight: 700; font-size: 0.85em; text-align: center; }
+.verdict.v-fail { background: var(--fail); }
+.verdict.v-warn { background: var(--warn); }
+.verdict.v-pass { background: var(--pass); }
+.verdict.v-info { background: var(--info); }
+.verdict.v-na, .verdict.v-other { background: var(--na); }
+.check { margin: 0 0 28px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--na); }
+.check.v-fail { border-left-color: var(--fail); }
+.check.v-warn { border-left-color: var(--warn); }
+.check.v-info { border-left-color: var(--info); }
+.meta { margin: 0; color: var(--muted); }
+.ref { margin: 0 0 10px; }
+.ref p { margin: 0; }
+blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--line); color: var(--muted); font-style: italic; }
+.finding { margin: 8px 0 0; padding: 8px 10px; background: var(--soft); border: 1px solid var(--line); }
+.finding dl { display: grid; grid-template-columns: 100px 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.finding dt { color: var(--muted); }
+.finding dd { margin: 0; }
+.errors li { color: var(--fail); }
+@media print {
+  body { max-width: none; padding: 0; font-size: 10pt; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; }
+  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  tr, .finding, .ref, .counts li { break-inside: avoid; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>kshield report - DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774</h1>
+<p class="disclaimer">This report supports evidence for the requirements it cites. It is not an audit and does not state compliance with any regulation.</p>
+</header>
+<section id="scan">
+<h2>Scan</h2>
+<table class="kv">
+<tr><th>Tool</th><td>kshield 0.0.0-deterministic</td></tr>
+<tr><th>Profile</th><td>dora v1</td></tr>
+<tr><th>Profile sha256</th><td><code>a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90</code></td></tr>
+<tr><th>Mode</th><td>manifest</td></tr>
+<tr><th>Inputs</th><td><code>test/corpus/baseline/toxic/input.yaml</code></td></tr>
+<tr><th>Input files</th><td>
+<table class="digests">
+<tr><td><code>test/corpus/baseline/toxic/input.yaml</code></td><td>sha256 <code>9d98c3b878d9151d2aabb98890ef826e434f714fa2c1b6da042a315838acc469</code></td></tr>
+</table></td></tr>
+<tr><th>Namespace</th><td>ai-inference</td></tr>
+<tr><th>Started at</th><td>1970-01-01T00:00:00Z</td></tr>
+<tr><th>Objects</th><td>5</td></tr>
+<tr><th>AI workloads</th><td>5</td></tr>
+</table>
+</section>
+<section id="summary">
+<h2>Summary</h2>
+<ul class="counts">
+<li class="v-fail"><b>17</b>FAIL</li>
+<li class="v-warn"><b>4</b>WARN</li>
+<li class="v-pass"><b>7</b>PASS</li>
+<li class="v-info"><b>0</b>INFO</li>
+<li class="v-na"><b>5</b>N/A</li>
+</ul>
+</section>
+<section id="checks">
+<h2>Checks</h2>
+<table>
+<thead><tr><th>Display ID</th><th>Check ID</th><th>Title</th><th>Severity</th><th>Verdict</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><a href="#ks-wl-001">DORA-CH2-001</a></td><td><code>KS-WL-001</code></td><td>Container may run as root (no runAsNonRoot: true, or UID 0)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-002">DORA-CH2-002</a></td><td><code>KS-WL-002</code></td><td>privileged: true or allowPrivilegeEscalation not false</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-003">DORA-CH2-003</a></td><td><code>KS-WL-003</code></td><td>Capabilities not dropped (drop: [ALL] missing)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-004</td><td><code>KS-WL-004</code></td><td>hostIPC, hostPID or hostNetwork true</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-005">DORA-CH2-005</a></td><td><code>KS-WL-005</code></td><td>/dev/shm from hostPath (or hostPath /dev)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-006</td><td><code>KS-WL-006</code></td><td>Memory emptyDir for shm without sizeLimit</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-007</td><td><code>KS-WL-007</code></td><td>shareProcessNamespace: true on AI workload</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-008">DORA-CH2-008</a></td><td><code>KS-WL-008</code></td><td>Root filesystem writable</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-009">DORA-CH2-009</a></td><td><code>KS-WL-009</code></td><td>No seccompProfile: RuntimeDefault</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-010">DORA-CH2-010</a></td><td><code>KS-WL-010</code></td><td>Service account token auto-mounted</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-011</td><td><code>KS-WL-011</code></td><td>Secret values in plain env (HF_TOKEN, API keys)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-WL-011)</td></tr>
+<tr><td><a href="#ks-wl-012">DORA-CH2-012</a></td><td><code>KS-WL-012</code></td><td>Image not pinned by digest</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>manual (kshield checks explain KS-WL-012)</td></tr>
+<tr><td><a href="#ks-wl-013">DORA-CH2-013</a></td><td><code>KS-WL-013</code></td><td>No memory limit on AI workload</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>manual (kshield checks explain KS-WL-013)</td></tr>
+<tr><td><a href="#ks-wl-014">DORA-CH2-014</a></td><td><code>KS-WL-014</code></td><td>GPU access via hostPath /dev/nvidia* or privileged, not device plugin</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-WL-014)</td></tr>
+<tr><td><a href="#ks-ai-001">DORA-CH2-015</a></td><td><code>KS-AI-001</code></td><td>vLLM API without auth (--api-key / VLLM_API_KEY unset)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-001)</td></tr>
+<tr><td><a href="#ks-ai-002">DORA-CH2-016</a></td><td><code>KS-AI-002</code></td><td>vLLM --trust-remote-code set</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-003">DORA-CH2-017</a></td><td><code>KS-AI-003</code></td><td>Model load may use pickle</td><td>fail</td><td><span class="verdict v-warn">WARN</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-004">DORA-CH2-018</a></td><td><code>KS-AI-004</code></td><td>Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-004)</td></tr>
+<tr><td><a href="#ks-ai-005">DORA-CH2-019</a></td><td><code>KS-AI-005</code></td><td>Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-006">DORA-CH2-020</a></td><td><code>KS-AI-006</code></td><td>Ray TLS off (RAY_USE_TLS not 1)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-006)</td></tr>
+<tr><td>DORA-CH2-021</td><td><code>KS-AI-007</code></td><td>Ollama 11434 exposed without an auth proxy</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-007)</td></tr>
+<tr><td><a href="#ks-ai-008">DORA-CH2-022</a></td><td><code>KS-AI-008</code></td><td>Qdrant without API key or TLS</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-008)</td></tr>
+<tr><td>DORA-CH2-023</td><td><code>KS-AI-009</code></td><td>Milvus authorization disabled</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-009)</td></tr>
+<tr><td><a href="#ks-net-001">DORA-CH2-024</a></td><td><code>KS-NET-001</code></td><td>AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-025</td><td><code>KS-NET-002</code></td><td>Egress allow-list too broad (world, 0.0.0.0/0)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-026</td><td><code>KS-NET-003</code></td><td>Pod-to-pod encryption off (Cilium WireGuard/IPsec)</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-NET-003)</td></tr>
+<tr><td><a href="#ks-rt-001">DORA-CH2-027</a></td><td><code>KS-RT-001</code></td><td>No runtime shell-exec guard on AI namespace (Tetragon)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td><a href="#ks-rt-002">DORA-CH2-028</a></td><td><code>KS-RT-002</code></td><td>No runtime egress-connect guard on AI namespace (Tetragon)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td><a href="#ks-rt-003">DORA-CH2-029</a></td><td><code>KS-RT-003</code></td><td>No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>DORA-CH2-030</td><td><code>KS-PRE-001</code></td><td>Tetragon missing or unhealthy</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-001)</td></tr>
+<tr><td>DORA-CH2-031</td><td><code>KS-PRE-002</code></td><td>CNI is not Cilium (L7/FQDN egress not possible)</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-002)</td></tr>
+<tr><td>DORA-CH2-032</td><td><code>KS-PRE-003</code></td><td>Kyverno missing or unhealthy</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-003)</td></tr>
+<tr><td>DORA-CH2-033</td><td><code>KS-PRE-004</code></td><td>Node kernel lacks BPF LSM (--node-probe)</td><td>warn</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-004)</td></tr>
+</tbody>
+</table>
+</section>
+<section id="findings">
+<h2>Findings</h2>
+<article class="check v-fail" id="ks-wl-001">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-001 <code>KS-WL-001</code> Container may run as root (no runAsNonRoot: true, or UID 0)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-002">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-002 <code>KS-WL-002</code> privileged: true or allowPrivilegeEscalation not false</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-003">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-003 <code>KS-WL-003</code> Capabilities not dropped (drop: [ALL] missing)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-005">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-005 <code>KS-WL-005</code> /dev/shm from hostPath (or hostPath /dev)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(3)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/volumes/1</code></dd>
+<dt>message</dt><dd>volume &#34;shm&#34; mounts hostPath /dev/shm</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-wl-008">
+<h3><span class="verdict v-warn">WARN</span> DORA-CH2-008 <code>KS-WL-008</code> Root filesystem writable</h3>
+<p class="meta">severity warn | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(3)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>minimise the risk of corruption or loss of data, unauthorised access and technical flaws that may hinder business activity;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(3)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-009">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-009 <code>KS-WL-009</code> No seccompProfile: RuntimeDefault</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<div class="ref">
+<p><b>RTS 2024/1774 Art. 11(2)(b)</b> - RTS 2024/1774, CELEX 32024R1774, <a href="https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj">https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj</a></p>
+<blockquote>the identification of a secure configuration baseline for ICT assets that minimise exposure of those ICT assets to cyber threats and measures to verify regularly that those baselines are effectively deployed;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-010">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-010 <code>KS-WL-010</code> Service account token auto-mounted</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-wl-012">
+<h3><span class="verdict v-warn">WARN</span> DORA-CH2-012 <code>KS-WL-012</code> Image not pinned by digest</h3>
+<p class="meta">severity warn | fix: manual (kshield checks explain KS-WL-012)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(e)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement documented policies, procedures and controls for ICT change management, including changes to software, hardware, firmware components, systems or security parameters, that are based on a risk assessment approach and are an integral part of the financial entity’s overall change management process, in order to ensure that all changes to ICT systems are recorded, tested, assessed, approved, implemented and verified in a controlled manner;</blockquote>
+</div>
+<div class="ref">
+<p><b>RTS 2024/1774 Art. 16(1)(c)</b> - RTS 2024/1774, CELEX 32024R1774, <a href="https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj">https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj</a></p>
+<blockquote>specify measures to mitigate the risk of unintentional alteration or intentional manipulation of the ICT systems during the development, maintenance, and deployment of those ICT systems in the production environment.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;qdrant/qdrant:v1.19.2&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;vllm/vllm-openai:v0.31.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0-gpu&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-wl-013">
+<h3><span class="verdict v-warn">WARN</span> DORA-CH2-013 <code>KS-WL-013</code> No memory limit on AI workload</h3>
+<p class="meta">severity warn | fix: manual (kshield checks explain KS-WL-013)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(2)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>Financial entities shall design, procure and implement ICT security policies, procedures, protocols and tools that aim to ensure the resilience, continuity and availability of ICT systems, in particular for those supporting critical or important functions, and to maintain high standards of availability, authenticity, integrity and confidentiality of data, whether at rest, in use or in transit.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/resources/limits/memory</code></dd>
+<dt>message</dt><dd>resources.limits.memory is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/resources/limits/memory</code></dd>
+<dt>message</dt><dd>resources.limits.memory is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/resources/limits/memory</code></dd>
+<dt>message</dt><dd>resources.limits.memory is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/resources/limits/memory</code></dd>
+<dt>message</dt><dd>resources.limits.memory is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/resources/limits/memory</code></dd>
+<dt>message</dt><dd>resources.limits.memory is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-014">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-014 <code>KS-WL-014</code> GPU access via hostPath /dev/nvidia* or privileged, not device plugin</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-WL-014)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/volumes/0</code></dd>
+<dt>message</dt><dd>volume &#34;nvidia0&#34; mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits)</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-001">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-015 <code>KS-AI-001</code> vLLM API without auth (--api-key / VLLM_API_KEY unset)</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-001)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(4)(d)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies and protocols for strong authentication mechanisms, based on relevant standards and dedicated control systems, and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-002">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-016 <code>KS-AI-002</code> vLLM --trust-remote-code set</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(3)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>minimise the risk of corruption or loss of data, unauthorised access and technical flaws that may hinder business activity;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(3)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>vLLM runs with --trust-remote-code: it executes code from the model repository</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-ai-003">
+<h3><span class="verdict v-warn">WARN</span> DORA-CH2-017 <code>KS-AI-003</code> Model load may use pickle</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(3)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>minimise the risk of corruption or loss of data, unauthorised access and technical flaws that may hinder business activity;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(3)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors)</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-004">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-018 <code>KS-AI-004</code> Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-004)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Service/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/type</code></dd>
+<dt>message</dt><dd>Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:43</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-005">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-019 <code>KS-AI-005</code> Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/serviceType</code></dd>
+<dt>message</dt><dd>head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-006">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-020 <code>KS-AI-006</code> Ray TLS off (RAY_USE_TLS not 1)</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-006)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(3)(a)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>ensure the security of the means of transfer of data;</blockquote>
+</div>
+<h4>Findings (3)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-008">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-022 <code>KS-AI-008</code> Qdrant without API key or TLS</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-008)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(4)(d)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies and protocols for strong authentication mechanisms, based on relevant standards and dedicated control systems, and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes;</blockquote>
+</div>
+<div class="ref">
+<p><b>DORA Art. 9(3)(a)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>ensure the security of the means of transfer of data;</blockquote>
+</div>
+<h4>Findings (2)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-net-001">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-024 <code>KS-NET-001</code> AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-001">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-027 <code>KS-RT-001</code> No runtime shell-exec guard on AI namespace (Tetragon)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 10(1)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>Financial entities shall have in place mechanisms to promptly detect anomalous activities, in accordance with Article 17, including ICT network performance issues and ICT-related incidents, and to identify potential material single points of failure.
+
+All detection mechanisms referred to in the first subparagraph shall be regularly tested in accordance with Article 25.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-002">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-028 <code>KS-RT-002</code> No runtime egress-connect guard on AI namespace (Tetragon)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 10(1)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>Financial entities shall have in place mechanisms to promptly detect anomalous activities, in accordance with Article 17, including ICT network performance issues and ICT-related incidents, and to identify potential material single points of failure.
+
+All detection mechanisms referred to in the first subparagraph shall be regularly tested in accordance with Article 25.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-003">
+<h3><span class="verdict v-fail">FAIL</span> DORA-CH2-029 <code>KS-RT-003</code> No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(c)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;</blockquote>
+</div>
+<div class="ref">
+<p><b>RTS 2024/1774 Art. 11(2)(b)</b> - RTS 2024/1774, CELEX 32024R1774, <a href="https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj">https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj</a></p>
+<blockquote>the identification of a secure configuration baseline for ICT assets that minimise exposure of those ICT assets to cyber threats and measures to verify regularly that those baselines are effectively deployed;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+</section>
+<section id="errors">
+<h2>Errors</h2>
+<p>No errors.</p>
+</section>
+</body>
+</html>
