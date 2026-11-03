@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  uid: b1a03cde-0001-4000-8000-000000000001
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vllm-6d5f8b7c9
+  namespace: ai
+  uid: b1a03cde-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: vllm
+      uid: b1a03cde-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+      pod-template-hash: 6d5f8b7c9
+  template:
+    metadata:
+      labels:
+        app: vllm
+        pod-template-hash: 6d5f8b7c9
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-6d5f8b7c9-z9y8x
+  namespace: ai
+  uid: b1a03cde-0004-4000-8000-000000000004
+  labels:
+    app: vllm
+    pod-template-hash: 6d5f8b7c9
+  annotations:
+    sidecar.istio.io/status: '{"containers":["istio-proxy"]}'
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-6d5f8b7c9
+      uid: b1a03cde-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: istio-proxy
+      image: docker.io/istio/proxyv2:1.24.0
+      args: ["proxy", "sidecar"]
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+status:
+  phase: Running
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-6d5f8b7c9-a1b2c
+  namespace: ai
+  uid: b1a03cde-0003-4000-8000-000000000003
+  labels:
+    app: vllm
+    pod-template-hash: 6d5f8b7c9
+  annotations:
+    sidecar.istio.io/status: '{"containers":["istio-proxy"]}'
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-6d5f8b7c9
+      uid: b1a03cde-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: istio-proxy
+      image: docker.io/istio/proxyv2:1.24.0
+      args: ["proxy", "sidecar"]
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+status:
+  phase: Running

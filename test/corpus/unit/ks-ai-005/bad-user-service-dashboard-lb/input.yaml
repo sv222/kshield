@@ -1,0 +1,43 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: raycluster
+  namespace: ai-inference
+spec:
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.9.0
+            ports:
+              - containerPort: 8265
+                name: dashboard
+  workerGroupSpecs:
+    - groupName: gpu
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 1
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.9.0-gpu
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ray-dashboard
+  namespace: ai-inference
+spec:
+  type: LoadBalancer
+  selector:
+    ray.io/cluster: raycluster
+    ray.io/node-type: head
+  ports:
+    - name: dashboard
+      port: 80
+      targetPort: dashboard

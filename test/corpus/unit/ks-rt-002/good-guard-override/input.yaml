@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "meta-llama/Llama-3.1-8B-Instruct", "--load-format", "safetensors"]
+          ports:
+            - containerPort: 8000
+---
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: kshield-egress-connect
+  labels:
+    kshield.io/guard: "egress-connect"
+spec:
+  kprobes:
+    - call: "tcp_connect"
+      syscall: true
+      selectors:
+        - matchActions:
+            - action: Override

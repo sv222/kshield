@@ -1,0 +1,49 @@
+---
+# Source: demo/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-config
+  labels:
+    app.kubernetes.io/managed-by: Helm
+data:
+  config: |
+    first: 1
+      ---
+    last: 2
+---
+---
+# Source: demo/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    app: demo
+---
+# Source: demo/templates/disabled.yaml
+---
+# Source: demo/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo
+  labels:
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+        - name: demo
+          image: vllm/vllm-openai:v0.6.3

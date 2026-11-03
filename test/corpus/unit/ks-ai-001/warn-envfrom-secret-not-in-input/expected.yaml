@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-001"]
+expect:
+  - {check: "KS-AI-001", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "WARN"}
+na: []

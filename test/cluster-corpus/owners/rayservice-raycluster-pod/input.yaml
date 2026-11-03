@@ -1,0 +1,125 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: llm
+  namespace: ai
+  uid: 5fad4c7e-0001-4000-8000-000000000001
+spec:
+  rayClusterConfig:
+    rayVersion: "2.9.0"
+    headGroupSpec:
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.9.0
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+    workerGroupSpecs:
+      - groupName: gpu
+        replicas: 1
+        rayStartParams: {}
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.9.0
+                securityContext:
+                  runAsNonRoot: true
+                  runAsUser: 1000
+                  allowPrivilegeEscalation: false
+---
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: llm-raycluster-x7k2p
+  namespace: ai
+  uid: 5fad4c7e-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: ray.io/v1
+      kind: RayService
+      name: llm
+      uid: 5fad4c7e-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  rayVersion: "2.9.0"
+  headGroupSpec:
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.9.0
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              allowPrivilegeEscalation: false
+  workerGroupSpecs:
+    - groupName: gpu
+      replicas: 1
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.9.0
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: llm-raycluster-x7k2p-head-9qv4m
+  namespace: ai
+  uid: 5fad4c7e-0003-4000-8000-000000000003
+  labels:
+    ray.io/cluster: llm-raycluster-x7k2p
+    ray.io/node-type: head
+    ray.io/group: headgroup
+  ownerReferences:
+    - apiVersion: ray.io/v1
+      kind: RayCluster
+      name: llm-raycluster-x7k2p
+      uid: 5fad4c7e-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: ray-head
+      image: rayproject/ray:2.9.0
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+status:
+  phase: Running
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: llm-raycluster-x7k2p-gpu-worker-t6h3n
+  namespace: ai
+  uid: 5fad4c7e-0004-4000-8000-000000000004
+  labels:
+    ray.io/cluster: llm-raycluster-x7k2p
+    ray.io/node-type: worker
+    ray.io/group: gpu
+  ownerReferences:
+    - apiVersion: ray.io/v1
+      kind: RayCluster
+      name: llm-raycluster-x7k2p
+      uid: 5fad4c7e-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: ray-worker
+      image: rayproject/ray:2.9.0
+status:
+  phase: Running

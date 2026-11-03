@@ -1,0 +1,545 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.31.0@sha256:3f1c9a7e5b2d4c6e8a0b1d3f5e7c9a2b4d6f8e0a1c3e5b7d9f2a4c6e8b0d1f3a
+          command: ["vllm", "serve"]
+          args: ["/models/Qwen2.5-7B-Instruct", "--load-format", "safetensors", "--api-key", "$(VLLM_API_KEY)", "--host", "0.0.0.0", "--port", "8000"]
+          env:
+            - name: VLLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vllm-api-key
+                  key: api-key
+            - name: HOME
+              value: /cache
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: VLLM_NO_USAGE_STATS
+              value: "1"
+            - name: DO_NOT_TRACK
+              value: "1"
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: "4"
+              memory: 32Gi
+            limits:
+              memory: 32Gi
+              nvidia.com/gpu: "1"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+            - name: cache
+              mountPath: /cache
+            - name: tmp
+              mountPath: /tmp
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models
+            readOnly: true
+        - name: cache
+          emptyDir:
+            sizeLimit: 20Gi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  type: ClusterIP
+  selector:
+    app: vllm
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qdrant
+  namespace: ai-inference
+  labels:
+    app: qdrant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 2000
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:v1.19.2-unprivileged@sha256:8b2e4d6f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b1d3f5a7c9e0b2d4f6a8c1e3b
+          env:
+            - name: QDRANT__SERVICE__API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: qdrant-api-key
+                  key: api-key
+            - name: QDRANT__SERVICE__ENABLE_TLS
+              value: "true"
+            - name: QDRANT__TLS__CERT
+              value: /qdrant/tls/tls.crt
+            - name: QDRANT__TLS__KEY
+              value: /qdrant/tls/tls.key
+            - name: QDRANT__TELEMETRY_DISABLED
+              value: "true"
+          ports:
+            - name: http
+              containerPort: 6333
+            - name: grpc
+              containerPort: 6334
+          resources:
+            requests:
+              cpu: "1"
+              memory: 4Gi
+            limits:
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: storage
+              mountPath: /qdrant/storage
+            - name: snapshots
+              mountPath: /qdrant/snapshots
+            - name: tmp
+              mountPath: /tmp
+            - name: tls
+              mountPath: /qdrant/tls
+              readOnly: true
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: qdrant-storage
+        - name: snapshots
+          emptyDir:
+            sizeLimit: 10Gi
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: tls
+          secret:
+            secretName: qdrant-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: ai-inference
+spec:
+  type: ClusterIP
+  selector:
+    app: qdrant
+  ports:
+    - name: http
+      port: 6333
+      targetPort: http
+    - name: grpc
+      port: 6334
+      targetPort: grpc
+---
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: rc
+  namespace: ai-inference
+spec:
+  rayVersion: "2.50.0"
+  headGroupSpec:
+    serviceType: ClusterIP
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        automountServiceAccountToken: false
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 100
+          fsGroup: 100
+          seccompProfile:
+            type: RuntimeDefault
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.50.0@sha256:5d7f9b1e3a5c7e9d1f3b5a7c9e1d3f5b7a9c1e3d5f7b9a1c3e5d7f9b1a3c5e7d
+            env:
+              - name: RAY_USE_TLS
+                value: "1"
+              - name: RAY_TLS_SERVER_CERT
+                value: /etc/ray/tls/tls.crt
+              - name: RAY_TLS_SERVER_KEY
+                value: /etc/ray/tls/tls.key
+              - name: RAY_TLS_CA_CERT
+                value: /etc/ray/tls/ca.crt
+              - name: RAY_USAGE_STATS_ENABLED
+                value: "0"
+            ports:
+              - name: gcs
+                containerPort: 6379
+              - name: dashboard
+                containerPort: 8265
+              - name: client
+                containerPort: 10001
+            resources:
+              requests:
+                cpu: "2"
+                memory: 8Gi
+              limits:
+                memory: 8Gi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+            volumeMounts:
+              - name: tmp
+                mountPath: /tmp
+              - name: shm
+                mountPath: /dev/shm
+              - name: ray-tls
+                mountPath: /etc/ray/tls
+                readOnly: true
+        volumes:
+          - name: tmp
+            emptyDir:
+              sizeLimit: 10Gi
+          - name: shm
+            emptyDir:
+              medium: Memory
+              sizeLimit: 4Gi
+          - name: ray-tls
+            secret:
+              secretName: ray-tls
+  workerGroupSpecs:
+    - groupName: cpu
+      replicas: 2
+      minReplicas: 1
+      maxReplicas: 4
+      rayStartParams: {}
+      template:
+        spec:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 100
+            fsGroup: 100
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0@sha256:5d7f9b1e3a5c7e9d1f3b5a7c9e1d3f5b7a9c1e3d5f7b9a1c3e5d7f9b1a3c5e7d
+              env:
+                - name: RAY_USE_TLS
+                  value: "1"
+                - name: RAY_TLS_SERVER_CERT
+                  value: /etc/ray/tls/tls.crt
+                - name: RAY_TLS_SERVER_KEY
+                  value: /etc/ray/tls/tls.key
+                - name: RAY_TLS_CA_CERT
+                  value: /etc/ray/tls/ca.crt
+                - name: RAY_USAGE_STATS_ENABLED
+                  value: "0"
+              resources:
+                requests:
+                  cpu: "4"
+                  memory: 16Gi
+                limits:
+                  memory: 16Gi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+                - name: shm
+                  mountPath: /dev/shm
+                - name: ray-tls
+                  mountPath: /etc/ray/tls
+                  readOnly: true
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: 10Gi
+            - name: shm
+              emptyDir:
+                medium: Memory
+                sizeLimit: 7Gi
+            - name: ray-tls
+              secret:
+                secretName: ray-tls
+    - groupName: gpu
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 1
+      rayStartParams: {}
+      template:
+        spec:
+          automountServiceAccountToken: false
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 100
+            fsGroup: 100
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0-gpu@sha256:9e1a3c5e7b9d1f3a5c7e9b1d3f5a7c9e1b3d5f7a9c1e3b5d7f9a1c3e5b7d9f1a
+              env:
+                - name: RAY_USE_TLS
+                  value: "1"
+                - name: RAY_TLS_SERVER_CERT
+                  value: /etc/ray/tls/tls.crt
+                - name: RAY_TLS_SERVER_KEY
+                  value: /etc/ray/tls/tls.key
+                - name: RAY_TLS_CA_CERT
+                  value: /etc/ray/tls/ca.crt
+                - name: RAY_USAGE_STATS_ENABLED
+                  value: "0"
+              resources:
+                requests:
+                  cpu: "4"
+                  memory: 32Gi
+                limits:
+                  memory: 32Gi
+                  nvidia.com/gpu: "1"
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+                - name: shm
+                  mountPath: /dev/shm
+                - name: ray-tls
+                  mountPath: /etc/ray/tls
+                  readOnly: true
+          volumes:
+            - name: tmp
+              emptyDir:
+                sizeLimit: 10Gi
+            - name: shm
+              emptyDir:
+                medium: Memory
+                sizeLimit: 13Gi
+            - name: ray-tls
+              secret:
+                secretName: ray-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-egress
+  namespace: ai-inference
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns-egress
+  namespace: ai-inference
+spec:
+  podSelector: {}
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-vllm-to-qdrant
+  namespace: ai-inference
+spec:
+  podSelector:
+    matchLabels:
+      app: vllm
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: qdrant
+      ports:
+        - protocol: TCP
+          port: 6333
+        - protocol: TCP
+          port: 6334
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ray-internal
+  namespace: ai-inference
+spec:
+  podSelector:
+    matchLabels:
+      ray.io/cluster: rc
+  policyTypes: ["Egress"]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              ray.io/cluster: rc
+---
+# Manifest-scan placeholder, not deployable: kshield remediate generates the real shell-exec guard.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: kshield-shell-exec
+  namespace: ai-inference
+  labels:
+    kshield.io/guard: "shell-exec"
+spec:
+  kprobes:
+    - call: "sys_execve"
+      syscall: true
+      args:
+        - index: 0
+          type: "string"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Postfix"
+              values:
+                - "/sh"
+                - "/bash"
+                - "/dash"
+          matchActions:
+            - action: Sigkill
+---
+# Manifest-scan placeholder, not deployable: kshield remediate generates the real egress-connect guard.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: kshield-egress-connect
+  namespace: ai-inference
+  labels:
+    kshield.io/guard: "egress-connect"
+spec:
+  kprobes:
+    - call: "tcp_connect"
+      syscall: false
+      args:
+        - index: 0
+          type: "sock"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "NotDAddr"
+              values:
+                - "10.0.0.0/8"
+                - "127.0.0.0/8"
+          matchActions:
+            - action: Sigkill
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: kshield-admission
+  namespace: ai-inference
+  labels:
+    kshield.io/guard: "admission"
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: run-as-non-root
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        message: "Pods must set runAsNonRoot and the RuntimeDefault seccomp profile"
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+              seccompProfile:
+                type: RuntimeDefault
+    - name: no-host-path
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        message: "hostPath volumes are not allowed"
+        pattern:
+          spec:
+            =(volumes):
+              - X(hostPath): "null"

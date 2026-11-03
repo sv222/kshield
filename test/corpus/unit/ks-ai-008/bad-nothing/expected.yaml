@@ -1,0 +1,6 @@
+namespace: "ai-inference"
+checks: ["KS-AI-008"]
+expect:
+  - {check: "KS-AI-008", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-AI-008", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+na: []

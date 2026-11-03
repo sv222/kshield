@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  uid: 4a050000-0031-4000-8000-000000000031
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cilium
+  namespace: kube-system
+  uid: 4a050000-0032-4000-8000-000000000032
+  labels:
+    k8s-app: cilium
+    app.kubernetes.io/part-of: cilium
+    app.kubernetes.io/name: cilium-agent
+spec:
+  selector:
+    matchLabels:
+      k8s-app: cilium
+  template:
+    metadata:
+      labels:
+        k8s-app: cilium
+        app.kubernetes.io/name: cilium-agent
+        app.kubernetes.io/part-of: cilium
+    spec:
+      containers:
+        - name: cilium-agent
+          image: quay.io/cilium/cilium:v1.20.3
+status:
+  desiredNumberScheduled: 3
+  numberReady: 1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cilium-config
+  namespace: cilium
+  uid: 4a050000-0033-4000-8000-000000000033
+data:
+  enable-wireguard: "true"

@@ -1,0 +1,9 @@
+- op: test
+  path: /spec/template/spec/containers/0/name
+  value: qdrant
+- op: test
+  path: /spec/template/spec/volumes/0/name
+  value: storage
+- op: test
+  path: /spec/template/spec/containers/0/volumeMounts/0/mountPath
+  value: /qdrant/storage

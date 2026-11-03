@@ -1,0 +1,3 @@
+probeRan: true
+nodes:
+  - {node: kind-control-plane, lsm: [lockdown, capability, yama], bpfLSMConfig: "", unknown: ""}

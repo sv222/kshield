@@ -1,0 +1,115 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: llm
+  namespace: ai
+  uid: 6abe5d8f-0001-4000-8000-000000000001
+spec:
+  predictor:
+    containers:
+      - name: kserve-container
+        image: vllm/vllm-openai:v0.6.0
+        args: ["--model", "facebook/opt-125m"]
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-predictor
+  namespace: ai
+  uid: 6abe5d8f-0002-4000-8000-000000000002
+  labels:
+    component: predictor
+    serving.kserve.io/inferenceservice: llm
+  ownerReferences:
+    - apiVersion: serving.kserve.io/v1beta1
+      kind: InferenceService
+      name: llm
+      uid: 6abe5d8f-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: isvc.llm-predictor
+  template:
+    metadata:
+      labels:
+        app: isvc.llm-predictor
+        component: predictor
+        serving.kserve.io/inferenceservice: llm
+    spec:
+      containers:
+        - name: kserve-container
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: llm-predictor-6b8c9d4f7
+  namespace: ai
+  uid: 6abe5d8f-0003-4000-8000-000000000003
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: llm-predictor
+      uid: 6abe5d8f-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: isvc.llm-predictor
+      pod-template-hash: 6b8c9d4f7
+  template:
+    metadata:
+      labels:
+        app: isvc.llm-predictor
+        component: predictor
+        serving.kserve.io/inferenceservice: llm
+        pod-template-hash: 6b8c9d4f7
+    spec:
+      containers:
+        - name: kserve-container
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: llm-predictor-6b8c9d4f7-r2p9s
+  namespace: ai
+  uid: 6abe5d8f-0004-4000-8000-000000000004
+  labels:
+    app: isvc.llm-predictor
+    component: predictor
+    serving.kserve.io/inferenceservice: llm
+    pod-template-hash: 6b8c9d4f7
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: llm-predictor-6b8c9d4f7
+      uid: 6abe5d8f-0003-4000-8000-000000000003
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: kserve-container
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Running

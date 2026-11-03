@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+patches:
+- path: workload-patch-6902/apps_Deployment_ai-inference_qdrant.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: qdrant
+    namespace: ai-inference
+    version: v1
+- path: workload-patch-6902/apps_Deployment_ai-inference_vllm.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: vllm
+    namespace: ai-inference
+    version: v1
+- path: workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml
+  target:
+    group: ray.io
+    kind: RayCluster
+    name: rc
+    namespace: ai-inference
+    version: v1
+- path: workload-patch.yaml
+resources:
+- base/manifests.yaml

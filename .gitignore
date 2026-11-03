@@ -1,0 +1,11 @@
+temp/
+/bin/
+/dist/
+.kind/
+*.test
+*.out
+coverage.*
+
+/out/
+
+.env

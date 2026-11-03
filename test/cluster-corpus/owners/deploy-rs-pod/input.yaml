@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  uid: 1b6f0e3a-0001-4000-8000-000000000001
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m", "--trust-remote-code"]
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vllm-7d9f8c6b5
+  namespace: ai
+  uid: 1b6f0e3a-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: vllm
+      uid: 1b6f0e3a-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+      pod-template-hash: 7d9f8c6b5
+  template:
+    metadata:
+      labels:
+        app: vllm
+        pod-template-hash: 7d9f8c6b5
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m", "--trust-remote-code"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-7d9f8c6b5-k2x7p
+  namespace: ai
+  uid: 1b6f0e3a-0003-4000-8000-000000000003
+  labels:
+    app: vllm
+    pod-template-hash: 7d9f8c6b5
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-7d9f8c6b5
+      uid: 1b6f0e3a-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m", "--trust-remote-code"]
+status:
+  phase: Running
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-7d9f8c6b5-q8m4z
+  namespace: ai
+  uid: 1b6f0e3a-0004-4000-8000-000000000004
+  labels:
+    app: vllm
+    pod-template-hash: 7d9f8c6b5
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-7d9f8c6b5
+      uid: 1b6f0e3a-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m", "--trust-remote-code"]
+status:
+  phase: Running

@@ -1,0 +1,15 @@
+# Chart defaults plus one extra worker group that requests a GPU.
+additionalWorkerGroups:
+  gpuGroup:
+    replicas: 1
+    minReplicas: 1
+    maxReplicas: 1
+    resources:
+      limits:
+        cpu: "4"
+        memory: "16Gi"
+        nvidia.com/gpu: "1"
+      requests:
+        cpu: "4"
+        memory: "16Gi"
+        nvidia.com/gpu: "1"

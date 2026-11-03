@@ -1,0 +1,14 @@
+# Same as standalone, plus Milvus user authentication and authorization on.
+cluster:
+  enabled: false
+etcd:
+  replicaCount: 1
+minio:
+  mode: "standalone"
+pulsarv3:
+  enabled: false
+extraConfigFiles:
+  user.yaml: |
+    common:
+      security:
+        authorizationEnabled: true

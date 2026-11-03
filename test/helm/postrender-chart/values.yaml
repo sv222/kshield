@@ -1,0 +1,4 @@
+image:
+  repository: vllm/vllm-openai
+  tag: v0.31.0
+model: /models/m

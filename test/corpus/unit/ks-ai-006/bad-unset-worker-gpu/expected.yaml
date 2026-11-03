@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-006"]
+expect:
+  - {check: "KS-AI-006", object: "RayCluster/ai-inference/raycluster", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+na: []

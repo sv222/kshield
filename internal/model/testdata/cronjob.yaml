@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dl
+  namespace: ai
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: dl
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: download
+              image: python:3.12-slim
+              command: ["python", "-c", "print('dl')"]

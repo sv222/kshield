@@ -1,0 +1,22 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: raycluster
+  namespace: ai-inference
+spec:
+  headGroupSpec:
+    serviceType: NodePort
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.9.0
+            ports:
+              - containerPort: 6379
+                name: gcs
+              - containerPort: 8265
+                name: dashboard
+              - containerPort: 10001
+                name: client

@@ -1,0 +1,25 @@
+apiVersion: ray.io/v1
+kind: RayJob
+metadata:
+  name: job
+  namespace: ai
+spec:
+  entrypoint: python /home/ray/train.py
+  rayClusterSpec:
+    rayVersion: "2.9.0"
+    headGroupSpec:
+      template:
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.9.0
+    workerGroupSpecs:
+      - groupName: gpu
+        replicas: 2
+        minReplicas: 0
+        maxReplicas: 4
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.9.0-gpu

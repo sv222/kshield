@@ -1,0 +1,9 @@
+kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 4 objects, 1 AI workloads
+
+[FAIL] DORA-CH2-001 KS-WL-001 Container may run as root
+       FAIL Deployment/ai-inference/vllm container=vllm: runAsNonRoot is not true and runAsUser is not set
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c)
+[PASS] DORA-CH2-002 KS-WL-002 Privileged container or privilege escalation allowed
+[N/A]  DORA-CH2-030 KS-PRE-001 Tetragon missing or unhealthy
+
+Summary: 1 FAIL, 0 WARN, 1 PASS, 0 INFO, 1 N/A

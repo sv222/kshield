@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+{{.CSP}}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kshield report - {{.Title}}</title>
+<style>
+:root { --fg: #1b1f24; --muted: #57606a; --line: #d0d7de; --soft: #f6f8fa; --fail: #b42318; --warn: #9a6700; --pass: #1a7f37; --info: #0b5cad; --na: #6e7781; }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 1100px; padding: 24px 16px 48px; color: var(--fg); background: #ffffff; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+h1 { font-size: 1.6em; margin: 0 0 8px; }
+h2 { font-size: 1.25em; margin: 32px 0 12px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.1em; margin: 0 0 6px; }
+h4 { font-size: 0.95em; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+code { font: 0.9em/1.4 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; word-break: break-all; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+thead th { background: var(--soft); }
+a { color: var(--info); }
+.disclaimer { margin: 0 0 16px; padding: 10px 12px; border-left: 4px solid var(--info); background: var(--soft); }
+.kv th { width: 180px; color: var(--muted); font-weight: 600; }
+.digests td, .digests th { border: 0; padding: 0 12px 2px 0; }
+.banner { margin: 24px 0 0; padding: 12px 14px; font-weight: 700; border: 2px solid var(--fail); color: var(--fail); background: #fff1f0; }
+.note { color: var(--muted); }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.counts li { min-width: 96px; padding: 8px 12px; border: 1px solid var(--line); border-top-width: 4px; }
+.counts b { display: block; font-size: 1.5em; }
+.counts .v-fail { border-top-color: var(--fail); }
+.counts .v-warn { border-top-color: var(--warn); }
+.counts .v-pass { border-top-color: var(--pass); }
+.counts .v-info { border-top-color: var(--info); }
+.counts .v-na { border-top-color: var(--na); }
+.verdict { display: inline-block; min-width: 48px; padding: 1px 6px; border-radius: 4px; color: #ffffff; font-weight: 700; font-size: 0.85em; text-align: center; }
+.verdict.v-fail { background: var(--fail); }
+.verdict.v-warn { background: var(--warn); }
+.verdict.v-pass { background: var(--pass); }
+.verdict.v-info { background: var(--info); }
+.verdict.v-na, .verdict.v-other { background: var(--na); }
+.check { margin: 0 0 28px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--na); }
+.check.v-fail { border-left-color: var(--fail); }
+.check.v-warn { border-left-color: var(--warn); }
+.check.v-info { border-left-color: var(--info); }
+.meta { margin: 0; color: var(--muted); }
+.ref { margin: 0 0 10px; }
+.ref p { margin: 0; }
+blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--line); color: var(--muted); font-style: italic; }
+.finding { margin: 8px 0 0; padding: 8px 10px; background: var(--soft); border: 1px solid var(--line); }
+.finding dl { display: grid; grid-template-columns: 100px 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.finding dt { color: var(--muted); }
+.finding dd { margin: 0; }
+.errors li { color: var(--fail); }
+{{- if .HasUnknown}}
+.counts .v-unknown { border-top-color: #6639ba; }
+.verdict.v-unknown { background: #6639ba; }
+.check.v-unknown { border-left-color: #6639ba; }
+{{- end}}
+@media print {
+  body { max-width: none; padding: 0; font-size: 10pt; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; }
+  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  tr, .finding, .ref, .counts li { break-inside: avoid; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>kshield report - {{.Title}}</h1>
+<p class="disclaimer">{{.Disclaimer}}</p>
+</header>
+<section id="scan">
+<h2>Scan</h2>
+<table class="kv">
+<tr><th>Tool</th><td>{{.R.Tool.Name}} {{.R.Tool.Version}}</td></tr>
+<tr><th>Profile</th><td>{{.R.Profile.ID}} v{{.R.Profile.Version}}</td></tr>
+<tr><th>Profile sha256</th><td><code>{{.R.Profile.SHA256}}</code></td></tr>
+<tr><th>Mode</th><td>{{.R.Scan.Mode}}</td></tr>
+{{- if .Cluster}}
+<tr><th>Context</th><td><code>{{.Cluster.Context}}</code></td></tr>
+<tr><th>Server</th><td><code>{{.Cluster.Server}}</code></td></tr>
+<tr><th>Namespaces</th><td>{{.Cluster.Namespaces}}</td></tr>
+<tr><th>Node probe</th><td>{{.Cluster.NodeProbe}}</td></tr>
+{{- else}}
+<tr><th>Inputs</th><td>{{range $i, $in := .Inputs}}{{if $i}}, {{end}}<code>{{$in}}</code>{{else}}none{{end}}</td></tr>
+<tr><th>Input files</th><td>{{if .Digests}}
+<table class="digests">
+{{- range .Digests}}
+<tr><td><code>{{.Path}}</code></td><td>sha256 <code>{{.SHA256}}</code></td></tr>
+{{- end}}
+</table>
+{{- else}}none{{end}}</td></tr>
+{{- end}}
+<tr><th>Namespace</th><td>{{.Namespace}}</td></tr>
+<tr><th>Started at</th><td>{{.R.Scan.StartedAt}}</td></tr>
+<tr><th>Objects</th><td>{{.R.Scan.Objects}}</td></tr>
+<tr><th>AI workloads</th><td>{{.R.Scan.AIWorkloads}}</td></tr>
+</table>
+</section>
+{{- if .R.Summary.Incomplete}}
+<p class="banner incomplete">INCOMPLETE - the scan did not finish. The results below are partial. See Errors.</p>
+{{- end}}
+<section id="summary">
+<h2>Summary</h2>
+<ul class="counts">
+<li class="v-fail"><b>{{.R.Summary.Fail}}</b>FAIL</li>
+{{- if .R.Summary.Unknown}}
+<li class="v-unknown"><b>{{.R.Summary.Unknown}}</b>UNKNOWN</li>
+{{- end}}
+<li class="v-warn"><b>{{.R.Summary.Warn}}</b>WARN</li>
+<li class="v-pass"><b>{{.R.Summary.Pass}}</b>PASS</li>
+<li class="v-info"><b>{{.R.Summary.Info}}</b>INFO</li>
+<li class="v-na"><b>{{.R.Summary.NA}}</b>N/A</li>
+</ul>
+{{- if .Note}}
+<p class="note">{{.Note}}</p>
+{{- end}}
+</section>
+<section id="checks">
+<h2>Checks</h2>
+{{- if .Checks}}
+<table>
+<thead><tr><th>Display ID</th><th>Check ID</th><th>Title</th><th>Severity</th><th>Verdict</th><th>Fix</th></tr></thead>
+<tbody>
+{{- range .Checks}}
+<tr><td>{{if .Findings}}<a href="#{{.Anchor}}">{{.Display}}</a>{{else}}{{.Display}}{{end}}</td><td><code>{{.ID}}</code></td><td>{{.Title}}</td><td>{{.Severity}}</td><td><span class="verdict {{.Class}}">{{.Verdict}}</span></td><td>{{.FixLabel}}</td></tr>
+{{- end}}
+</tbody>
+</table>
+{{- else}}
+<p>No checks.</p>
+{{- end}}
+</section>
+<section id="findings">
+<h2>Findings</h2>
+{{- range .Details}}
+<article class="check {{.Class}}" id="{{.Anchor}}">
+<h3><span class="verdict {{.Class}}">{{.Verdict}}</span> {{.Display}} <code>{{.ID}}</code> {{.Title}}</h3>
+<p class="meta">severity {{.Severity}} | fix: {{.FixLabel}}</p>
+{{- if .Refs}}
+<h4>Supports evidence for</h4>
+{{- range .Refs}}
+<div class="ref">
+<p><b>{{.Label}}</b> - {{.Short}}, CELEX {{.CELEX}}, <a href="{{.URL}}">{{.URL}}</a></p>
+<blockquote>{{.Text}}</blockquote>
+</div>
+{{- end}}
+{{- end}}
+<h4>Findings ({{len .Findings}})</h4>
+{{- range .Findings}}
+<div class="finding">
+<span class="verdict {{.Class}}">{{.Verdict}}</span> <code>{{.Object}}</code>
+<dl>
+{{- if .Group}}
+<dt>group</dt><dd>{{.Group}}</dd>
+{{- end}}
+{{- if .Container}}
+<dt>container</dt><dd>{{.Container}}</dd>
+{{- end}}
+<dt>path</dt><dd><code>{{.Path}}</code></dd>
+<dt>message</dt><dd>{{.Message}}</dd>
+{{- if .Source}}
+<dt>source</dt><dd><code>{{.Source}}</code></dd>
+{{- end}}
+</dl>
+</div>
+{{- end}}
+</article>
+{{- else}}
+<p>No findings.</p>
+{{- end}}
+</section>
+<section id="errors">
+<h2>Errors</h2>
+{{- if .R.Errors}}
+<ul class="errors">
+{{- range .R.Errors}}
+<li>{{.}}</li>
+{{- end}}
+</ul>
+{{- else}}
+<p>No errors.</p>
+{{- end}}
+</section>
+</body>
+</html>

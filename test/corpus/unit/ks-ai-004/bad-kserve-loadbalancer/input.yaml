@@ -1,0 +1,26 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: sklearn-iris
+  namespace: ai-inference
+spec:
+  predictor:
+    containers:
+      - name: kserve-container
+        image: kserve/sklearnserver:v0.15.0
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sklearn-iris-public
+  namespace: ai-inference
+spec:
+  type: LoadBalancer
+  selector:
+    serving.kserve.io/inferenceservice: sklearn-iris
+    component: predictor
+  ports:
+    - port: 80
+      targetPort: 8080

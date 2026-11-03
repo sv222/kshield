@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: other
+  namespace: ai
+  uid: 8cd07fab-0001-4000-8000-000000000001
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: other
+  template:
+    metadata:
+      labels:
+        app: other
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-debug
+  namespace: ai
+  uid: 8cd07fab-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: other
+      uid: 8cd07fab-0001-4000-8000-000000000001
+      controller: false
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Running

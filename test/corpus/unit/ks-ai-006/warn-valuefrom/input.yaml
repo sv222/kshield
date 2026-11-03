@@ -1,0 +1,30 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: raycluster
+  namespace: ai-inference
+spec:
+  headGroupSpec:
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.9.0
+            env:
+              - name: RAY_USE_TLS
+                valueFrom:
+                  configMapKeyRef:
+                    name: ray-tls
+                    key: enabled
+  workerGroupSpecs:
+    - groupName: gpu
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.9.0-gpu
+              env:
+                - name: RAY_USE_TLS
+                  value: "1"

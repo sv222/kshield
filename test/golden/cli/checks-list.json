@@ -1,0 +1,381 @@
+[
+  {
+    "id": "KS-WL-001",
+    "display": "DORA-CH2-001",
+    "title": "Container may run as root (no runAsNonRoot: true, or UID 0)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-WL-002",
+    "display": "DORA-CH2-002",
+    "title": "privileged: true or allowPrivilegeEscalation not false",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-WL-003",
+    "display": "DORA-CH2-003",
+    "title": "Capabilities not dropped (drop: [ALL] missing)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-WL-004",
+    "display": "DORA-CH2-004",
+    "title": "hostIPC, hostPID or hostNetwork true",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-c",
+      "dora-art9-4-b",
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-WL-005",
+    "display": "DORA-CH2-005",
+    "title": "/dev/shm from hostPath (or hostPath /dev)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-WL-006",
+    "display": "DORA-CH2-006",
+    "title": "Memory emptyDir for shm without sizeLimit",
+    "severity": "warn",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-2"
+    ]
+  },
+  {
+    "id": "KS-WL-007",
+    "display": "DORA-CH2-007",
+    "title": "shareProcessNamespace: true on AI workload",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-WL-008",
+    "display": "DORA-CH2-008",
+    "title": "Root filesystem writable",
+    "severity": "warn",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-b",
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-WL-009",
+    "display": "DORA-CH2-009",
+    "title": "No seccompProfile: RuntimeDefault",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-c",
+      "rts-art11-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-010",
+    "display": "DORA-CH2-010",
+    "title": "Service account token auto-mounted",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-WL-011",
+    "display": "DORA-CH2-011",
+    "title": "Secret values in plain env (HF_TOKEN, API keys)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-WL-012",
+    "display": "DORA-CH2-012",
+    "title": "Image not pinned by digest",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-e",
+      "rts-art16-1-c"
+    ]
+  },
+  {
+    "id": "KS-WL-013",
+    "display": "DORA-CH2-013",
+    "title": "No memory limit on AI workload",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-2"
+    ]
+  },
+  {
+    "id": "KS-WL-014",
+    "display": "DORA-CH2-014",
+    "title": "GPU access via hostPath /dev/nvidia* or privileged, not device plugin",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-AI-001",
+    "display": "DORA-CH2-015",
+    "title": "vLLM API without auth (--api-key / VLLM_API_KEY unset)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "dora-art9-4-d"
+    ]
+  },
+  {
+    "id": "KS-AI-002",
+    "display": "DORA-CH2-016",
+    "title": "vLLM --trust-remote-code set",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-b",
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-AI-003",
+    "display": "DORA-CH2-017",
+    "title": "Model load may use pickle",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-b",
+      "dora-art9-3-c"
+    ]
+  },
+  {
+    "id": "KS-AI-004",
+    "display": "DORA-CH2-018",
+    "title": "Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-b",
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-AI-005",
+    "display": "DORA-CH2-019",
+    "title": "Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-4-b",
+      "dora-art9-4-c"
+    ]
+  },
+  {
+    "id": "KS-AI-006",
+    "display": "DORA-CH2-020",
+    "title": "Ray TLS off (RAY_USE_TLS not 1)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-3-a"
+    ]
+  },
+  {
+    "id": "KS-AI-007",
+    "display": "DORA-CH2-021",
+    "title": "Ollama 11434 exposed without an auth proxy",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "dora-art9-4-d"
+    ]
+  },
+  {
+    "id": "KS-AI-008",
+    "display": "DORA-CH2-022",
+    "title": "Qdrant without API key or TLS",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "dora-art9-4-d",
+      "dora-art9-3-a"
+    ]
+  },
+  {
+    "id": "KS-AI-009",
+    "display": "DORA-CH2-023",
+    "title": "Milvus authorization disabled",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "dora-art9-4-d"
+    ]
+  },
+  {
+    "id": "KS-NET-001",
+    "display": "DORA-CH2-024",
+    "title": "AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "dora-art9-4-b"
+    ]
+  },
+  {
+    "id": "KS-NET-002",
+    "display": "DORA-CH2-025",
+    "title": "Egress allow-list too broad (world, 0.0.0.0/0)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "dora-art9-4-b"
+    ]
+  },
+  {
+    "id": "KS-NET-003",
+    "display": "DORA-CH2-026",
+    "title": "Pod-to-pod encryption off (Cilium WireGuard/IPsec)",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-3-a"
+    ]
+  },
+  {
+    "id": "KS-RT-001",
+    "display": "DORA-CH2-027",
+    "title": "No runtime shell-exec guard on AI namespace (Tetragon)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "dora-art10-1"
+    ]
+  },
+  {
+    "id": "KS-RT-002",
+    "display": "DORA-CH2-028",
+    "title": "No runtime egress-connect guard on AI namespace (Tetragon)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "dora-art10-1"
+    ]
+  },
+  {
+    "id": "KS-RT-003",
+    "display": "DORA-CH2-029",
+    "title": "No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "dora-art9-4-c",
+      "rts-art11-2-b"
+    ]
+  },
+  {
+    "id": "KS-PRE-001",
+    "display": "DORA-CH2-030",
+    "title": "Tetragon missing or unhealthy",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art10-1"
+    ]
+  },
+  {
+    "id": "KS-PRE-002",
+    "display": "DORA-CH2-031",
+    "title": "CNI is not Cilium (L7/FQDN egress not possible)",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-b"
+    ]
+  },
+  {
+    "id": "KS-PRE-003",
+    "display": "DORA-CH2-032",
+    "title": "Kyverno missing or unhealthy",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "rts-art11-2-b"
+    ]
+  },
+  {
+    "id": "KS-PRE-004",
+    "display": "DORA-CH2-033",
+    "title": "Node kernel lacks BPF LSM (--node-probe)",
+    "severity": "warn",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art10-1"
+    ]
+  }
+]

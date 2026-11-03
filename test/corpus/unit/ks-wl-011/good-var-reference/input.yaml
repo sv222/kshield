@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "meta-llama/Llama-3.1-8B-Instruct"]
+          env:
+            - name: HF_TOKEN_FROM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hf-credentials
+                  key: token
+            - name: HF_TOKEN
+              value: "$(HF_TOKEN_FROM_SECRET)"

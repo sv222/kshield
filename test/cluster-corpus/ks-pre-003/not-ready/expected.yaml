@@ -1,0 +1,5 @@
+namespace: "ai"
+checks: ["KS-PRE-003"]
+expect:
+  - {check: "KS-PRE-003", object: "Deployment/kyverno/kyverno-admission-controller", verdict: "FAIL"}
+na: []

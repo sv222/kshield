@@ -1,0 +1,22 @@
+namespace: "ai-inference"
+checks: "all"
+expect:
+  - {check: "KS-WL-001", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "FAIL"}
+  - {check: "KS-WL-009", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-012", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "WARN"}
+  - {check: "KS-WL-012", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "WARN"}
+  - {check: "KS-WL-013", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "WARN"}
+  - {check: "KS-WL-013", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "WARN"}
+  - {check: "KS-AI-008", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-AI-008", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+na: ["KS-NET-003", "KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004"]

@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vllm-eval
+  namespace: ai
+  uid: 4e9c3b6d-0001-4000-8000-000000000001
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: vllm-eval
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: vllm
+              image: vllm/vllm-openai:v0.6.0
+              args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vllm-eval-29361720
+  namespace: ai
+  uid: 4e9c3b6d-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: batch/v1
+      kind: CronJob
+      name: vllm-eval
+      uid: 4e9c3b6d-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  template:
+    metadata:
+      labels:
+        app: vllm-eval
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-eval-29361720-x5d8k
+  namespace: ai
+  uid: 4e9c3b6d-0003-4000-8000-000000000003
+  labels:
+    app: vllm-eval
+    job-name: vllm-eval-29361720
+  ownerReferences:
+    - apiVersion: batch/v1
+      kind: Job
+      name: vllm-eval-29361720
+      uid: 4e9c3b6d-0002-4000-8000-000000000002
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  restartPolicy: Never
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Running

@@ -1,0 +1,13 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: badworkers
+  namespace: ai
+spec:
+  headGroupSpec:
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.9.0
+  workerGroupSpecs: "x"

@@ -1,0 +1,4 @@
+namespace: "ai-inference"
+checks: "all"
+expect: []
+na: ["KS-WL-001", "KS-WL-002", "KS-WL-003", "KS-WL-004", "KS-WL-005", "KS-WL-006", "KS-WL-007", "KS-WL-008", "KS-WL-009", "KS-WL-010", "KS-WL-011", "KS-WL-012", "KS-WL-013", "KS-WL-014", "KS-AI-001", "KS-AI-002", "KS-AI-003", "KS-AI-004", "KS-AI-005", "KS-AI-006", "KS-AI-007", "KS-AI-008", "KS-AI-009", "KS-NET-001", "KS-NET-002", "KS-NET-003", "KS-RT-001", "KS-RT-002", "KS-RT-003", "KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004"]

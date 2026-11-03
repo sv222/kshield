@@ -1,0 +1,5 @@
+namespace: "ai"
+checks: ["KS-NET-003"]
+expect:
+  - {check: "KS-NET-003", object: "Namespace/ai", verdict: "WARN"}
+na: []

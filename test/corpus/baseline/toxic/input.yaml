@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+  labels:
+    app: vllm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.31.0
+          command: ["sh", "-c"]
+          args: ["vllm serve /models/Qwen2.5-7B-Instruct --trust-remote-code --host 0.0.0.0 --port 8000"]
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            limits:
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: models
+        - name: shm
+          hostPath:
+            path: /dev/shm
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  type: NodePort
+  selector:
+    app: vllm
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qdrant
+  namespace: ai-inference
+  labels:
+    app: qdrant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      containers:
+        - name: qdrant
+          image: qdrant/qdrant:v1.19.2
+          ports:
+            - name: http
+              containerPort: 6333
+            - name: grpc
+              containerPort: 6334
+          volumeMounts:
+            - name: storage
+              mountPath: /qdrant/storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: qdrant-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: ai-inference
+spec:
+  type: ClusterIP
+  selector:
+    app: qdrant
+  ports:
+    - name: http
+      port: 6333
+      targetPort: http
+    - name: grpc
+      port: 6334
+      targetPort: grpc
+---
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: rc
+  namespace: ai-inference
+spec:
+  rayVersion: "2.50.0"
+  headGroupSpec:
+    serviceType: NodePort
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.50.0
+            ports:
+              - name: gcs
+                containerPort: 6379
+              - name: dashboard
+                containerPort: 8265
+              - name: client
+                containerPort: 10001
+  workerGroupSpecs:
+    - groupName: cpu
+      replicas: 2
+      minReplicas: 1
+      maxReplicas: 4
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0
+    - groupName: gpu
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 1
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0-gpu
+              volumeMounts:
+                - name: nvidia0
+                  mountPath: /dev/nvidia0
+          volumes:
+            - name: nvidia0
+              hostPath:
+                path: /dev/nvidia0
+                type: CharDevice

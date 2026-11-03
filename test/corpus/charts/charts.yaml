@@ -1,0 +1,86 @@
+# Real upstream charts for the corpus. Render with: go run ./test/corpus/charts/render
+# Versions are the latest stable releases on 2026-10-17 (helm search repo, no --devel).
+# name is the case dir, the helm repo alias and the release name.
+# values paths are relative to this file.
+charts:
+  - name: "vllm-stack"
+    repo: "https://vllm-project.github.io/production-stack"
+    chart: "vllm-stack"
+    version: "0.1.13"
+    # The chart sets no appVersion; the image tags come from values.
+    appVersion: ""
+    namespace: "ai-inference"
+    variants:
+      - name: "model"
+        values: "vllm-stack/model/values.yaml"
+  - name: "kuberay-operator"
+    repo: "https://ray-project.github.io/kuberay-helm/"
+    chart: "kuberay-operator"
+    version: "1.7.1"
+    # The chart sets no appVersion; the image tags come from values.
+    appVersion: ""
+    namespace: "ai-inference"
+    variants:
+      - name: "default"
+        values: "kuberay-operator/default/values.yaml"
+  - name: "ray-cluster"
+    repo: "https://ray-project.github.io/kuberay-helm/"
+    chart: "ray-cluster"
+    version: "1.7.1"
+    # The chart sets no appVersion; the image tags come from values.
+    appVersion: ""
+    namespace: "ai-inference"
+    variants:
+      - name: "default"
+        values: "ray-cluster/default/values.yaml"
+      - name: "gpu-group"
+        values: "ray-cluster/gpu-group/values.yaml"
+  - name: "ollama"
+    repo: "https://otwld.github.io/ollama-helm/"
+    chart: "ollama"
+    version: "1.89.0"
+    appVersion: "0.40.5"
+    namespace: "ai-inference"
+    variants:
+      - name: "default"
+        values: "ollama/default/values.yaml"
+      - name: "gpu"
+        values: "ollama/gpu/values.yaml"
+  - name: "qdrant"
+    repo: "https://qdrant.github.io/qdrant-helm"
+    chart: "qdrant"
+    version: "1.19.2"
+    appVersion: "v1.19.2"
+    namespace: "ai-inference"
+    variants:
+      - name: "default"
+        values: "qdrant/default/values.yaml"
+      - name: "apikey"
+        values: "qdrant/apikey/values.yaml"
+      - name: "tls-apikey"
+        values: "qdrant/tls-apikey/values.yaml"
+  - name: "milvus"
+    repo: "https://zilliztech.github.io/milvus-helm/"
+    chart: "milvus"
+    version: "5.0.31"
+    appVersion: "3.0.3"
+    namespace: "ai-inference"
+    variants:
+      - name: "standalone"
+        values: "milvus/standalone/values.yaml"
+      - name: "standalone-auth"
+        values: "milvus/standalone-auth/values.yaml"
+
+# Upstream sample manifests, not rendered by helm. The renderer only checks that
+# each rendered.yaml exists and is not empty. rendered.yaml holds the source files
+# joined in the order below, each after a "# Source: <url>" line.
+samples:
+  - name: "kserve"
+    repo: "https://github.com/kserve/kserve"
+    tag: "v0.21.0"
+    namespace: "ai-inference"
+    cases:
+      - name: "huggingface"
+        sources:
+          - "https://raw.githubusercontent.com/kserve/kserve/v0.21.0/docs/samples/storage/hf/hf_isvc.yaml"
+          - "https://raw.githubusercontent.com/kserve/kserve/v0.21.0/config/runtimes/kserve-huggingfaceserver.yaml"

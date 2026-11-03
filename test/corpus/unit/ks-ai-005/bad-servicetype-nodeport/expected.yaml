@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-005"]
+expect:
+  - {check: "KS-AI-005", object: "RayCluster/ai-inference/raycluster", group: "head", verdict: "FAIL"}
+na: []

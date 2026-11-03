@@ -1,0 +1,4 @@
+# A literal placeholder key, the only deterministic form that renders a key:
+# "apiKey: true" draws a random key per render, and "valueFrom" reads the key
+# with lookup, which is empty under helm template.
+apiKey: "corpus-placeholder-api-key"

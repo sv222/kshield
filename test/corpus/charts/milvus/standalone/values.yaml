@@ -1,0 +1,10 @@
+# Standalone mode as in the upstream Helm install guide: one etcd replica,
+# MinIO in standalone mode, no Pulsar (the default woodpecker queue is embedded).
+cluster:
+  enabled: false
+etcd:
+  replicaCount: 1
+minio:
+  mode: "standalone"
+pulsarv3:
+  enabled: false

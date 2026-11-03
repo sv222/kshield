@@ -1,0 +1,13 @@
+# One small model, shaped like the upstream minimal tutorial values.
+# The chart default modelSpec entry is disabled, so this list replaces it.
+servingEngineSpec:
+  modelSpec:
+    - name: "opt125m"
+      repository: "vllm/vllm-openai"
+      # Pinned to VLLM_VERSION in versions.env instead of the tutorial's "latest".
+      tag: "v0.31.0"
+      modelURL: "facebook/opt-125m"
+      replicaCount: 1
+      requestCPU: 6
+      requestMemory: "16Gi"
+      requestGPU: 1

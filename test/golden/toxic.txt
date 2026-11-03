@@ -1,0 +1,130 @@
+kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 5 objects, 5 AI workloads
+
+[FAIL] DORA-CH2-001 KS-WL-001 Container may run as root (no runAsNonRoot: true, or UID 0)
+       FAIL Deployment/ai-inference/qdrant container=qdrant: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL Deployment/ai-inference/vllm container=vllm: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c)
+[FAIL] DORA-CH2-002 KS-WL-002 privileged: true or allowPrivilegeEscalation not false
+       FAIL Deployment/ai-inference/qdrant container=qdrant: allowPrivilegeEscalation is not set to false
+       FAIL Deployment/ai-inference/vllm container=vllm: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: allowPrivilegeEscalation is not set to false
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c)
+[FAIL] DORA-CH2-003 KS-WL-003 Capabilities not dropped (drop: [ALL] missing)
+       FAIL Deployment/ai-inference/qdrant container=qdrant: capabilities.drop does not contain ALL
+       FAIL Deployment/ai-inference/vllm container=vllm: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: capabilities.drop does not contain ALL
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c)
+[PASS] DORA-CH2-004 KS-WL-004 hostIPC, hostPID or hostNetwork true
+[FAIL] DORA-CH2-005 KS-WL-005 /dev/shm from hostPath (or hostPath /dev)
+       FAIL Deployment/ai-inference/vllm: volume "shm" mounts hostPath /dev/shm
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(3)(c)
+[PASS] DORA-CH2-006 KS-WL-006 Memory emptyDir for shm without sizeLimit
+[PASS] DORA-CH2-007 KS-WL-007 shareProcessNamespace: true on AI workload
+[WARN] DORA-CH2-008 KS-WL-008 Root filesystem writable
+       WARN Deployment/ai-inference/qdrant container=qdrant: readOnlyRootFilesystem is not set to true
+       WARN Deployment/ai-inference/vllm container=vllm: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=cpu container=ray-worker: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=gpu container=ray-worker: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=head container=ray-head: readOnlyRootFilesystem is not set to true
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(3)(b), DORA Art. 9(3)(c)
+[FAIL] DORA-CH2-009 KS-WL-009 No seccompProfile: RuntimeDefault
+       FAIL Deployment/ai-inference/qdrant container=qdrant: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL Deployment/ai-inference/vllm container=vllm: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: seccompProfile is not set: the container runs without a seccomp profile
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c), RTS 2024/1774 Art. 11(2)(b)
+[FAIL] DORA-CH2-010 KS-WL-010 Service account token auto-mounted
+       FAIL Deployment/ai-inference/qdrant: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL Deployment/ai-inference/vllm: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=cpu: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=gpu: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=head: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(c)
+[PASS] DORA-CH2-011 KS-WL-011 Secret values in plain env (HF_TOKEN, API keys)
+[WARN] DORA-CH2-012 KS-WL-012 Image not pinned by digest
+       WARN Deployment/ai-inference/qdrant container=qdrant: image "qdrant/qdrant:v1.19.2" has no @sha256: digest
+       WARN Deployment/ai-inference/vllm container=vllm: image "vllm/vllm-openai:v0.31.0" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=cpu container=ray-worker: image "rayproject/ray:2.50.0" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=gpu container=ray-worker: image "rayproject/ray:2.50.0-gpu" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=head container=ray-head: image "rayproject/ray:2.50.0" has no @sha256: digest
+       fix: manual (kshield checks explain KS-WL-012) | supports evidence for: DORA Art. 9(4)(e), RTS 2024/1774 Art. 16(1)(c)
+[WARN] DORA-CH2-013 KS-WL-013 No memory limit on AI workload
+       WARN Deployment/ai-inference/qdrant container=qdrant: resources.limits.memory is not set
+       WARN Deployment/ai-inference/vllm container=vllm: resources.limits.memory is not set
+       WARN RayCluster/ai-inference/rc group=cpu container=ray-worker: resources.limits.memory is not set
+       WARN RayCluster/ai-inference/rc group=gpu container=ray-worker: resources.limits.memory is not set
+       WARN RayCluster/ai-inference/rc group=head container=ray-head: resources.limits.memory is not set
+       fix: manual (kshield checks explain KS-WL-013) | supports evidence for: DORA Art. 9(2)
+[FAIL] DORA-CH2-014 KS-WL-014 GPU access via hostPath /dev/nvidia* or privileged, not device plugin
+       FAIL RayCluster/ai-inference/rc group=gpu: volume "nvidia0" mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits)
+       fix: manual (kshield checks explain KS-WL-014) | supports evidence for: DORA Art. 9(4)(c)
+[FAIL] DORA-CH2-015 KS-AI-001 vLLM API without auth (--api-key / VLLM_API_KEY unset)
+       FAIL Deployment/ai-inference/vllm container=vllm: vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set
+       fix: manual (kshield checks explain KS-AI-001) | supports evidence for: DORA Art. 9(4)(c), DORA Art. 9(4)(d)
+[FAIL] DORA-CH2-016 KS-AI-002 vLLM --trust-remote-code set
+       FAIL Deployment/ai-inference/vllm container=vllm: vLLM runs with --trust-remote-code: it executes code from the model repository
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(3)(b), DORA Art. 9(3)(c)
+[WARN] DORA-CH2-017 KS-AI-003 Model load may use pickle
+       WARN Deployment/ai-inference/vllm container=vllm: no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors)
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(3)(b), DORA Art. 9(3)(c)
+[FAIL] DORA-CH2-018 KS-AI-004 Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth
+       FAIL Service/ai-inference/vllm: Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY
+       fix: manual (kshield checks explain KS-AI-004) | supports evidence for: DORA Art. 9(4)(b), DORA Art. 9(4)(c)
+[FAIL] DORA-CH2-019 KS-AI-005 Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP
+       FAIL RayCluster/ai-inference/rc group=head: head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster
+       fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(4)(b), DORA Art. 9(4)(c)
+[FAIL] DORA-CH2-020 KS-AI-006 Ray TLS off (RAY_USE_TLS not 1)
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       fix: manual (kshield checks explain KS-AI-006) | supports evidence for: DORA Art. 9(3)(a)
+[PASS] DORA-CH2-021 KS-AI-007 Ollama 11434 exposed without an auth proxy
+[FAIL] DORA-CH2-022 KS-AI-008 Qdrant without API key or TLS
+       FAIL Deployment/ai-inference/qdrant container=qdrant: Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key
+       FAIL Deployment/ai-inference/qdrant container=qdrant: Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true
+       fix: manual (kshield checks explain KS-AI-008) | supports evidence for: DORA Art. 9(4)(c), DORA Art. 9(4)(d), DORA Art. 9(3)(a)
+[PASS] DORA-CH2-023 KS-AI-009 Milvus authorization disabled
+[FAIL] DORA-CH2-024 KS-NET-001 AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)
+       FAIL Deployment/ai-inference/qdrant: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL Deployment/ai-inference/vllm: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=cpu: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=gpu: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=head: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       fix: guardrail policy (kshield remediate) | supports evidence for: DORA Art. 9(4)(b)
+[PASS] DORA-CH2-025 KS-NET-002 Egress allow-list too broad (world, 0.0.0.0/0)
+[N/A]  DORA-CH2-026 KS-NET-003 Pod-to-pod encryption off (Cilium WireGuard/IPsec)
+[FAIL] DORA-CH2-027 KS-RT-001 No runtime shell-exec guard on AI namespace (Tetragon)
+       FAIL Deployment/ai-inference/qdrant: no Tetragon shell-exec guard covers this workload
+       FAIL Deployment/ai-inference/vllm: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=cpu: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=gpu: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=head: no Tetragon shell-exec guard covers this workload
+       fix: guardrail policy (kshield remediate) | supports evidence for: DORA Art. 10(1)
+[FAIL] DORA-CH2-028 KS-RT-002 No runtime egress-connect guard on AI namespace (Tetragon)
+       FAIL Deployment/ai-inference/qdrant: no Tetragon egress-connect guard covers this workload
+       FAIL Deployment/ai-inference/vllm: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=cpu: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=gpu: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=head: no Tetragon egress-connect guard covers this workload
+       fix: guardrail policy (kshield remediate) | supports evidence for: DORA Art. 10(1)
+[FAIL] DORA-CH2-029 KS-RT-003 No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)
+       FAIL Deployment/ai-inference/qdrant: no kshield admission guard (Kyverno) covers this namespace
+       FAIL Deployment/ai-inference/vllm: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=cpu: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=gpu: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=head: no kshield admission guard (Kyverno) covers this namespace
+       fix: guardrail policy (kshield remediate) | supports evidence for: DORA Art. 9(4)(c), RTS 2024/1774 Art. 11(2)(b)
+[N/A]  DORA-CH2-030 KS-PRE-001 Tetragon missing or unhealthy
+[N/A]  DORA-CH2-031 KS-PRE-002 CNI is not Cilium (L7/FQDN egress not possible)
+[N/A]  DORA-CH2-032 KS-PRE-003 Kyverno missing or unhealthy
+[N/A]  DORA-CH2-033 KS-PRE-004 Node kernel lacks BPF LSM (--node-probe)
+
+Summary: 17 FAIL, 4 WARN, 7 PASS, 0 INFO, 5 N/A

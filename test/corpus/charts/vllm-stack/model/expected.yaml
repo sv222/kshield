@@ -1,0 +1,18 @@
+namespace: "ai-inference"
+checks: "all"
+expect:
+  - {check: "KS-WL-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+  - {check: "KS-WL-012", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "WARN"}
+  - {check: "KS-WL-013", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "WARN"}
+  - {check: "KS-AI-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-AI-003", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "WARN"}
+  - {check: "KS-NET-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+na: ["KS-NET-003", "KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004"]

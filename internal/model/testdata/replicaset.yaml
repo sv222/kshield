@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs
+  namespace: ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rs
+  template:
+    metadata:
+      labels:
+        app: rs
+    spec:
+      containers:
+        - name: main
+          image: nginx:1.27

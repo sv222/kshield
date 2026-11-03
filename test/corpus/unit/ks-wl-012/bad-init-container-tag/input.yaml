@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      initContainers:
+        - name: fetch-model
+          image: busybox:1.36
+          command: ["sh", "-c", "echo fetch"]
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          args: ["--model", "facebook/opt-125m"]

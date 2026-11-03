@@ -1,0 +1,72 @@
+namespace: "ai-inference"
+checks: "all"
+expect:
+  - {check: "KS-WL-001", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-005", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "Deployment/ai-inference/vllm", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-AI-004", object: "Service/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "Deployment/ai-inference/vllm", verdict: "FAIL"}
+
+  - {check: "KS-WL-001", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "Deployment/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-AI-008", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-AI-008", object: "Deployment/ai-inference/qdrant", container: "qdrant", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "Deployment/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "Deployment/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "Deployment/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "Deployment/ai-inference/qdrant", verdict: "FAIL"}
+
+  - {check: "KS-WL-001", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+  - {check: "KS-AI-005", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+  - {check: "KS-AI-006", object: "RayCluster/ai-inference/rc", group: "head", container: "ray-head", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "RayCluster/ai-inference/rc", group: "head", verdict: "FAIL"}
+
+  - {check: "KS-WL-001", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "RayCluster/ai-inference/rc", group: "cpu", verdict: "FAIL"}
+  - {check: "KS-AI-006", object: "RayCluster/ai-inference/rc", group: "cpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "RayCluster/ai-inference/rc", group: "cpu", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "RayCluster/ai-inference/rc", group: "cpu", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "RayCluster/ai-inference/rc", group: "cpu", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "RayCluster/ai-inference/rc", group: "cpu", verdict: "FAIL"}
+
+  - {check: "KS-WL-001", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-003", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-008", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "WARN"}
+  - {check: "KS-WL-009", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-WL-010", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+  - {check: "KS-WL-014", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+  - {check: "KS-AI-006", object: "RayCluster/ai-inference/rc", group: "gpu", container: "ray-worker", verdict: "FAIL"}
+  - {check: "KS-NET-001", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+  - {check: "KS-RT-001", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+  - {check: "KS-RT-002", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+  - {check: "KS-RT-003", object: "RayCluster/ai-inference/rc", group: "gpu", verdict: "FAIL"}
+
+  - {check: "KS-PRE-001", object: "Namespace/ai-inference", verdict: "FAIL"}
+  - {check: "KS-PRE-002", object: "Namespace/ai-inference", verdict: "FAIL"}
+  - {check: "KS-PRE-003", object: "Namespace/ai-inference", verdict: "FAIL"}
+  - {check: "KS-NET-003", object: "Namespace/ai-inference", verdict: "WARN"}
+na: ["KS-WL-011", "KS-WL-012", "KS-WL-013", "KS-AI-001", "KS-AI-002", "KS-AI-003", "KS-PRE-004"]

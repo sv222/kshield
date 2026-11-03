@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  uid: 4a030000-0021-4000-8000-000000000021
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kyverno-admission-controller
+  namespace: kyverno
+  uid: 4a030000-0022-4000-8000-000000000022
+  labels:
+    app.kubernetes.io/component: admission-controller
+    app.kubernetes.io/instance: kyverno
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
+    app.kubernetes.io/part-of: kyverno
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: admission-controller
+      app.kubernetes.io/instance: kyverno
+      app.kubernetes.io/part-of: kyverno
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: admission-controller
+        app.kubernetes.io/instance: kyverno
+        app.kubernetes.io/part-of: kyverno
+    spec:
+      containers:
+        - name: kyverno
+          image: reg.kyverno.io/kyverno/kyverno:v1.19.1

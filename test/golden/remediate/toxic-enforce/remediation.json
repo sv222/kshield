@@ -1,0 +1,1179 @@
+{
+  "schemaVersion": "kshield.remediation/v1",
+  "tool": {
+    "name": "kshield",
+    "version": "dev"
+  },
+  "profile": {
+    "id": "dora",
+    "sha256": "a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90"
+  },
+  "mode": "enforce",
+  "scanSha256": "452914acb97462fce166a4a17a7ec7bad94e2d8ca44d412889f3b9d495160806",
+  "items": [
+    {
+      "check": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/securityContext/runAsNonRoot",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/securityContext/runAsNonRoot",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/runAsNonRoot",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/runAsNonRoot",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-001",
+      "display": "DORA-CH2-001",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/runAsNonRoot",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-002",
+      "display": "DORA-CH2-002",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/allowPrivilegeEscalation",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/securityContext/capabilities",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/securityContext/capabilities",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/capabilities",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/capabilities",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-003",
+      "display": "DORA-CH2-003",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/capabilities",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-005",
+      "display": "DORA-CH2-005",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/spec/template/spec/volumes/1",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-008",
+      "display": "DORA-CH2-008",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/readOnlyRootFilesystem",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/securityContext/seccompProfile",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/securityContext/seccompProfile",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/seccompProfile",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/seccompProfile",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-009",
+      "display": "DORA-CH2-009",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/securityContext/seccompProfile",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/spec/template/spec/automountServiceAccountToken",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/spec/template/spec/automountServiceAccountToken",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/spec/workerGroupSpecs/0/template/spec/automountServiceAccountToken",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/spec/workerGroupSpecs/1/template/spec/automountServiceAccountToken",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-010",
+      "display": "DORA-CH2-010",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/spec/headGroupSpec/template/spec/automountServiceAccountToken",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/image",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/image",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/image",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/image",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-012",
+      "display": "DORA-CH2-012",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/image",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/resources/limits/memory",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/resources/limits/memory",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/resources/limits/memory",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/resources/limits/memory",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-013",
+      "display": "DORA-CH2-013",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/resources/limits/memory",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-WL-014",
+      "display": "DORA-CH2-014",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/spec/workerGroupSpecs/1/template/spec/volumes/0",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-001",
+      "display": "DORA-CH2-015",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/args",
+      "action": "patch",
+      "file": "workload-patch.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-002",
+      "display": "DORA-CH2-016",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/args",
+      "action": "patch",
+      "file": "workload-patch-6902/apps_Deployment_ai-inference_vllm.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-003",
+      "display": "DORA-CH2-017",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "container": "vllm",
+      "path": "/spec/template/spec/containers/0/args",
+      "action": "patch",
+      "file": "workload-patch-6902/apps_Deployment_ai-inference_vllm.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-004",
+      "display": "DORA-CH2-018",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/spec/type",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-005",
+      "display": "DORA-CH2-019",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/spec/headGroupSpec/serviceType",
+      "action": "patch",
+      "file": "workload-patch-6902/ray.io_RayCluster_ai-inference_rc.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-006",
+      "display": "DORA-CH2-020",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/0/template/spec/containers/0/env",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-006",
+      "display": "DORA-CH2-020",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "container": "ray-worker",
+      "path": "/spec/workerGroupSpecs/1/template/spec/containers/0/env",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-006",
+      "display": "DORA-CH2-020",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "container": "ray-head",
+      "path": "/spec/headGroupSpec/template/spec/containers/0/env",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-008",
+      "display": "DORA-CH2-022",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/env",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-AI-008",
+      "display": "DORA-CH2-022",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "container": "qdrant",
+      "path": "/spec/template/spec/containers/0/env",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-001",
+      "display": "DORA-CH2-024",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-001",
+      "display": "DORA-CH2-027",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-002",
+      "display": "DORA-CH2-028",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-RT-003",
+      "display": "DORA-CH2-029",
+      "verdict": "FAIL",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/metadata/namespace",
+      "action": "policy",
+      "file": "infrastructure-policies.yaml",
+      "reason": ""
+    }
+  ]
+}

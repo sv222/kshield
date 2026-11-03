@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "meta-llama/Llama-3.1-8B-Instruct", "--load-format", "safetensors"]
+          ports:
+            - containerPort: 8000
+---
+apiVersion: kyverno.io/v1
+kind: Policy
+metadata:
+  name: kshield-admission
+  namespace: ai-inference
+  labels:
+    kshield.io/guard: "admission"
+spec:
+  rules:
+    - name: run-as-non-root
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        failureAction: Enforce
+        message: "runAsNonRoot must be true"
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true
+    - name: no-host-ipc
+      match:
+        any:
+          - resources:
+              kinds: ["Pod"]
+      validate:
+        failureAction: Enforce
+        message: "hostIPC must be false"
+        pattern:
+          spec:
+            =(hostIPC): false

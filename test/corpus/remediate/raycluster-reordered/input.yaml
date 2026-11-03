@@ -1,0 +1,41 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: rc
+  namespace: ai-inference
+spec:
+  rayVersion: "2.50.0"
+  headGroupSpec:
+    rayStartParams: {}
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            image: rayproject/ray:2.50.0
+  workerGroupSpecs:
+    - groupName: cpu
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 2
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0
+    - groupName: gpu
+      replicas: 1
+      minReplicas: 1
+      maxReplicas: 1
+      rayStartParams: {}
+      template:
+        spec:
+          containers:
+            - name: ray-worker
+              image: rayproject/ray:2.50.0-gpu
+              resources:
+                limits:
+                  nvidia.com/gpu: "1"
+            - name: model-loader
+              image: busybox:1.37.0
+              command: ["sh", "-c", "sleep infinity"]

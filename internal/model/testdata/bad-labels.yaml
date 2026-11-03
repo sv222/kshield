@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: badlabels
+  namespace: ai
+spec:
+  template:
+    metadata:
+      labels:
+        app: 1
+    spec:
+      containers:
+        - name: main
+          image: nginx:1.27

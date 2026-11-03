@@ -1,0 +1,136 @@
+id: "dora"
+version: 1
+title: "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774"
+checks:
+  "KS-WL-001":
+    display: "DORA-CH2-001"
+    severity: "fail"
+    refs: ["dora-art9-4-c"]
+  "KS-WL-002":
+    display: "DORA-CH2-002"
+    severity: "fail"
+    refs: ["dora-art9-4-c"]
+  "KS-WL-003":
+    display: "DORA-CH2-003"
+    severity: "fail"
+    refs: ["dora-art9-4-c"]
+  "KS-WL-004":
+    display: "DORA-CH2-004"
+    severity: "fail"
+    refs: ["dora-art9-3-c", "dora-art9-4-b", "dora-art9-4-c"]
+  "KS-WL-005":
+    display: "DORA-CH2-005"
+    severity: "fail"
+    refs: ["dora-art9-3-c"]
+  "KS-WL-006":
+    display: "DORA-CH2-006"
+    severity: "warn"
+    refs: ["dora-art9-2"]
+  "KS-WL-007":
+    display: "DORA-CH2-007"
+    severity: "fail"
+    refs: ["dora-art9-3-c"]
+  "KS-WL-008":
+    display: "DORA-CH2-008"
+    severity: "warn"
+    refs: ["dora-art9-3-b", "dora-art9-3-c"]
+  "KS-WL-009":
+    display: "DORA-CH2-009"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "rts-art11-2-b"]
+  "KS-WL-010":
+    display: "DORA-CH2-010"
+    severity: "fail"
+    refs: ["dora-art9-4-c"]
+  "KS-WL-011":
+    display: "DORA-CH2-011"
+    severity: "fail"
+    refs: ["dora-art9-3-c"]
+  "KS-WL-012":
+    display: "DORA-CH2-012"
+    severity: "warn"
+    refs: ["dora-art9-4-e", "rts-art16-1-c"]
+  "KS-WL-013":
+    display: "DORA-CH2-013"
+    severity: "warn"
+    refs: ["dora-art9-2"]
+  "KS-WL-014":
+    display: "DORA-CH2-014"
+    severity: "fail"
+    refs: ["dora-art9-4-c"]
+  "KS-AI-001":
+    display: "DORA-CH2-015"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "dora-art9-4-d"]
+  "KS-AI-002":
+    display: "DORA-CH2-016"
+    severity: "fail"
+    refs: ["dora-art9-3-b", "dora-art9-3-c"]
+  "KS-AI-003":
+    display: "DORA-CH2-017"
+    severity: "fail"
+    refs: ["dora-art9-3-b", "dora-art9-3-c"]
+  "KS-AI-004":
+    display: "DORA-CH2-018"
+    severity: "fail"
+    refs: ["dora-art9-4-b", "dora-art9-4-c"]
+  "KS-AI-005":
+    display: "DORA-CH2-019"
+    severity: "fail"
+    refs: ["dora-art9-4-b", "dora-art9-4-c"]
+  "KS-AI-006":
+    display: "DORA-CH2-020"
+    severity: "fail"
+    refs: ["dora-art9-3-a"]
+  "KS-AI-007":
+    display: "DORA-CH2-021"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "dora-art9-4-d"]
+  "KS-AI-008":
+    display: "DORA-CH2-022"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "dora-art9-4-d", "dora-art9-3-a"]
+  "KS-AI-009":
+    display: "DORA-CH2-023"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "dora-art9-4-d"]
+  "KS-NET-001":
+    display: "DORA-CH2-024"
+    severity: "fail"
+    refs: ["dora-art9-4-b"]
+  "KS-NET-002":
+    display: "DORA-CH2-025"
+    severity: "fail"
+    refs: ["dora-art9-4-b"]
+  "KS-NET-003":
+    display: "DORA-CH2-026"
+    severity: "fail"
+    refs: ["dora-art9-3-a"]
+  "KS-RT-001":
+    display: "DORA-CH2-027"
+    severity: "fail"
+    refs: ["dora-art10-1"]
+  "KS-RT-002":
+    display: "DORA-CH2-028"
+    severity: "fail"
+    refs: ["dora-art10-1"]
+  "KS-RT-003":
+    display: "DORA-CH2-029"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "rts-art11-2-b"]
+  "KS-PRE-001":
+    display: "DORA-CH2-030"
+    severity: "fail"
+    refs: ["dora-art10-1"]
+  "KS-PRE-002":
+    display: "DORA-CH2-031"
+    severity: "fail"
+    refs: ["dora-art9-4-b"]
+  "KS-PRE-003":
+    display: "DORA-CH2-032"
+    severity: "fail"
+    refs: ["dora-art9-4-c", "rts-art11-2-b"]
+  "KS-PRE-004":
+    display: "DORA-CH2-033"
+    severity: "warn"
+    refs: ["dora-art10-1"]

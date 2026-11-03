@@ -1,0 +1,23 @@
+- op: test
+  path: /spec/template/spec/containers/0/name
+  value: vllm
+- op: test
+  path: /spec/template/spec/volumes/0/name
+  value: models
+- op: test
+  path: /spec/template/spec/volumes/1/name
+  value: shm
+- op: test
+  path: /spec/template/spec/containers/0/volumeMounts/0/mountPath
+  value: /models
+- op: test
+  path: /spec/template/spec/containers/0/volumeMounts/1/mountPath
+  value: /dev/shm
+- op: test
+  path: /spec/template/spec/containers/0/args/0
+  value: vllm serve /models/Qwen2.5-7B-Instruct --trust-remote-code --host 0.0.0.0
+    --port 8000
+- op: replace
+  path: /spec/template/spec/containers/0/args/0
+  value: vllm serve /models/Qwen2.5-7B-Instruct --host 0.0.0.0 --port 8000 --load-format
+    safetensors

@@ -1,0 +1,5 @@
+namespace: "ai"
+checks: ["KS-PRE-001"]
+expect:
+  - {check: "KS-PRE-001", object: "DaemonSet/kube-system/tetragon", verdict: "FAIL"}
+na: []

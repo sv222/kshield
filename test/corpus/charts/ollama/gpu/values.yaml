@@ -1,0 +1,4 @@
+# One NVIDIA GPU (chart defaults: type nvidia, number 1).
+ollama:
+  gpu:
+    enabled: true

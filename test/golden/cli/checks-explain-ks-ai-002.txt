@@ -1,0 +1,20 @@
+KS-AI-002 (DORA-CH2-016)
+Title:    vLLM --trust-remote-code set
+Tier:     manifest
+Fix:      patch
+Severity: fail
+Profile:  dora v1
+
+This report supports evidence for the requirements it cites. It is not an audit and does not state compliance with any regulation.
+
+References:
+
+DORA Art. 9(3)(b)
+Source: DORA, CELEX 32022R2554
+URL: https://eur-lex.europa.eu/eli/reg/2022/2554/oj
+  minimise the risk of corruption or loss of data, unauthorised access and technical flaws that may hinder business activity;
+
+DORA Art. 9(3)(c)
+Source: DORA, CELEX 32022R2554
+URL: https://eur-lex.europa.eu/eli/reg/2022/2554/oj
+  prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;

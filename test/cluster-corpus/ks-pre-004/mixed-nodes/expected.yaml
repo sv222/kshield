@@ -1,0 +1,6 @@
+namespace: "ai"
+checks: ["KS-PRE-004"]
+expect:
+  - {check: "KS-PRE-004", object: "Node/gpu-b", verdict: "WARN"}
+  - {check: "KS-PRE-004", object: "Node/gpu-c", verdict: "WARN"}
+na: []

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  labels:
+    tier: object
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+      annotations:
+        team: ml
+    spec:
+      initContainers:
+        - name: fetch
+          image: busybox:1.36
+          command: ["sh", "-c", "echo fetch"]
+      containers:
+        - name: server
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          ports:
+            - containerPort: 8000

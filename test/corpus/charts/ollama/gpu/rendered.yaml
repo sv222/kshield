@@ -1,0 +1,155 @@
+---
+# Source: ollama/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ollama
+  namespace: ai-inference
+  labels:
+    helm.sh/chart: ollama-1.89.0
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+    app.kubernetes.io/version: "0.40.5"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+
+---
+# Source: ollama/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: ai-inference
+  labels:
+    helm.sh/chart: ollama-1.89.0
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+    app.kubernetes.io/version: "0.40.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 11434
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+
+
+---
+# Source: ollama/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: ai-inference
+  labels:
+    helm.sh/chart: ollama-1.89.0
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+    app.kubernetes.io/version: "0.40.5"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy: 
+    type: Recreate
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ollama
+      app.kubernetes.io/instance: ollama
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: ollama-1.89.0
+        app.kubernetes.io/name: ollama
+        app.kubernetes.io/instance: ollama
+        app.kubernetes.io/version: "0.40.5"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: ollama
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        {}
+      containers:
+        - name: ollama
+          securityContext:
+            {}
+          image: "ollama/ollama:0.40.5"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 11434
+              protocol: TCP
+          env:
+            - name: OLLAMA_HOST
+              value: "0.0.0.0:11434"
+            - name: PATH
+              value: /usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          envFrom:
+          args:
+          resources:
+          # If gpu is enabled, it can either be a NVIDIA card or a AMD card
+          # NVIDIA is assumed by default if no value is set and GPU is enabled
+          # NVIDIA cards can have mig enabled (i.e., the card is sliced into parts
+          # Therefore, the first case is no migs enabled
+          # Second case is mig is enabled
+            limits:
+              nvidia.com/gpu: 1
+            requests: {}
+          volumeMounts:
+            - name: ollama-data
+              mountPath: /root/.ollama
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 6
+      volumes:
+        - name: ollama-data
+          emptyDir: { }
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: Exists
+          effect: NoSchedule
+---
+# Source: ollama/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "ollama-test-connection"
+  namespace: ai-inference
+  labels:
+    helm.sh/chart: ollama-1.89.0
+    app.kubernetes.io/name: ollama
+    app.kubernetes.io/instance: ollama
+    app.kubernetes.io/version: "0.40.5"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['sh', '-ec']
+      args:
+        - >
+          wget -qO- "http://ollama:11434" >/dev/null
+  restartPolicy: Never
+
+

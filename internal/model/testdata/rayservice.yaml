@@ -1,0 +1,39 @@
+apiVersion: ray.io/v1
+kind: RayService
+metadata:
+  name: svc
+  namespace: ai
+spec:
+  serveConfigV2: |
+    applications: []
+  rayClusterConfig:
+    rayVersion: "2.9.0"
+    headGroupSpec:
+      template:
+        metadata:
+          labels:
+            app: ray
+            ray.io/cluster: spoofed
+        spec:
+          containers:
+            - name: ray-head
+              image: rayproject/ray:2.9.0
+    workerGroupSpecs:
+      - groupName: cpu
+        replicas: 1
+        minReplicas: 1
+        maxReplicas: 2
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.9.0
+      - groupName: gpu
+        replicas: 1
+        minReplicas: 0
+        maxReplicas: 4
+        template:
+          spec:
+            containers:
+              - name: ray-worker
+                image: rayproject/ray:2.9.0-gpu
