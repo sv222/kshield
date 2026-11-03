@@ -1,0 +1,4 @@
+namespace: "ai"
+checks: ["KS-WL-001", "KS-WL-002", "KS-AI-002"]
+expect: []
+na: ["KS-AI-002"]

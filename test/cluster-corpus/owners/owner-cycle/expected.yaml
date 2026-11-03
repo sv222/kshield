@@ -1,0 +1,8 @@
+namespace: "ai"
+checks: ["KS-WL-001", "KS-WL-002", "KS-AI-002"]
+expect:
+  - {check: "KS-WL-001", object: "ReplicaSet/ai/vllm-a", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "ReplicaSet/ai/vllm-a", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-001", object: "ReplicaSet/ai/vllm-b", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "ReplicaSet/ai/vllm-b", container: "vllm", verdict: "FAIL"}
+na: ["KS-AI-002"]

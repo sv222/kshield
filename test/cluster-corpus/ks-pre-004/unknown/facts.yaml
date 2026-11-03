@@ -1,0 +1,4 @@
+probeRan: true
+nodes:
+  - {node: kind-control-plane, lsm: [lockdown, capability, landlock, yama, apparmor, bpf], bpfLSMConfig: "y", unknown: ""}
+  - {node: kind-worker, unknown: "probe pod Pending: ImagePullBackOff"}

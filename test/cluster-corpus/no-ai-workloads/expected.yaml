@@ -1,0 +1,4 @@
+namespace: "web"
+checks: ["KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004", "KS-NET-003"]
+expect: []
+na: ["KS-PRE-001", "KS-PRE-002", "KS-PRE-003", "KS-PRE-004", "KS-NET-003"]

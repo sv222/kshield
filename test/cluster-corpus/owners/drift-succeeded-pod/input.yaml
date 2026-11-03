@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  namespace: ai
+  uid: 3d8b2a5c-0001-4000-8000-000000000001
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vllm-6f4b8d2e7
+  namespace: ai
+  uid: 3d8b2a5c-0004-4000-8000-000000000004
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: vllm
+      uid: 3d8b2a5c-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: vllm
+      pod-template-hash: 6f4b8d2e7
+  template:
+    metadata:
+      labels:
+        app: vllm
+        pod-template-hash: 6f4b8d2e7
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-6f4b8d2e7-w9t5r
+  namespace: ai
+  uid: 3d8b2a5c-0005-4000-8000-000000000005
+  labels:
+    app: vllm
+    pod-template-hash: 6f4b8d2e7
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-6f4b8d2e7
+      uid: 3d8b2a5c-0004-4000-8000-000000000004
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Succeeded
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-6f4b8d2e7-b3j6v
+  namespace: ai
+  uid: 3d8b2a5c-0006-4000-8000-000000000006
+  labels:
+    app: vllm
+    pod-template-hash: 6f4b8d2e7
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-6f4b8d2e7
+      uid: 3d8b2a5c-0004-4000-8000-000000000004
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Succeeded

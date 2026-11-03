@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vllm-a
+  namespace: ai
+  uid: 9de18abc-0001-4000-8000-000000000001
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-b
+      uid: 9de18abc-0002-4000-8000-000000000002
+      controller: true
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: vllm-b
+  namespace: ai
+  uid: 9de18abc-0002-4000-8000-000000000002
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-a
+      uid: 9de18abc-0001-4000-8000-000000000001
+      controller: true
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: vllm
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vllm-a-m7c2d
+  namespace: ai
+  uid: 9de18abc-0003-4000-8000-000000000003
+  labels:
+    app: vllm
+  ownerReferences:
+    - apiVersion: apps/v1
+      kind: ReplicaSet
+      name: vllm-a
+      uid: 9de18abc-0001-4000-8000-000000000001
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  containers:
+    - name: vllm
+      image: vllm/vllm-openai:v0.6.0
+      args: ["--model", "facebook/opt-125m"]
+status:
+  phase: Running

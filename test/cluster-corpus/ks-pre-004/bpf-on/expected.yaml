@@ -1,0 +1,4 @@
+namespace: "ai"
+checks: ["KS-PRE-004"]
+expect: []
+na: []

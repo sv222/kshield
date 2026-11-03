@@ -1,0 +1,6 @@
+namespace: "ai"
+checks: ["KS-WL-001", "KS-WL-002", "KS-AI-002"]
+expect:
+  - {check: "KS-WL-001", object: "Pod/ai/vllm-abc-xyz12", container: "vllm", verdict: "FAIL"}
+  - {check: "KS-WL-002", object: "Pod/ai/vllm-abc-xyz12", container: "vllm", verdict: "FAIL"}
+na: ["KS-AI-002"]

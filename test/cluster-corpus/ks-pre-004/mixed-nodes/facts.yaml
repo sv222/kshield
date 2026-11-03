@@ -1,0 +1,5 @@
+probeRan: true
+nodes:
+  - {node: gpu-a, lsm: [lockdown, capability, bpf], bpfLSMConfig: "y", unknown: ""}
+  - {node: gpu-b, lsm: [lockdown, capability, apparmor], bpfLSMConfig: "y", unknown: ""}
+  - {node: gpu-c, lsm: [capability], bpfLSMConfig: "n", unknown: ""}

@@ -1,0 +1,5 @@
+namespace: "ai"
+checks: ["KS-PRE-002"]
+expect:
+  - {check: "KS-PRE-002", object: "DaemonSet/kube-system/cilium", verdict: "WARN"}
+na: []
