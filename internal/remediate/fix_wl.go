@@ -22,6 +22,7 @@ const (
 	netBindService   = "NET_BIND_SERVICE"
 	runtimeDefault   = "RuntimeDefault"
 	gpuCheckID       = "KS-WL-014"
+	wl001CheckID     = "KS-WL-001"
 	rayGroup         = "ray.io"
 	rayHeadGroup     = "head"
 	rayHeadSpec      = "/headGroupSpec/template/spec"
@@ -33,6 +34,7 @@ const (
 	reasonRuntimeSA  = "ServingRuntime has no automountServiceAccountToken; set automountServiceAccountToken: false on the ServiceAccount the InferenceService uses"
 	rootDir          = "/root"
 	kserveGroup      = "serving.kserve.io"
+	ollamaMountDir   = "/ollama"
 )
 
 var sysAdmin = []string{"SYS_ADMIN", "CAP_SYS_ADMIN"}
@@ -47,6 +49,11 @@ var cacheEnv = []envDefault{
 	{"XDG_CACHE_HOME", CacheDir + "/xdg"},
 }
 
+var ollamaMountEnv = []envDefault{
+	{"HOME", ollamaMountDir},
+	{"OLLAMA_MODELS", ollamaMountDir + "/models"},
+}
+
 type writableDir struct {
 	volume, path string
 }
@@ -59,7 +66,7 @@ var baseDirs = []writableDir{
 var stackDirs = map[model.Stack][]writableDir{
 	model.Qdrant: {{"kshield-qdrant-storage", "/qdrant/storage"}, {"kshield-qdrant-snapshots", "/qdrant/snapshots"}},
 	model.Milvus: {{"kshield-milvus-data", "/var/lib/milvus"}},
-	model.Ollama: {{"kshield-ollama", "/root/.ollama"}},
+	model.Ollama: {{"kshield-ollama", ollamaMountDir}},
 }
 
 const milvusMeasuredImage = "milvusdb/milvus:v3.0.3"
@@ -81,10 +88,58 @@ func securityContextPath(c model.Container) string {
 	return c.Path + "/securityContext"
 }
 
-func fixRunAsRoot(w model.Workload, c model.Container, _ *check.Input) ([]Op, string) {
-	if mountsUnder(c, rootDir) {
+// rootMountsNotMoved lists mounts under /root that no patch moves out of it.
+// An Ollama .ollama mount is moved to /ollama by fixRunAsRoot (owner ruling
+// of 2026-10-26), so it blocks neither the uid fix nor the read-only-root fix.
+func rootMountsNotMoved(c model.Container) []corev1.VolumeMount {
+	var out []corev1.VolumeMount
+	for _, m := range c.Spec.VolumeMounts {
+		p := path.Clean(m.MountPath)
+		if under(p, rootDir) && (c.Stack != model.Ollama || !strings.Contains(p, ".ollama")) {
+			out = append(out, m)
+		}
+	}
+	return out
+}
+
+// wl001FindingFor reports whether check KS-WL-001 produced a finding for
+// workload w and container c in the input.
+func wl001FindingFor(in *check.Input, w model.Workload, c model.Container) bool {
+	wl001, ok := check.ByID(wl001CheckID)
+	if in == nil || !ok {
+		return false
+	}
+	return slices.ContainsFunc(check.Evaluate(wl001, in).Findings, func(f check.Finding) bool {
+		return f.Object == w.Owner && f.Group == w.Group && f.Container == c.Spec.Name
+	})
+}
+
+// hasOllamaRootMount reports whether an Ollama container mounts a .ollama
+// directory under /root.
+func hasOllamaRootMount(c model.Container) bool {
+	return c.Stack == model.Ollama && slices.ContainsFunc(c.Spec.VolumeMounts, func(m corev1.VolumeMount) bool {
+		p := path.Clean(m.MountPath)
+		return under(p, rootDir) && strings.Contains(p, ".ollama")
+	})
+}
+
+// ollamaWillMove reports whether the KS-WL-001 fixer moves the container's
+// .ollama mount from under /root to /ollama.
+func ollamaWillMove(in *check.Input, w model.Workload, c model.Container) bool {
+	return hasOllamaRootMount(c) && wl001FindingFor(in, w, c)
+}
+
+func fixRunAsRoot(w model.Workload, c model.Container, in *check.Input) ([]Op, string) {
+	if len(rootMountsNotMoved(c)) > 0 {
 		return nil, reasonRootMount
 	}
+	var ops []Op
+	ops = append(ops, ollamaRootMountOps(w, c, in)...)
+	ops = append(ops, runAsRootOps(w, c)...)
+	return ops, ""
+}
+
+func runAsRootOps(w model.Workload, c model.Container) []Op {
 	obj := w.Object.U.Object
 	sc := securityContextPath(c)
 	var ops []Op
@@ -100,7 +155,49 @@ func fixRunAsRoot(w model.Workload, c model.Container, _ *check.Input) ([]Op, st
 	if !servingRuntime(w) && hasClaim(w) && (w.Spec.SecurityContext == nil || w.Spec.SecurityContext.FSGroup == nil) {
 		ops = append(ops, Set(obj, w.SpecPath+"/securityContext/fsGroup", nonRootUID(w.Stacks...)))
 	}
-	return ops, ""
+	return ops
+}
+
+// ollamaRootMountOps moves an Ollama .ollama mount from under /root to
+// /ollama and points HOME and OLLAMA_MODELS at it (owner ruling of
+// 2026-10-26). No ops for a container without such a mount.
+func ollamaRootMountOps(w model.Workload, c model.Container, in *check.Input) []Op {
+	if c.Stack != model.Ollama {
+		return nil
+	}
+	obj := w.Object.U.Object
+	var ops []Op
+	for k, m := range c.Spec.VolumeMounts {
+		p := path.Clean(m.MountPath)
+		if !under(p, rootDir) || !strings.Contains(p, ".ollama") {
+			continue
+		}
+		ops = append(ops, Set(obj, fmt.Sprintf("%s/volumeMounts/%d/mountPath", c.Path, k), ollamaMountDir))
+		if v, ok := literalEnv(c, "OLLAMA_MODELS"); ok && under(path.Clean(v), p) {
+			ops = append(ops, Op{Op: OpReplace, Path: fmt.Sprintf("%s/env/%d/value", c.Path, envIndex(c, "OLLAMA_MODELS")), Value: ollamaMountDir + "/models"})
+		}
+		if v, ok := literalEnv(c, "HOME"); ok && under(path.Clean(v), p) {
+			ops = append(ops, Op{Op: OpReplace, Path: fmt.Sprintf("%s/env/%d/value", c.Path, envIndex(c, "HOME")), Value: ollamaMountDir})
+		}
+	}
+	if len(ops) == 0 {
+		return nil
+	}
+	for _, e := range ollamaMountEnv {
+		if !envSet(w, c, in, e.name) {
+			ops = append(ops, Set(obj, c.Path+"/env/-", map[string]any{"name": e.name, "value": e.value}))
+		}
+	}
+	return ops
+}
+
+func envIndex(c model.Container, name string) int {
+	for i := len(c.Spec.Env) - 1; i >= 0; i-- {
+		if c.Spec.Env[i].Name == name {
+			return i
+		}
+	}
+	return -1
 }
 
 func runAsUser(w model.Workload, c model.Container) *int64 {
@@ -304,16 +401,20 @@ func fixShareProcessNamespace(w model.Workload, _ check.Finding, _ *check.Input,
 }
 
 func fixReadOnlyRootFS(w model.Workload, c model.Container, in *check.Input) ([]Op, string) {
-	if mountsUnder(c, rootDir) {
+	homeMoved := ollamaWillMove(in, w, c)
+	if len(rootMountsNotMoved(c)) > 0 || (hasOllamaRootMount(c) && !homeMoved) {
 		return nil, reasonRootROFS
 	}
 	var added []writableDir
 	for _, d := range slices.Concat(baseDirs, stackDirs[c.Stack]) {
+		if homeMoved && d.path == ollamaMountDir {
+			continue
+		}
 		if !mounted(c, d.path) {
 			added = append(added, d)
 		}
 	}
-	if reason := readOnlyCacheEnv(c, added); reason != "" {
+	if reason := readOnlyCacheEnv(c, added, homeMoved); reason != "" {
 		return nil, reason
 	}
 	obj := w.Object.U.Object
@@ -330,6 +431,9 @@ func fixReadOnlyRootFS(w model.Workload, c model.Container, in *check.Input) ([]
 		)
 	}
 	for _, e := range cacheEnv {
+		if homeMoved && e.name == "HOME" {
+			continue
+		}
 		if !envSet(w, c, in, e.name) {
 			ops = append(ops, Set(obj, c.Path+"/env/-", map[string]any{"name": e.name, "value": e.value}))
 		}
@@ -337,7 +441,7 @@ func fixReadOnlyRootFS(w model.Workload, c model.Container, in *check.Input) ([]
 	return ops, ""
 }
 
-func readOnlyCacheEnv(c model.Container, added []writableDir) string {
+func readOnlyCacheEnv(c model.Container, added []writableDir, homeMoved bool) string {
 	var writable []string
 	for _, m := range c.Spec.VolumeMounts {
 		if !m.ReadOnly {
@@ -346,6 +450,11 @@ func readOnlyCacheEnv(c model.Container, added []writableDir) string {
 	}
 	for _, d := range added {
 		writable = append(writable, d.path)
+	}
+	// With homeMoved the KS-WL-001 fixer repoints the moved mount at
+	// ollamaMountDir, so it stays writable even though it is not in added.
+	if homeMoved {
+		writable = append(writable, ollamaMountDir)
 	}
 	var reasons []string
 	for _, e := range cacheEnv {

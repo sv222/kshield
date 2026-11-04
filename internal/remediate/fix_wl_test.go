@@ -544,7 +544,7 @@ func TestWL008StackDataPaths(t *testing.T) {
 		"milvus": {"milvusdb/milvus:v2.6.4", `[]`, `[]`,
 			`[{"name":"kshield-tmp","mountPath":"/tmp"},{"name":"kshield-cache","mountPath":"/kshield/cache"},{"name":"kshield-milvus-data","mountPath":"/var/lib/milvus"}]`},
 		"ollama": {"ollama/ollama:0.12.6", `[]`, `[]`,
-			`[{"name":"kshield-tmp","mountPath":"/tmp"},{"name":"kshield-cache","mountPath":"/kshield/cache"},{"name":"kshield-ollama","mountPath":"/root/.ollama"}]`},
+			`[{"name":"kshield-tmp","mountPath":"/tmp"},{"name":"kshield-cache","mountPath":"/kshield/cache"},{"name":"kshield-ollama","mountPath":"/ollama"}]`},
 		"qdrant parent mount": {"qdrant/qdrant:v1.15.5", `[{"name":"data","mountPath":"/qdrant/"}]`, `[{"name":"data","emptyDir":{}}]`,
 			`[{"name":"data","mountPath":"/qdrant/"},{"name":"kshield-tmp","mountPath":"/tmp"},{"name":"kshield-cache","mountPath":"/kshield/cache"}]`},
 	}
@@ -689,8 +689,7 @@ func TestWorkloadFixersTogether(t *testing.T) {
 func TestRootMountResidual(t *testing.T) {
 	const wl008Reason = "a volume is mounted under /root and the process keeps HOME=/root; a read-only root filesystem would block writes there; move the mount out of /root first"
 	cases := map[string]struct{ image, mount string }{
-		"ollama data":   {"ollama/ollama:0.12.6", "/root/.ollama"},
-		"ollama models": {"ollama/ollama:0.12.6", "/root/.ollama/models"},
+		"ollama other":  {"ollama/ollama:0.12.6", "/root/.not-ollama"},
 		"vllm hf cache": {"vllm/vllm-openai:v0.31.0", "/root/.cache/huggingface"},
 		"root":          {"vllm/vllm-openai:v0.31.0", "/root"},
 	}
@@ -811,4 +810,101 @@ func TestBindNoOpsIsResidual(t *testing.T) {
 	}
 	assertJSON(t, res, `{"Check":"KS-X","Finding":{"Object":{"APIVersion":"apps/v1","Kind":"Deployment","Namespace":"ai","Name":"app"},
 		"Group":"","Container":"","Path":"`+wlPod+`/x","Message":"","Strength":0},"Reason":"no automatic fix for this finding"}`)
+}
+
+func TestWL001OllamaRootMountMoved(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001")
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/volumeMounts"), `[{"name":"data","mountPath":"/ollama"}]`)
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"HOME","value":"/ollama"},{"name":"OLLAMA_MODELS","value":"/ollama/models"}]`)
+	assertJSON(t, at(t, got, wlC0+"/securityContext"), `{"runAsNonRoot":true,"runAsUser":1000,"runAsGroup":1000}`)
+	assertJSON(t, at(t, got, wlPod+"/securityContext"), `{"fsGroup":1000}`)
+	assertNoFindings(t, r.rescan(t), "KS-WL-001")
+}
+
+func TestWL001OllamaRootMountLiteralModels(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"env":[{"name":"OLLAMA_MODELS","value":"/root/.ollama/models"}],
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001")
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"OLLAMA_MODELS","value":"/ollama/models"},{"name":"HOME","value":"/ollama"}]`)
+	assertNoFindings(t, r.rescan(t), "KS-WL-001")
+}
+
+func TestWL001OllamaOtherRootMountStillResidual(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"volumeMounts":[{"name":"keys","mountPath":"/root/keys"},{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"keys","hostPath":{"path":"/etc/keys"}},{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001")
+	assertResidual(t, r, "KS-WL-001", 1, reasonRootMount)
+}
+
+func TestWL008OllamaNoFindingRefusalRestored(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6","securityContext":{"runAsNonRoot":true},
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-008")
+	assertResidual(t, r, "KS-WL-008", 1, reasonRootROFS)
+	if len(r.ops) > 0 {
+		t.Fatalf("ops: %v", r.ops)
+	}
+}
+
+func TestWL008OllamaHomeDefaultRestored(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6"}]}`)
+	r := runFixers(t, base, "KS-WL-008")
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"HOME","value":"/kshield/cache"},
+		{"name":"HF_HOME","value":"/kshield/cache/huggingface"},{"name":"XDG_CACHE_HOME","value":"/kshield/cache/xdg"}]`)
+	assertNoFindings(t, r.rescan(t), "KS-WL-008")
+}
+
+func TestWL008OllamaLiteralHomeOutsideMovedPathRefused(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"env":[{"name":"HOME","value":"/root"}],
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001", "KS-WL-008")
+	assertResidual(t, r, "KS-WL-008", 1, "HOME points at /root, which becomes read-only; mount a volume there or unset it first")
+	for _, op := range r.only(t) {
+		if op.Path == wlC0+"/env/0/value" {
+			t.Fatalf("HOME replaced despite the residual: %v", op)
+		}
+	}
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"HOME","value":"/root"},{"name":"OLLAMA_MODELS","value":"/ollama/models"}]`)
+}
+
+func TestWL001AndWL008StockChartNoDuplicateOllamaMount(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001", "KS-WL-008")
+	if len(r.residuals) > 0 {
+		t.Fatalf("residuals: %+v", r.residuals)
+	}
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/volumeMounts"), `[{"name":"data","mountPath":"/ollama"},
+		{"name":"kshield-tmp","mountPath":"/tmp"},{"name":"kshield-cache","mountPath":"/kshield/cache"}]`)
+	assertJSON(t, at(t, got, wlPod+"/volumes"), `[{"name":"data","persistentVolumeClaim":{"claimName":"models"}},
+		{"name":"kshield-tmp","emptyDir":{}},{"name":"kshield-cache","emptyDir":{}}]`)
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"HOME","value":"/ollama"},{"name":"OLLAMA_MODELS","value":"/ollama/models"},
+		{"name":"HF_HOME","value":"/kshield/cache/huggingface"},{"name":"XDG_CACHE_HOME","value":"/kshield/cache/xdg"}]`)
+	assertNoFindings(t, r.rescan(t), "KS-WL-001", "KS-WL-008")
+}
+
+func TestWL001OllamaRootMountLiteralHome(t *testing.T) {
+	base := deploymentWith(t, `{"containers":[{"name":"ollama","image":"ollama/ollama:0.12.6",
+		"env":[{"name":"HOME","value":"/root/.ollama"}],
+		"volumeMounts":[{"name":"data","mountPath":"/root/.ollama"}]}],
+		"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"models"}}]}`)
+	r := runFixers(t, base, "KS-WL-001")
+	got := byName(t, r.patched(t), "Deployment", "app")
+	assertJSON(t, at(t, got, wlC0+"/env"), `[{"name":"HOME","value":"/ollama"},{"name":"OLLAMA_MODELS","value":"/ollama/models"}]`)
+	assertNoFindings(t, r.rescan(t), "KS-WL-001")
 }
