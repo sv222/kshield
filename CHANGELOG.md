@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-04
+
 ### Added
 
 - `kshield scan manifest` scans Kubernetes YAML files, directories or stdin for risks in AI workloads: vLLM, Ollama, KubeRay (RayCluster, RayService, RayJob), KServe, Qdrant and Milvus.

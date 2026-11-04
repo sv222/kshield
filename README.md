@@ -23,7 +23,7 @@ With Go 1.26 or newer:
 go install github.com/sv222/kshield/cmd/kshield@latest
 ```
 
-Binaries for Linux, macOS and Windows (amd64 and arm64) with `checksums.txt` are attached to each [release](https://github.com/sv222/kshield/releases). There is no tagged release yet, so build from source for now:
+Binaries for Linux, macOS and Windows (amd64 and arm64) with `checksums.txt` are attached to each [release](https://github.com/sv222/kshield/releases). To build from source:
 
 ```bash
 git clone https://github.com/sv222/kshield.git
@@ -183,7 +183,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: "1.26.10"
-      - run: go install github.com/sv222/kshield/cmd/kshield@main
+      - run: go install github.com/sv222/kshield/cmd/kshield@v0.1.0
       - run: kshield scan manifest -f k8s/ --format sarif --out kshield.sarif --fail-on never
       - uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
         with:
@@ -213,7 +213,7 @@ The scanner has no network access other than the Kubernetes API, no telemetry an
 
 ## Roadmap
 
-- First tagged release with signed binaries.
+- Signed release binaries.
 - Ray in enforce mode without killing the head processes.
 - More AI serving stacks and checks.
 - More profiles beyond DORA.
