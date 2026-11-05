@@ -921,6 +921,60 @@ spec:
 	}
 }
 
+func TestManualOllamaMoves(t *testing.T) {
+	ollama := `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: ai-inference
+spec:
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - name: ollama
+        image: ollama/ollama:0.12.6
+        ports:
+        - containerPort: 11434
+        volumeMounts:
+        - name: ollama-data
+          mountPath: /root/.ollama
+      volumes:
+      - name: ollama-data
+        persistentVolumeClaim:
+          claimName: ollama-models
+`
+	want := "### Ollama mount move (KS-WL-001)\n\n" +
+		"For `Deployment/ai-inference/ollama` the patch moved the Ollama volume mount from under `/root` to `/ollama` " +
+		"and set `HOME=/ollama` and `OLLAMA_MODELS=/ollama/models`. "
+	b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, ollama)), Mode: "enforce"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	manual := string(b.Files["MANUAL.md"])
+	if !strings.Contains(manual, want) {
+		t.Errorf("MANUAL.md has no %q:\n%s", want, manual)
+	}
+	b, err = Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, manualDeployment("models", `["serve", "/models/m"]`, `        volumeMounts:
+        - name: models
+          mountPath: /models
+      volumes:
+      - name: models
+        emptyDir: {}
+`))), Mode: "enforce"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b.Files["MANUAL.md"]), "Ollama mount move") {
+		t.Errorf("MANUAL.md has the Ollama mount move section for a workload without an .ollama mount:\n%s", b.Files["MANUAL.md"])
+	}
+}
+
 func TestDeterministic(t *testing.T) {
 	t.Chdir("../..")
 	opt := Options{

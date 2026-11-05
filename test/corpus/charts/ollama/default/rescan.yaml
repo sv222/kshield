@@ -1,2 +1,1 @@
-residuals:
-  - {check: KS-WL-001, object: Deployment/ai-inference/ollama, container: ollama, mode: both}
+residuals: []

@@ -272,6 +272,18 @@ func (b *builder) beforeApply(m *manualWriter) {
 		}
 		m.f("\n")
 	}
+	if refs := b.ollamaMoves(); len(refs) > 0 {
+		empty = false
+		names := make([]string, len(refs))
+		for i, r := range refs {
+			names[i] = code(r.String())
+		}
+		m.f("### Ollama mount move (KS-WL-001)\n\n")
+		m.f("For %s the patch moved the Ollama volume mount from under `/root` to `%s` and set `HOME=%s` and `OLLAMA_MODELS=%s`. ",
+			strings.Join(names, ", "), ollamaMountDir, ollamaMountDir, ollamaMountDir+"/models")
+		m.f("This fix is unit-tested and corpus-verified, but not verified on a cluster with the stock `ollama/ollama` image; the measured lab run used a custom image with equivalent values. ")
+		m.f("Check that the workload starts and reads its models from `%s` before you switch the namespace to enforce.\n\n", ollamaMountDir)
+	}
 	if empty {
 		m.f("Nothing to create or check before you apply.\n\n")
 	}
@@ -306,6 +318,28 @@ func runAsUserOf(p string, v any) (int64, bool) {
 		}
 	}
 	return 0, false
+}
+
+// ollamaMoves lists workloads whose patch moved an Ollama .ollama mount out
+// of /root (spec section 2).
+func (b *builder) ollamaMoves() []load.ObjectRef {
+	var out []load.ObjectRef
+	for _, w := range b.in.Workloads {
+		if !w.HasStack(model.Ollama) || !slices.Contains(b.policyNS, w.Owner.Namespace) {
+			continue
+		}
+		moved := slices.ContainsFunc(w.Containers, func(c model.Container) bool {
+			return c.Stack == model.Ollama && mountsUnder(c, rootDir) && len(rootMountsNotMoved(c)) == 0
+		})
+		patched := slices.ContainsFunc(b.patched("KS-WL-001"), func(it *item) bool {
+			return it.finding.Object == w.Owner
+		})
+		if moved && patched && !slices.Contains(out, w.Owner) {
+			out = append(out, w.Owner)
+		}
+	}
+	slices.SortFunc(out, compareRefs)
+	return out
 }
 
 func (b *builder) rollout(m *manualWriter) {
