@@ -17,6 +17,7 @@ import (
 	"sigs.k8s.io/kustomize/api/krusty"
 	"sigs.k8s.io/kustomize/kyaml/filesys"
 
+	"github.com/sv222/kshield/internal/load"
 	"github.com/sv222/kshield/internal/report"
 	"github.com/sv222/kshield/internal/scan"
 )
@@ -798,11 +799,14 @@ spec:
 		other("Deployment", "ai-inference", "minio", "quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z"),
 		other("Deployment", "tools", "busy", "busybox:1.38.0"),
 	}, "---\n")
+	plain := "container main runAsNonRoot is not true; container main allowPrivilegeEscalation is not false; " +
+		"container main seccompProfile is not RuntimeDefault or Localhost; container main capabilities drop ALL is missing"
 	want := "- kshield checks and patches AI workloads only, but the policies of a namespace apply to all its pods: " +
 		"the egress policy, the shell-exec guard and the `kshield-pod-security` rule. " +
-		"Other workloads in the namespaces with policies: `Deployment/ai-inference/minio`, `StatefulSet/ai-inference/etcd`. " +
-		"kshield does not patch them: in enforce mode the `kshield-pod-security` rule rejects their new pods that break the `restricted` profile, " +
-		"so set their security context to that profile first. " +
+		"In enforce mode `kshield-pod-security` rejects new pods that break the `restricted` profile:\n" +
+		"  - `Deployment/ai-inference/minio` breaks `restricted`: " + plain + ".\n" +
+		"  - `StatefulSet/ai-inference/etcd` breaks `restricted`: " + plain + ".\n" +
+		"kshield does not patch these workloads: set their security context to that profile first. " +
 		"Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, " +
 		"or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [kube-apiserver]`. " +
 		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods (`ray.io/node-type: head`) of the namespace.\n"
@@ -823,8 +827,157 @@ spec:
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Contains(string(b.Files["MANUAL.md"]), "Other workloads in the namespaces with policies") {
+	if strings.Contains(string(b.Files["MANUAL.md"]), "kshield checks and patches AI workloads only") {
 		t.Errorf("MANUAL.md names other workloads, but the input has none:\n%s", b.Files["MANUAL.md"])
+	}
+}
+
+func TestManualOtherWorkloadsPSS(t *testing.T) {
+	serve := `["serve", "/models/m", "--port", "8000"]`
+	pssDeployment := func(name, securityContext, volume string) string {
+		return `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ` + name + `
+  namespace: ai-inference
+spec:
+  selector:
+    matchLabels:
+      app: ` + name + `
+  template:
+    metadata:
+      labels:
+        app: ` + name + `
+    spec:
+      containers:
+      - name: main
+        image: quay.io/coreos/etcd:v3.5.21
+        securityContext:
+` + securityContext + `      volumes:
+      - name: data
+` + volume
+	}
+	breaking := pssDeployment("etcd",
+		"          privileged: true\n          runAsUser: 0\n",
+		"        hostPath:\n          path: /var/lib/etcd\n")
+	conforming := pssDeployment("proxy",
+		"          runAsNonRoot: true\n          allowPrivilegeEscalation: false\n          seccompProfile:\n            type: RuntimeDefault\n          capabilities:\n            drop: [\"ALL\"]\n",
+		"        emptyDir: {}\n")
+	input := strings.Join([]string{
+		manualDeployment("models", serve, ""),
+		breaking,
+		conforming,
+	}, "---\n")
+	want := "- kshield checks and patches AI workloads only, but the policies of a namespace apply to all its pods: " +
+		"the egress policy, the shell-exec guard and the `kshield-pod-security` rule. " +
+		"In enforce mode `kshield-pod-security` rejects new pods that break the `restricted` profile:\n" +
+		"  - `Deployment/ai-inference/etcd` breaks `restricted`: " +
+		"volume data (hostPath) is not allowed by restricted; " +
+		"container main runAsNonRoot is not true; " +
+		"container main allowPrivilegeEscalation is not false; " +
+		"container main runAsUser is 0; " +
+		"container main seccompProfile is not RuntimeDefault or Localhost; " +
+		"container main capabilities drop ALL is missing.\n" +
+		"  - `Deployment/ai-inference/proxy` conforms to `restricted`.\n" +
+		"kshield does not patch these workloads: set their security context to that profile first. " +
+		"Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, " +
+		"or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [kube-apiserver]`. " +
+		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods (`ray.io/node-type: head`) of the namespace.\n"
+	for _, mode := range []string{"audit", "enforce"} {
+		b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, input)), Mode: mode})
+		if err != nil {
+			t.Fatal(err)
+		}
+		manual := string(b.Files["MANUAL.md"])
+		if !strings.Contains(manual, want) {
+			t.Errorf("%s: MANUAL.md has no %q:\n%s", mode, want, manual)
+		}
+	}
+}
+
+func TestRemediationJSONPSSNonAI(t *testing.T) {
+	serve := `["serve", "/models/m", "--port", "8000"]`
+	pssDeployment := func(name, securityContext, volume string) string {
+		return `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ` + name + `
+  namespace: ai-inference
+spec:
+  selector:
+    matchLabels:
+      app: ` + name + `
+  template:
+    metadata:
+      labels:
+        app: ` + name + `
+    spec:
+      containers:
+      - name: main
+        image: quay.io/coreos/etcd:v3.5.21
+        securityContext:
+` + securityContext + `      volumes:
+      - name: data
+` + volume
+	}
+	breaking := pssDeployment("etcd",
+		"          privileged: true\n          runAsUser: 0\n",
+		"        hostPath:\n          path: /var/lib/etcd\n")
+	conforming := pssDeployment("proxy",
+		"          runAsNonRoot: true\n          allowPrivilegeEscalation: false\n          seccompProfile:\n            type: RuntimeDefault\n          capabilities:\n            drop: [\"ALL\"]\n",
+		"        emptyDir: {}\n")
+	input := strings.Join([]string{
+		manualDeployment("models", serve, ""),
+		breaking,
+		conforming,
+	}, "---\n")
+	b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, input)), Mode: "enforce"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc struct {
+		PSSNonAI []struct {
+			Object     load.ObjectRef `json:"object"`
+			Violations []string       `json:"violations"`
+		} `json:"pssNonAI"`
+	}
+	if err := json.Unmarshal(b.Files["remediation.json"], &doc); err != nil {
+		t.Fatal(err)
+	}
+	if len(doc.PSSNonAI) != 2 {
+		t.Fatalf("pssNonAI has %d entries, want 2: %v", len(doc.PSSNonAI), doc.PSSNonAI)
+	}
+	wantViolations := []string{
+		"volume data (hostPath) is not allowed by restricted",
+		"container main runAsNonRoot is not true",
+		"container main allowPrivilegeEscalation is not false",
+		"container main runAsUser is 0",
+		"container main seccompProfile is not RuntimeDefault or Localhost",
+		"container main capabilities drop ALL is missing",
+	}
+	gotBreaking := doc.PSSNonAI[0]
+	if gotBreaking.Object != (load.ObjectRef{APIVersion: "apps/v1", Kind: "Deployment", Namespace: "ai-inference", Name: "etcd"}) {
+		t.Fatalf("first entry object %+v, want Deployment/ai-inference/etcd", gotBreaking.Object)
+	}
+	if !slices.Equal(gotBreaking.Violations, wantViolations) {
+		t.Fatalf("breaking violations %v, want %v", gotBreaking.Violations, wantViolations)
+	}
+	gotConforming := doc.PSSNonAI[1]
+	if gotConforming.Object != (load.ObjectRef{APIVersion: "apps/v1", Kind: "Deployment", Namespace: "ai-inference", Name: "proxy"}) {
+		t.Fatalf("second entry object %+v, want Deployment/ai-inference/proxy", gotConforming.Object)
+	}
+	if gotConforming.Violations == nil || len(gotConforming.Violations) != 0 {
+		t.Fatalf("conforming violations %v, want an empty array", gotConforming.Violations)
+	}
+	if !strings.Contains(string(b.Files["remediation.json"]), "\"violations\": []") {
+		t.Fatalf("remediation.json serializes the conforming entry as null, not []:\n%s", b.Files["remediation.json"])
+	}
+	b, err = Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, manualDeployment("models", serve, ""))), Mode: "enforce"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b.Files["remediation.json"]), "pssNonAI") {
+		t.Fatalf("remediation.json has pssNonAI, but the input has no non-AI workload:\n%s", b.Files["remediation.json"])
 	}
 }
 

@@ -65,13 +65,19 @@ type profileJSON struct {
 	SHA256 string `json:"sha256"`
 }
 
+type pssNonAIJSON struct {
+	Object     load.ObjectRef `json:"object"`
+	Violations []string       `json:"violations"`
+}
+
 type remediationJSON struct {
-	SchemaVersion string      `json:"schemaVersion"`
-	Tool          report.Tool `json:"tool"`
-	Profile       profileJSON `json:"profile"`
-	Mode          string      `json:"mode"`
-	ScanSHA256    string      `json:"scanSha256"`
-	Items         []itemJSON  `json:"items"`
+	SchemaVersion string         `json:"schemaVersion"`
+	Tool          report.Tool    `json:"tool"`
+	Profile       profileJSON    `json:"profile"`
+	Mode          string         `json:"mode"`
+	ScanSHA256    string         `json:"scanSha256"`
+	Items         []itemJSON     `json:"items"`
+	PSSNonAI      []pssNonAIJSON `json:"pssNonAI,omitempty"`
 }
 
 type kustomizeTarget struct {
@@ -187,6 +193,13 @@ func (b *builder) remediationJSON() ([]byte, error) {
 			File:      it.file,
 			Reason:    it.reason,
 		})
+	}
+	for _, r := range b.otherWorkloads() {
+		v := b.restrictedViolationsOf(r)
+		if v == nil {
+			v = []string{}
+		}
+		doc.PSSNonAI = append(doc.PSSNonAI, pssNonAIJSON{Object: r, Violations: v})
 	}
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)

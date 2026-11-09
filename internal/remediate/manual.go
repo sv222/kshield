@@ -416,15 +416,17 @@ func (b *builder) rollout(m *manualWriter) {
 		m.f("No workload of this bundle has such a residual item or a hostPath volume.\n")
 	}
 	if refs := b.otherWorkloads(); len(refs) > 0 {
-		names := make([]string, len(refs))
-		for i, r := range refs {
-			names[i] = code(r.String())
-		}
 		m.f("- kshield checks and patches AI workloads only, but the policies of a namespace apply to all its pods: ")
 		m.f("the egress policy, the shell-exec guard and the `%s` rule. ", podSecurityRuleName)
-		m.f("Other workloads in the namespaces with policies: %s. ", strings.Join(names, ", "))
-		m.f("kshield does not patch them: in enforce mode the `%s` rule rejects their new pods that break the `restricted` profile, ", podSecurityRuleName)
-		m.f("so set their security context to that profile first. ")
+		m.f("In enforce mode `%s` rejects new pods that break the `restricted` profile:\n", podSecurityRuleName)
+		for _, r := range refs {
+			if v := b.restrictedViolationsOf(r); len(v) == 0 {
+				m.f("  - %s conforms to `restricted`.\n", code(r.String()))
+			} else {
+				m.f("  - %s breaks `restricted`: %s.\n", code(r.String()), strings.Join(v, "; "))
+			}
+		}
+		m.f("kshield does not patch these workloads: set their security context to that profile first. ")
 		m.f("Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, ")
 		m.f("or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [%s]`. ", entityAPIServer)
 		m.f("This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `%s` policy, which selects only the Ray head pods (`%s: %s`) of the namespace.\n", apiServerPolicyName, rayHeadLabel, rayHeadValue)
@@ -472,6 +474,17 @@ func (b *builder) otherWorkloads() []load.ObjectRef {
 	}
 	slices.SortFunc(out, compareRefs)
 	return out
+}
+
+// restrictedViolationsOf returns the `restricted` violations of the pod spec
+// of a workload in the input, or nil when the workload is not there.
+func (b *builder) restrictedViolationsOf(ref load.ObjectRef) []string {
+	for _, w := range b.in.Workloads {
+		if w.Owner == ref {
+			return restrictedViolations(w.Spec)
+		}
+	}
+	return nil
 }
 
 func (b *builder) rayWorkloads() []load.ObjectRef {
