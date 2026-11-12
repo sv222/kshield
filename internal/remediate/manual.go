@@ -429,7 +429,8 @@ func (b *builder) rollout(m *manualWriter) {
 		m.f("kshield does not patch these workloads: set their security context to that profile first. ")
 		m.f("Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, ")
 		m.f("or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [%s]`. ", entityAPIServer)
-		m.f("This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `%s` policy, which selects only the Ray head pods (`%s: %s`) of the namespace.\n", apiServerPolicyName, rayHeadLabel, rayHeadValue)
+		m.f("This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `%s` policy, which selects only the Ray head pods of one cluster (`%s: %s` and `%s: <cluster name>`) of the namespace", apiServerPolicyName, rayHeadLabel, rayHeadValue, rayClusterLabel)
+		m.f(" (with more than one such RayCluster the policies are `%s-<cluster name>`).\n", apiServerPolicyName)
 	}
 	m.f("- `policies/README.md` in the kshield repository lists the limits of each policy.\n\n")
 }

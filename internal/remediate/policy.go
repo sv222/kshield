@@ -6,6 +6,7 @@ import (
 	"net/netip"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"k8s.io/apimachinery/pkg/util/validation"
@@ -42,6 +43,7 @@ const (
 	entityAPIServer = "kube-apiserver"
 	rayHeadLabel    = "ray.io/node-type"
 	rayHeadValue    = "head"
+	rayClusterLabel = "ray.io/cluster"
 	shellExecMsg    = "kshield shell-exec guard: a shell started by a process that is not a shell and not PID 1"
 	connectMsg      = "kshield egress-connect guard: TCP connect to an address outside the private ranges and --allow-cidr"
 	pickleMsgFormat = "kshield: a container starts vLLM with --trust-remote-code or a pickle --load-format (%s)"
@@ -59,19 +61,20 @@ var (
 )
 
 type PolicyOptions struct {
-	Mode                string
-	AllowFQDN           []string
-	AllowCIDR           []string
-	PeerNamespaces      map[string][]string
-	APIServerNamespaces []string
+	Mode              string
+	AllowFQDN         []string
+	AllowCIDR         []string
+	PeerNamespaces    map[string][]string
+	APIServerClusters map[string][]string
 }
 
 type egressPeers struct {
 	fqdns, cidrs, namespaces []string
 }
 
-func PolicyPeers(in *check.Input) (map[string][]string, []string) {
-	ai, apiServer := []string{}, []string{}
+func PolicyPeers(in *check.Input) (map[string][]string, map[string][]string) {
+	ai := []string{}
+	apiServer := map[string][]string{}
 	for _, w := range check.AIWorkloads(in) {
 		ns := w.Owner.Namespace
 		if ns == "" {
@@ -80,12 +83,16 @@ func PolicyPeers(in *check.Input) (map[string][]string, []string) {
 		if !slices.Contains(ai, ns) {
 			ai = append(ai, ns)
 		}
-		if w.Object != nil && w.Object.U != nil && rayAutoscaling(w) && !slices.Contains(apiServer, ns) {
-			apiServer = append(apiServer, ns)
+		if w.Object != nil && w.Object.U != nil && rayAutoscaling(w) && !slices.Contains(apiServer[ns], w.Owner.Name) {
+			apiServer[ns] = append(apiServer[ns], w.Owner.Name)
 		}
 	}
 	slices.Sort(ai)
-	slices.Sort(apiServer)
+	for ns := range apiServer {
+		v := apiServer[ns]
+		slices.Sort(v)
+		apiServer[ns] = v
+	}
 	peers := make(map[string][]string, len(ai))
 	for _, ns := range ai {
 		peers[ns] = slices.DeleteFunc(slices.Clone(ai), func(p string) bool { return p == ns })
@@ -131,9 +138,10 @@ func Policies(namespaces []string, opt PolicyOptions) ([]map[string]any, error) 
 	if err != nil {
 		return nil, err
 	}
-	apiServer, err := policyNamespaceList(opt.APIServerNamespaces)
-	if err != nil {
-		return nil, err
+	for _, ns := range slices.Sorted(maps.Keys(opt.APIServerClusters)) {
+		if _, err := policyNamespaceList([]string{ns}); err != nil {
+			return nil, err
+		}
 	}
 	out := make([]map[string]any, 0, 4*len(nss))
 	for _, ns := range nss {
@@ -143,9 +151,7 @@ func Policies(namespaces []string, opt PolicyOptions) ([]map[string]any, error) 
 			namespaces: slices.DeleteFunc(slices.Clone(peers[ns]), func(p string) bool { return p == ns }),
 		}
 		out = append(out, egressPolicy(ns, enforce, ep))
-		if slices.Contains(apiServer, ns) {
-			out = append(out, apiServerPolicy(ns, enforce))
-		}
+		out = append(out, apiServerPolicies(ns, opt.APIServerClusters[ns], enforce)...)
 		out = append(out,
 			shellExecPolicy(ns, enforce),
 			egressConnectPolicy(ns, enforce, cidrs),
@@ -287,12 +293,63 @@ func egressPolicy(ns string, enforce bool, ep egressPeers) map[string]any {
 	})
 }
 
-func apiServerPolicy(ns string, enforce bool) map[string]any {
-	return policyObject(ciliumAPIVersion, kindCNP, ns, apiServerPolicyName, "", map[string]any{
-		"endpointSelector":  map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue}},
-		"enableDefaultDeny": map[string]any{"egress": enforce, "ingress": false},
-		"egress":            []any{map[string]any{"toEntities": []any{entityAPIServer}}},
-	})
+// apiServerPolicies emits one CiliumNetworkPolicy per autoscaling RayCluster
+// of the namespace. The selector pins both ray.io/node-type: head and
+// ray.io/cluster: <name>, so a pod that merely sets the head label does not
+// get API server egress (spec section 4; any pod in the namespace can set
+// that label). One cluster keeps the plain policy name; more than one (or a
+// truncation collision) uses kshield-egress-apiserver-<cluster>.
+func apiServerPolicies(ns string, clusters []string, enforce bool) []map[string]any {
+	if len(clusters) == 0 {
+		return nil
+	}
+	plain := len(clusters) == 1
+	out := make([]map[string]any, 0, len(clusters))
+	seen := map[string]bool{}
+	for i, cluster := range clusters {
+		name := apiServerPolicyName
+		if !plain {
+			name = apiServerPolicyName + "-" + dnsLabel(cluster, 63-len(apiServerPolicyName)-1)
+			if seen[name] {
+				// The first suffixed candidate can itself collide (a shorter
+				// label truncates to the same name); extend the suffix until
+				// the name is free, recomputing the label width each time.
+				sfx := strconv.Itoa(i)
+				for {
+					name = apiServerPolicyName + "-" + dnsLabel(cluster, 63-len(apiServerPolicyName)-2-len(sfx)) + "-" + sfx
+					if !seen[name] {
+						break
+					}
+					sfx += "x"
+				}
+			}
+		}
+		seen[name] = true
+		out = append(out, policyObject(ciliumAPIVersion, kindCNP, ns, name, "", map[string]any{
+			"endpointSelector":  map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: cluster}},
+			"enableDefaultDeny": map[string]any{"egress": enforce, "ingress": false},
+			"egress":            []any{map[string]any{"toEntities": []any{entityAPIServer}}},
+		}))
+	}
+	return out
+}
+
+// dnsLabel makes a Kubernetes name-safe, at most n bytes long label from s.
+func dnsLabel(s string, n int) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(s) {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '-':
+			b.WriteRune(r)
+		default:
+			b.WriteByte('-')
+		}
+	}
+	out := strings.Trim(b.String(), "-")
+	if len(out) > n {
+		out = strings.Trim(out[:n], "-")
+	}
+	return out
 }
 
 func tetragonAction(enforce bool) []any {

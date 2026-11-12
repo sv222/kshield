@@ -809,7 +809,7 @@ spec:
 		"kshield does not patch these workloads: set their security context to that profile first. " +
 		"Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, " +
 		"or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [kube-apiserver]`. " +
-		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods (`ray.io/node-type: head`) of the namespace.\n"
+		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods of one cluster (`ray.io/node-type: head` and `ray.io/cluster: <cluster name>`) of the namespace (with more than one such RayCluster the policies are `kshield-egress-apiserver-<cluster name>`).\n"
 	for _, mode := range []string{"audit", "enforce"} {
 		b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, input)), Mode: mode})
 		if err != nil {
@@ -882,7 +882,7 @@ spec:
 		"kshield does not patch these workloads: set their security context to that profile first. " +
 		"Run an operator or controller among them (for example the KubeRay operator) in a namespace without these policies, " +
 		"or give only its pods an egress rule to the API server: a CiliumNetworkPolicy with an `endpointSelector` on its pod labels and `toEntities: [kube-apiserver]`. " +
-		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods (`ray.io/node-type: head`) of the namespace.\n"
+		"This bundle adds an API server rule only for a RayCluster with the in-tree autoscaler, and that rule is the `kshield-egress-apiserver` policy, which selects only the Ray head pods of one cluster (`ray.io/node-type: head` and `ray.io/cluster: <cluster name>`) of the namespace (with more than one such RayCluster the policies are `kshield-egress-apiserver-<cluster name>`).\n"
 	for _, mode := range []string{"audit", "enforce"} {
 		b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, input)), Mode: mode})
 		if err != nil {

@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -24,9 +25,9 @@ var (
 	testPeers   = map[string][]string{policyNS: {"vector-db", "ai-train"}, "ai-train": {policyNS}}
 	policyOpts  = []PolicyOptions{
 		{Mode: "audit", AllowFQDN: []string{"huggingface.co"}, AllowCIDR: []string{"203.0.113.0/24", "2001:db8::/32"},
-			PeerNamespaces: testPeers, APIServerNamespaces: []string{"ai-train"}},
+			PeerNamespaces: testPeers, APIServerClusters: map[string][]string{"ai-train": {"rc"}}},
 		{Mode: "enforce", AllowFQDN: []string{"huggingface.co"}, AllowCIDR: []string{"203.0.113.0/24", "2001:db8::/32"},
-			PeerNamespaces: testPeers, APIServerNamespaces: []string{"ai-train"}},
+			PeerNamespaces: testPeers, APIServerClusters: map[string][]string{"ai-train": {"rc"}}},
 	}
 )
 
@@ -257,7 +258,7 @@ func TestAPIServerPolicyHeadOnly(t *testing.T) {
 		if lookupPath(o, "/metadata/namespace") != "ai-train" || o["kind"] != "CiliumNetworkPolicy" || o["apiVersion"] != "cilium.io/v2" {
 			t.Errorf("%s: policy %v", opt.Mode, o)
 		}
-		wantSel := map[string]any{"matchLabels": map[string]any{"ray.io/node-type": "head"}}
+		wantSel := map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: "rc"}}
 		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
 			t.Errorf("%s: endpointSelector %v, want %v", opt.Mode, got, wantSel)
 		}
@@ -273,7 +274,125 @@ func TestAPIServerPolicyHeadOnly(t *testing.T) {
 	none := mustPolicies(t, []string{policyNS}, PolicyOptions{Mode: "enforce"})
 	for _, o := range none {
 		if lookupPath(o, "/metadata/name") == apiServerPolicyName {
-			t.Errorf("%s without APIServerNamespaces", apiServerPolicyName)
+			t.Errorf("%s without APIServerClusters", apiServerPolicyName)
+		}
+	}
+}
+
+func TestAPIServerPolicyPerCluster(t *testing.T) {
+	two := mustPolicies(t, []string{"ai-train"}, PolicyOptions{
+		Mode:              "enforce",
+		APIServerClusters: map[string][]string{"ai-train": {"rc-a", "rc-b"}},
+	})
+	names := []string{}
+	byName := map[string]map[string]any{}
+	for _, o := range two {
+		name := lookupPath(o, "/metadata/name").(string)
+		if name == apiServerPolicyName || strings.HasPrefix(name, apiServerPolicyName+"-") {
+			names = append(names, name)
+			byName[name] = o
+		}
+	}
+	wantNames := []string{apiServerPolicyName + "-rc-a", apiServerPolicyName + "-rc-b"}
+	if !slices.Equal(names, wantNames) {
+		t.Fatalf("policy names %v, want %v", names, wantNames)
+	}
+	for _, cluster := range []string{"rc-a", "rc-b"} {
+		o := byName[apiServerPolicyName+"-"+cluster]
+		wantSel := map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: cluster}}
+		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
+			t.Errorf("%s: endpointSelector %v, want %v", cluster, got, wantSel)
+		}
+		wantEgress := []any{map[string]any{"toEntities": []any{entityAPIServer}}}
+		if got := lookupPath(o, "/spec/egress"); !reflect.DeepEqual(got, wantEgress) {
+			t.Errorf("%s: egress %v, want %v", cluster, got, wantEgress)
+		}
+	}
+	if empty := apiServerPolicies("ai-train", nil, true); len(empty) != 0 {
+		t.Errorf("no clusters: %d policies, want 0", len(empty))
+	}
+}
+
+func TestAPIServerPolicyTruncationCollision(t *testing.T) {
+	long := func(suffix string) string { return strings.Repeat("r", 60) + suffix }
+	clusters := []string{long("-a"), long("-b")}
+	objs := apiServerPolicies("ai-train", clusters, true)
+	if len(objs) != 2 {
+		t.Fatalf("%d policies, want 2", len(objs))
+	}
+	seen := map[string]bool{}
+	for i, o := range objs {
+		name := lookupPath(o, "/metadata/name").(string)
+		if len(name) > 63 {
+			t.Errorf("policy name %q is longer than 63 bytes", name)
+		}
+		if seen[name] {
+			t.Errorf("duplicate policy name %q", name)
+		}
+		seen[name] = true
+		wantSel := map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: clusters[i]}}
+		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
+			t.Errorf("%q: endpointSelector %v, want %v", name, got, wantSel)
+		}
+	}
+	// Both 38-byte labels truncate to the same name; the first suffixed
+	// candidate of the second cluster collides too, so the suffix must be
+	// extended until the name is free.
+	pair := []string{strings.Repeat("r", 36) + "-1" + strings.Repeat("z", 10), strings.Repeat("r", 36) + "-1"}
+	objs = apiServerPolicies("ai-train", pair, true)
+	if len(objs) != 2 {
+		t.Fatalf("%d policies, want 2", len(objs))
+	}
+	seen = map[string]bool{}
+	for i, o := range objs {
+		name := lookupPath(o, "/metadata/name").(string)
+		if len(name) > 63 {
+			t.Errorf("policy name %q is longer than 63 bytes", name)
+		}
+		if seen[name] {
+			t.Errorf("duplicate policy name %q", name)
+		}
+		seen[name] = true
+		wantSel := map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: pair[i]}}
+		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
+			t.Errorf("%q: endpointSelector %v, want %v", name, got, wantSel)
+		}
+	}
+	many := make([]string, 12)
+	for i := range many {
+		many[i] = strings.Repeat("r", 60) + "-" + strconv.Itoa(i)
+	}
+	objs = apiServerPolicies("ai-train", many, true)
+	if len(objs) != 12 {
+		t.Fatalf("%d policies, want 12", len(objs))
+	}
+	seen = map[string]bool{}
+	for _, o := range objs {
+		name := lookupPath(o, "/metadata/name").(string)
+		if len(name) > 63 {
+			t.Errorf("policy name %q is longer than 63 bytes", name)
+		}
+		if seen[name] {
+			t.Errorf("duplicate policy name %q", name)
+		}
+		seen[name] = true
+	}
+}
+
+func TestDNSLabel(t *testing.T) {
+	cases := []struct {
+		in   string
+		n    int
+		want string
+	}{
+		{"Some.Cluster_1", 40, "some-cluster-1"},
+		{strings.Repeat("r", 50), 38, strings.Repeat("r", 38)},
+		{"abcd-" + strings.Repeat("e", 50), 4, "abcd"},
+		{"--wrapped--", 40, "wrapped"},
+	}
+	for _, c := range cases {
+		if got := dnsLabel(c.in, c.n); got != c.want {
+			t.Errorf("dnsLabel(%q, %d) = %q, want %q", c.in, c.n, got, c.want)
 		}
 	}
 }
@@ -282,11 +401,12 @@ func TestPolicyPeers(t *testing.T) {
 	qdrant := toYAML(t, `{"apiVersion":"apps/v1","kind":"StatefulSet","metadata":{"name":"qdrant","namespace":"vector-db"},
 		"spec":{"selector":{"matchLabels":{"app":"qdrant"}},"template":{"metadata":{"labels":{"app":"qdrant"}},
 		"spec":{"containers":[{"name":"qdrant","image":"qdrant/qdrant:v1.15.4"}]}}}}`)
-	ray := func(ns, autoscaling string) string {
-		return toYAML(t, `{"apiVersion":"ray.io/v1","kind":"RayCluster","metadata":{"name":"rc","namespace":"`+ns+`"},
+	ray := func(ns, name, autoscaling string) string {
+		return toYAML(t, `{"apiVersion":"ray.io/v1","kind":"RayCluster","metadata":{"name":"`+name+`","namespace":"`+ns+`"},
 			"spec":{"enableInTreeAutoscaling":`+autoscaling+`,"headGroupSpec":{"template":{"spec":{"containers":[{"name":"ray-head","image":"rayproject/ray:2.50.0"}]}}}}}`)
 	}
-	in := loadInput(t, joinDocs(t, vllmIn(t, policyNS), qdrant, webIn(t, "web"), ray("ai-train", "true"), ray("ray-static", "false")))
+	in := loadInput(t, joinDocs(t, vllmIn(t, policyNS), qdrant, webIn(t, "web"),
+		ray("ai-train", "rc-a", "true"), ray("ai-train", "rc-b", "true"), ray("ray-static", "rc-s", "false")))
 	peers, apiServer := PolicyPeers(in)
 	wantPeers := map[string][]string{
 		policyNS:     {"ai-train", "ray-static", "vector-db"},
@@ -297,8 +417,8 @@ func TestPolicyPeers(t *testing.T) {
 	if !reflect.DeepEqual(peers, wantPeers) {
 		t.Errorf("peers %v, want %v", peers, wantPeers)
 	}
-	if want := []string{"ai-train"}; !slices.Equal(apiServer, want) {
-		t.Errorf("API server namespaces %v, want %v", apiServer, want)
+	if want := map[string][]string{"ai-train": {"rc-a", "rc-b"}}; !reflect.DeepEqual(apiServer, want) {
+		t.Errorf("API server clusters %v, want %v", apiServer, want)
 	}
 	single, none := PolicyPeers(loadInput(t, vllmIn(t, policyNS)))
 	if !reflect.DeepEqual(single, map[string][]string{policyNS: {}}) || len(none) != 0 {
@@ -384,7 +504,7 @@ func TestPolicyOptionsErrors(t *testing.T) {
 		"cluster dot":    {[]string{policyNS}, PolicyOptions{Mode: "audit", AllowFQDN: []string{"api.cluster.local."}}},
 		"svc upper":      {[]string{policyNS}, PolicyOptions{Mode: "audit", AllowFQDN: []string{"QDRANT.SVC"}}},
 		"bad peer":       {[]string{policyNS}, PolicyOptions{Mode: "audit", PeerNamespaces: map[string][]string{policyNS: {"Bad_NS"}}}},
-		"bad apiserver":  {[]string{policyNS}, PolicyOptions{Mode: "audit", APIServerNamespaces: []string{""}}},
+		"bad apiserver":  {[]string{policyNS}, PolicyOptions{Mode: "audit", APIServerClusters: map[string][]string{"": nil}}},
 	}
 	for name, c := range cases {
 		if _, err := Policies(c.ns, c.opt); err == nil {
@@ -401,11 +521,11 @@ func TestPoliciesDeterministic(t *testing.T) {
 		t.Fatalf("two calls differ:\n%s\n---\n%s", a, b)
 	}
 	opt2 := PolicyOptions{
-		Mode:                opt.Mode,
-		AllowFQDN:           slices.Clone(opt.AllowFQDN),
-		AllowCIDR:           []string{"2001:db8::/32", "203.0.113.0/24", "2001:db8::/32"},
-		PeerNamespaces:      map[string][]string{policyNS: {"ai-train", "vector-db", "ai-train", policyNS}, "ai-train": {policyNS}, "other": {"x"}},
-		APIServerNamespaces: []string{"ai-train", "ai-train", "other"},
+		Mode:              opt.Mode,
+		AllowFQDN:         slices.Clone(opt.AllowFQDN),
+		AllowCIDR:         []string{"2001:db8::/32", "203.0.113.0/24", "2001:db8::/32"},
+		PeerNamespaces:    map[string][]string{policyNS: {"ai-train", "vector-db", "ai-train", policyNS}, "ai-train": {policyNS}, "other": {"x"}},
+		APIServerClusters: map[string][]string{"ai-train": {"rc"}, "other": {"rc"}},
 	}
 	c := joinDocs(t, policyDocs(t, mustPolicies(t, []string{policyNS, "ai-train", policyNS}, opt2))...)
 	if a != c {

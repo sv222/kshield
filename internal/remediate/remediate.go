@@ -198,7 +198,7 @@ func Run(opt Options) (*Bundle, error) {
 			}
 		}
 	}
-	popt.PeerNamespaces, popt.APIServerNamespaces = PolicyPeers(in)
+	popt.PeerNamespaces, popt.APIServerClusters = PolicyPeers(in)
 	if b.policies, err = Policies(b.policyNS, popt); err != nil {
 		return nil, err
 	}
