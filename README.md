@@ -87,7 +87,7 @@ kshield scan cluster -n ai-inference --format html --out report.html
 | Runtime guards | KS-RT-001..003 | no Tetragon shell-exec guard, no Tetragon egress-connect guard, no Kyverno admission guard |
 | Cluster prerequisites | KS-PRE-001..004 | Tetragon, Cilium and Kyverno present and healthy, BPF LSM on the nodes |
 
-Supported workloads: Pod, Deployment, StatefulSet, DaemonSet, ReplicaSet, Job, CronJob, KubeRay RayCluster, RayService and RayJob, KServe InferenceService, ServingRuntime and ClusterServingRuntime. Helm users can pipe `helm template` output into `kshield scan manifest -f -`.
+Supported workloads: Pod, Deployment, StatefulSet, DaemonSet, ReplicaSet, Job, CronJob, KubeRay RayCluster, RayService and RayJob, KServe InferenceService, ServingRuntime and ClusterServingRuntime. Helm users can pipe `helm template` output into `kshield scan manifest -f -`. A container counts as Ollama when its image or command says so, or when it exposes port 11434, sets an `OLLAMA_` env var, or mounts a path containing `.ollama`.
 
 ### Report formats
 
@@ -146,6 +146,10 @@ kshield remediate --from scan.json -f app.yaml --mode audit --out fix
 
 The `fix` directory is a kustomize bundle: `base/`, `workload-patch.yaml`, `workload-patch-6902/`, `infrastructure-policies.yaml` (Cilium, Tetragon and Kyverno), `MANUAL.md` and `remediation.json`. `--mode audit` blocks nothing. `--mode enforce` switches the policies to deny and kill. The policies and their limits are described in [policies/README.md](policies/README.md).
 
+- For an Ollama container with a volume mounted under `/root` at a path containing `.ollama`, the workload patch moves that mount to `/ollama` and points `HOME` and `OLLAMA_MODELS` there before applying the non-root uid. A mount under `/root` at any other path stays a manual item.
+- `MANUAL.md` lists which non-AI workloads of a policy namespace break the Pod Security Standards `restricted` profile and which conform, and `remediation.json` carries the same list as `pssNonAI`.
+- The Ray API server egress policy is one per autoscaling RayCluster and selects on both `ray.io/node-type: head` and `ray.io/cluster`.
+
 ### Exit codes
 
 | Code | Meaning |
@@ -182,7 +186,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: "1.26.10"
+          go-version: "1.26.11"
       - run: go install github.com/sv222/kshield/cmd/kshield@v0.1.0
       - run: kshield scan manifest -f k8s/ --format sarif --out kshield.sarif --fail-on never
       - uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
@@ -209,6 +213,7 @@ The scanner has no network access other than the Kubernetes API, no telemetry an
 - KS-PRE-004 cannot pass on Kind nodes, which do not expose `/sys/kernel/security/lsm`.
 - The enforce-mode shell guard kills Ray head processes and exec probes that run a shell. Keep Ray namespaces in audit mode.
 - The overhead of the runtime guards is not measured.
+- The Ollama root-mount move is unit-tested and corpus-verified, but it has not been verified on a cluster running the stock `ollama/ollama` image.
 - Only the `dora` profile exists today.
 
 ## Roadmap

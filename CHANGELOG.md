@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `MANUAL.md` lists which non-AI workloads of a policy namespace break the Pod Security Standards `restricted` profile and which conform, and `remediation.json` carries the same list as `pssNonAI`.
+- The Ray API server egress policy is one per autoscaling RayCluster and selects on both `ray.io/node-type: head` and `ray.io/cluster`.
+
+### Fixed
+
+- Ollama false negative: custom images without an `ollama` name or command are now detected via port 11434, `OLLAMA_` env vars and `.ollama` mounts.
+- The KS-WL-001 patch no longer refuses Ollama containers whose `.ollama` volume is mounted under `/root`; the mount moves to `/ollama`.
+
 ## [0.1.0] - 2026-11-04
 
 ### Added
