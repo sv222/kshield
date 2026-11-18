@@ -186,7 +186,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: "1.26.11"
+          go-version: "1.27.4"
       - run: go install github.com/sv222/kshield/cmd/kshield@v0.1.0
       - run: kshield scan manifest -f k8s/ --format sarif --out kshield.sarif --fail-on never
       - uses: github/codeql-action/upload-sarif@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
