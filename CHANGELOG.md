@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-18
+
 ### Added
 
 - `MANUAL.md` lists which non-AI workloads of a policy namespace break the Pod Security Standards `restricted` profile and which conform, and `remediation.json` carries the same list as `pssNonAI`.
