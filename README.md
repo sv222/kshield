@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/logo.png" alt="kshield logo" width="320">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+    <img src="docs/logo.png" alt="kshield logo" width="320">
+  </picture>
 </p>
 
 # kshield - Kubernetes AI workload scanner with DORA evidence reports
