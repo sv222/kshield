@@ -393,8 +393,9 @@ func (b *builder) rollout(m *manualWriter) {
 			names[i] = code(r.String())
 		}
 		m.f("- Ray starts shells from its Python processes: the dashboard, the client server, the autoscaler v2 monitor, `multiprocessing` spawn children and a `ray start` fork. ")
-		m.f("In enforce mode the shell-exec guard kills them, and the Ray head does not start (measured with `rayproject/ray:2.52.0`). ")
-		m.f("kshield has no allow-list for Ray. Keep the namespaces of these workloads in audit: %s.\n", strings.Join(names, ", "))
+		m.f("The enforce shell-exec guard exempts pods that carry the KubeRay `%s` label, so the head, worker and driver pods of a RayCluster start in enforce mode. ", rayClusterLabel)
+		m.f("A pod that starts Ray without that label is not exempt, and the guard kills it (measured with `rayproject/ray:2.52.0`): ")
+		m.f("label such pods like KubeRay does, or keep the namespaces of these workloads in audit: %s.\n", strings.Join(names, ", "))
 	}
 	m.f("- The egress policy allows DNS through kube-dns, the same namespace, the other AI namespaces and the `--allow-fqdn` and `--allow-cidr` values. ")
 	m.f("Add `--allow-cidr` for NodeLocal DNSCache (`169.254.20.10/32`) and for pod or service CIDRs outside RFC 1918 (for example `100.64.0.0/10`).\n")

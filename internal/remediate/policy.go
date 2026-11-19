@@ -360,6 +360,15 @@ func tetragonAction(enforce bool) []any {
 }
 
 // source: https://github.com/cilium/tetragon/blob/v1.7.1/pkg/k8s/apis/cilium.io/client/crds/v1alpha1/cilium.io_tracingpoliciesnamespaced.yaml@v1.7.1
+// shellExecPolicy scopes the sigkill guard of enforce mode to pods without the
+// KubeRay ray.io/cluster label (podSelector, DoesNotExist): KubeRay puts that
+// label on the head, worker and driver pods, and Ray starts shells from its
+// Python processes (dashboard, client server, autoscaler monitor,
+// multiprocessing spawn children), so a namespace-wide sigkill guard kills the
+// head before it starts. The pinned Tetragon v1.7.1 CRD has no matchPods in
+// kprobe selectors; the spec-level podSelector is the closest supported
+// scoping (see the vendored CRD in test/crds/tetragon/). Audit mode keeps the
+// policy unscoped, so the Post events also record the Ray pods.
 func shellExecPolicy(ns string, enforce bool) map[string]any {
 	selector := map[string]any{
 		"matchArgs":     []any{map[string]any{"index": int64(0), "operator": "Postfix", "values": strs(shellSuffixes)}},
@@ -367,7 +376,7 @@ func shellExecPolicy(ns string, enforce bool) map[string]any {
 		"matchPIDs":     []any{map[string]any{"operator": "NotIn", "values": []any{int64(1)}, "isNamespacePID": true}},
 		"matchActions":  tetragonAction(enforce),
 	}
-	return policyObject(tetragonAPIVersion, kindTracingNS, ns, shellExecPolicyName, check.GuardShellExec, map[string]any{
+	spec := map[string]any{
 		"kprobes": []any{map[string]any{
 			"call":      "security_bprm_check",
 			"syscall":   false,
@@ -375,7 +384,14 @@ func shellExecPolicy(ns string, enforce bool) map[string]any {
 			"args":      []any{map[string]any{"index": int64(0), "type": "linux_binprm"}},
 			"selectors": []any{selector},
 		}},
-	})
+	}
+	if enforce {
+		spec["podSelector"] = map[string]any{"matchExpressions": []any{map[string]any{
+			"key":      rayClusterLabel,
+			"operator": "DoesNotExist",
+		}}}
+	}
+	return policyObject(tetragonAPIVersion, kindTracingNS, ns, shellExecPolicyName, check.GuardShellExec, spec)
 }
 
 // source: https://github.com/cilium/tetragon/blob/v1.7.1/docs/content/en/docs/concepts/tracing-policy/hooks.md@v1.7.1
