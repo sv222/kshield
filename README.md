@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="kshield logo" width="320">
+</p>
+
 # kshield - Kubernetes AI workload scanner with DORA evidence reports
 
 [![CI](https://github.com/sv222/kshield/actions/workflows/ci.yml/badge.svg)](https://github.com/sv222/kshield/actions/workflows/ci.yml)
