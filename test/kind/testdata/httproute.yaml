@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+        - name: ollama
+          image: ollama/ollama:0.40.3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+spec:
+  selector:
+    app: ollama
+  ports:
+    - port: 11434
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: open
+spec:
+  parentRefs:
+    - name: public
+  rules:
+    - backendRefs:
+        - name: ollama
+          port: 11434
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jwt
+spec:
+  parentRefs:
+    - name: public
+  rules:
+    - backendRefs:
+        - name: ollama
+          port: 11434
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: elsewhere
+spec:
+  parentRefs:
+    - name: public
+      namespace: kshield-not-scanned
+  rules:
+    - backendRefs:
+        - name: ollama
+          port: 11434
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: jwt
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: jwt
+  jwt:
+    providers:
+      - name: issuer
+        remoteJWKS:
+          uri: https://issuer.example.com/jwks.json
