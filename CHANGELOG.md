@@ -10,8 +10,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Engine detection for Triton, Text Generation Inference (including `text-generation-launcher` and `text-generation-router`), Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy and TensorRT-LLM, and for Ray Serve by command. Triton, TGI and the other new engines now get findings: a scan of manifests with these engines reports more findings than before, because every check runs on AI workloads only. A non-AI pod stays non-AI.
+- The label or annotation `kshield.io/ai: "true"` and the flag `--workload-selector <label selector>` on `scan manifest` and `scan cluster` mark custom images as AI workloads. Engine findings on an opted-in workload are suspect (WARN). `kshield remediate` re-uses the selector recorded in `scan.json`.
+- `scan manifest` reads Argo Rollout and ReplicationController workloads, and `remediate` patches them.
+- KS-AI-010 (DORA-CH2-036): inference engine other than vLLM without an API key flag, engine env var or gateway auth evidence. It reads the Secret behind `envFrom`.
+- KS-AI-011 (DORA-CH2-037): `--debug`, `--allow-http`, `OLLAMA_DEBUG` and `OLLAMA_ORIGINS` with `*` on an inference engine.
+- KS-AI-012 (DORA-CH2-038): `--trust-remote-code`, pickle and Keras model files (`.bin`, `.pt`, `.pth`, `.pkl`, `.pickle`, `.ckpt`, `.h5`, `.keras`) on engines other than vLLM, and `s3://` or `gs://` model sources on every engine.
+- KS-WL-015 (DORA-CH2-034): hostPath volume outside `/dev`, `/dev/shm` and the GPU devices that KS-WL-005 and KS-WL-014 cover.
+- KS-WL-016 (DORA-CH2-035): hostPort on an AI container, with a `remediate` patch that removes it.
+- KS-NET-004 (DORA-CH2-039): no NetworkPolicy or Cilium policy restricts ingress to the workload. A policy rule that allows every source does not count.
+- KS-AI-004 also checks engines other than vLLM, and accepts the Ingress annotations `auth-signin`, `auth-secret` and `oauth2` as auth evidence besides `auth-url` and `auth-type`.
+- The label or annotation `kshield.io/gateway-auth: "true"` on a workload makes KS-AI-001, KS-AI-004, KS-AI-007 and KS-AI-010 report INFO that names the annotation, instead of FAIL or WARN. kshield does not verify the gateway. On an Ingress it counts as auth evidence.
+- `scan.json` records the `workloadSelector` of the scan when one is set.
+- `docs/hardened-engines.md` and the hardened Ollama and vLLM examples in `examples/hardened/`.
+- Corpus cases from ai-guard-k8s (regression files, the offending and clean samples) and the TGI, TEI, LocalAI and Triton charts. The chart renderer can render a chart from a git commit.
 - Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
 - In enforce mode each `kshield-egress-apiserver` policy also allows the Ray head to reach the pods of its own cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve).
+
+### Changed
+
+- The `dora` profile has 39 checks (6 new). The profile sha256 changed, so `docs/MAPPING-REVIEW.md` needs a new sign-off.
 
 ### Fixed
 
