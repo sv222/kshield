@@ -2,7 +2,7 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e`
+- Profile sha256: `162dd79bbb06ab3454d5c3b3b07d3ca276d93a311fa03f1562704c064d473eca`
 - Checks: 39
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
