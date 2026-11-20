@@ -19,10 +19,11 @@ import (
 )
 
 const (
-	ExitOK         = 0
-	ExitFindings   = 1
-	ExitUsage      = 2
-	ExitIncomplete = 3
+	ExitOK          = 0
+	ExitFindings    = 1
+	ExitUsage       = 2
+	ExitIncomplete  = 3
+	ExitApplyFailed = 4
 )
 
 const (
@@ -42,7 +43,7 @@ const (
 const usage = `usage:
   kshield scan manifest -f <file|dir|-> [-f ...] [-n <ns>] [--profile dora] [--workload-selector <selector>] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
   kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--profile dora] [--workload-selector <selector>] [--node-probe [--probe-namespace kube-system] [--probe-timeout 60s] [--probe-image <ref>]] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
-  kshield remediate --from <scan.json> [-f <file|dir|-> ...] [-n <ns>] [--kubeconfig <file>] [--context <name>] [--mode audit|enforce] [--allow-fqdn <name> ...] [--allow-cidr <cidr> ...] [--out <dir>]
+  kshield remediate --from <scan.json> [-f <file|dir|-> ...] [-n <ns>] [--kubeconfig <file>] [--context <name>] [--mode audit|enforce] [--allow-fqdn <name> ...] [--allow-cidr <cidr> ...] [--out <dir>] [--apply [--apply-patches] [--dry-run] [--yes] [--force-conflicts] [--skip-missing-crds]]
   kshield checks list [--profile dora] [--format text|json]
   kshield checks explain <check-id|display-id> [--profile dora]
   kshield profiles list [--format text|json]
@@ -219,7 +220,7 @@ func write(w io.Writer, s string) {
 }
 
 const (
-	remediateUsage = `usage: kshield remediate --from <scan.json> [-f <file|dir|-> ...] [-n <ns>] [--kubeconfig <file>] [--context <name>] [--mode audit|enforce] [--allow-fqdn <name> ...] [--allow-cidr <cidr> ...] [--out <dir>]
+	remediateUsage = `usage: kshield remediate --from <scan.json> [-f <file|dir|-> ...] [-n <ns>] [--kubeconfig <file>] [--context <name>] [--mode audit|enforce] [--allow-fqdn <name> ...] [--allow-cidr <cidr> ...] [--out <dir>] [--apply [--apply-patches] [--dry-run] [--yes] [--force-conflicts] [--skip-missing-crds]]
 `
 	modeAudit        = "audit"
 	modeEnforce      = "enforce"
@@ -242,6 +243,13 @@ func runRemediate(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 	fs.Var(&fqdns, "allow-fqdn", "egress DNS name to allow (repeatable)")
 	fs.Var(&cidrs, "allow-cidr", "egress CIDR to allow (repeatable)")
 	out := fs.String("out", defaultBundleDir, "output directory (missing or empty)")
+	var af applyFlags
+	fs.BoolVar(&af.apply, "apply", false, "apply the policies of the bundle to the cluster with server-side apply (default: only write the bundle)")
+	fs.BoolVar(&af.patches, "apply-patches", false, "with --apply, also apply the workload patches (they restart pods)")
+	fs.BoolVar(&af.dryRun, "dry-run", false, "with --apply, run a server-side dry run and change nothing")
+	fs.BoolVar(&af.yes, "yes", false, "with --apply, do not ask for confirmation (needed when stdin is not a terminal)")
+	fs.BoolVar(&af.force, "force-conflicts", false, "with --apply, take over fields that another field manager owns")
+	fs.BoolVar(&af.skipMissing, "skip-missing-crds", false, "with --apply, skip objects whose kind the cluster does not serve")
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return ExitOK
@@ -257,6 +265,8 @@ func runRemediate(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 		return usageError(stderr, "unknown --mode value %q (audit or enforce)", *mode)
 	case *out == "":
 		return usageError(stderr, "--out must not be empty")
+	case !af.apply && (af.patches || af.dryRun || af.yes || af.force || af.skipMissing):
+		return usageError(stderr, "--apply-patches, --dry-run, --yes, --force-conflicts and --skip-missing-crds need --apply")
 	}
 	data, err := os.ReadFile(*from)
 	if err != nil {
@@ -278,8 +288,8 @@ func runRemediate(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 		return ExitIncomplete
 	case err != nil:
 		return usageError(stderr, "%v", err)
-	case sr.Scan.Mode != report.ModeCluster && (*kubeconfig != "" || *kubeContext != ""):
-		return usageError(stderr, "--kubeconfig and --context need the scan.json of a cluster scan")
+	case sr.Scan.Mode != report.ModeCluster && !af.apply && (*kubeconfig != "" || *kubeContext != ""):
+		return usageError(stderr, "--kubeconfig and --context need the scan.json of a cluster scan or --apply")
 	case sr.Scan.Mode == report.ModeCluster && len(inputs) > 0:
 		return usageError(stderr, "%v", remediate.ErrClusterFiles)
 	case sr.Scan.Mode == report.ModeCluster && namespace != "":
@@ -309,5 +319,12 @@ func runRemediate(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 	for _, name := range names {
 		write(stdout, path.Join(filepath.ToSlash(*out), name)+"\n")
 	}
-	return ExitOK
+	if !af.apply {
+		return ExitOK
+	}
+	applyContext := *kubeContext
+	if applyContext == "" && sr.Scan.Cluster != nil {
+		applyContext = sr.Scan.Cluster.Context
+	}
+	return applyBundle(b, *kubeconfig, applyContext, af, stdin, stdout, stderr)
 }
