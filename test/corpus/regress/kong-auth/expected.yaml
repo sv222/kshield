@@ -1,0 +1,9 @@
+namespace: "llm"
+checks: ["KS-AI-007"]
+expect:
+  - {check: "KS-AI-007", object: "Ingress/llm/ingress-open", verdict: "FAIL"}
+  - {check: "KS-AI-007", object: "Ingress/llm/ingress-kong", verdict: "INFO"}
+  - {check: "KS-AI-007", object: "Ingress/llm/ingress-ratelimit", verdict: "FAIL"}
+  - {check: "KS-AI-007", object: "Ingress/llm/ingress-anon", verdict: "FAIL"}
+  - {check: "KS-AI-007", object: "Ingress/llm/ingress-svc-kong", verdict: "INFO"}
+na: []
