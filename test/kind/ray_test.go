@@ -434,7 +434,7 @@ func kindsOf(objs []*unstructured.Unstructured) string {
 // Sigkill. It walks the object instead of comparing it to a fixed shape, so
 // the exemption commit may restructure the policy freely.
 func hasSigkillAction(u *unstructured.Unstructured) bool {
-	kprobes, _, _ := unstructured.NestedSlice(u.Object, "kprobes")
+	kprobes, _, _ := unstructured.NestedSlice(u.Object, "spec", "kprobes")
 	for _, kp := range kprobes {
 		m, _ := kp.(map[string]any)
 		selectors, _, _ := unstructured.NestedSlice(m, "selectors")
