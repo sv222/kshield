@@ -1,9 +1,13 @@
 namespace: "llm"
-checks: ["KS-AI-007"]
+checks: ["KS-AI-007", "KS-AI-013"]
 expect:
   - {check: "KS-AI-007", object: "Ingress/llm/ingress-open", verdict: "FAIL"}
   - {check: "KS-AI-007", object: "Ingress/llm/ingress-kong", verdict: "INFO"}
   - {check: "KS-AI-007", object: "Ingress/llm/ingress-ratelimit", verdict: "FAIL"}
   - {check: "KS-AI-007", object: "Ingress/llm/ingress-anon", verdict: "FAIL"}
   - {check: "KS-AI-007", object: "Ingress/llm/ingress-svc-kong", verdict: "INFO"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-open", verdict: "FAIL"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-kong", verdict: "INFO"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-ref", verdict: "INFO"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-ratelimit", verdict: "FAIL"}
 na: []

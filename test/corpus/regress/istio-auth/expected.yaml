@@ -1,5 +1,5 @@
 namespace: "llm"
-checks: ["KS-AI-007", "KS-AI-010"]
+checks: ["KS-AI-007", "KS-AI-010", "KS-AI-013"]
 expect:
   - {check: "KS-AI-007", object: "Service/llm/lb-open", verdict: "FAIL"}
   - {check: "KS-AI-007", object: "Service/llm/lb-jwt", verdict: "INFO"}
@@ -15,4 +15,6 @@ expect:
   - {check: "KS-AI-010", object: "Deployment/llm/lb-any-source", container: "server", verdict: "WARN"}
   - {check: "KS-AI-010", object: "Deployment/llm/route-jwt", container: "server", verdict: "WARN"}
   - {check: "KS-AI-010", object: "Deployment/llm/route-open", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-jwt", verdict: "INFO"}
+  - {check: "KS-AI-013", object: "HTTPRoute/llm/route-open", verdict: "FAIL"}
 na: []
