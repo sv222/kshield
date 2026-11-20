@@ -104,6 +104,10 @@ func TestKindRayEnforce(t *testing.T) {
 	env := versionsEnv(t)
 	helm := helmBin(t)
 	_, cs := clients(t)
+	t.Cleanup(func() {
+		helmUninstall(t, helm, "kuberay-operator", "kuberay-operator")
+		helmUninstall(t, helm, "tetragon", "tetragon")
+	})
 	ns := tempNamespace(t, nil)
 
 	installTetragon(t, helm, env)
@@ -229,6 +233,14 @@ func helmBin(t *testing.T) string {
 		t.Skip("helm is not on PATH: the Ray enforce test installs Tetragon and the KubeRay operator with it")
 	}
 	return bin
+}
+
+func helmUninstall(t *testing.T, helm, release, namespace string) {
+	t.Helper()
+	out, err := exec.Command(helm, "uninstall", release, "--namespace", namespace, "--wait", "--timeout", "5m", "--ignore-not-found").CombinedOutput()
+	if err != nil {
+		t.Errorf("helm uninstall %s: %v\n%s", release, err, out)
+	}
 }
 
 func helmRun(t *testing.T, helm string, args ...string) {
