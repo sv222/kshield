@@ -253,7 +253,7 @@ func installTetragon(t *testing.T, helm string, env map[string]string) {
 		t.Skip("TETRAGON_CHART_VERSION missing in versions.env")
 	}
 	helmRun(t, helm, "upgrade", "--install", "tetragon", "tetragon",
-		"--repo", "https://cilium.github.io/tetragon",
+		"--repo", "https://helm.cilium.io",
 		"--version", ver,
 		"--namespace", "tetragon", "--create-namespace",
 		"--set", "tetragon.grpc.enabled=false",
