@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-20
+
 ### Added
 
 - Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
