@@ -61,25 +61,23 @@ const (
 	rayHeadImage   = "rayproject/ray:2.52.0"
 	rayHeadCName   = "ray-head"
 
-	// startCanaryScript leaves a sleep 600 process behind after the shell
-	// exits, the way ray leaves shell-started children behind. Ray starts
-	// the shell from a python process, so the probe spawns it the same way:
-	// a process that a probe container runs directly is a child of PID 1
-	// in the shared PID namespace and the guard exempts it by design.
-	startCanaryScript = `import subprocess
-subprocess.Popen(["sh", "-c", "nohup sleep 600 >/dev/null 2>&1"])`
-	canaryProbeScript = `import os, sys
-for p in os.listdir("/proc"):
-    if not p.isdigit():
-        continue
-    try:
-        argv = open("/proc/%s/cmdline" % p, "rb").read().split(b"\0")
-    except OSError:
-        continue
-    if argv and argv[0].endswith(b"sleep") and b"600" in argv[1:]:
-        print("CANARY_ALIVE")
-        sys.exit(0)
-print("CANARY_MISSING")
+	// canaryRunScript runs a shell from a python process inside the head
+	// pod, exactly the ray pattern (a non-shell process spawning a shell),
+	// and reports whether the shell completed. The guard kills a shell at
+	// its execve, so the forked python child dies with SIGKILL and
+	// subprocess sees returncode -9. The probe process itself is a child of
+	// PID 1 in the shared PID namespace and stays exempt, which is why the
+	// shell must come from a python fork like ray does it.
+	canaryRunScript = `import subprocess, sys
+try:
+    r = subprocess.run(["sh", "-c", "sleep 2 && echo SHELL_OK"], capture_output=True, text=True, timeout=30)
+except subprocess.TimeoutExpired:
+    print("CANARY_TIMEOUT")
+    sys.exit(1)
+if r.returncode == 0 and "SHELL_OK" in r.stdout:
+    print("CANARY_ALIVE")
+    sys.exit(0)
+print("CANARY_KILLED", r.returncode)
 sys.exit(1)`
 	dashboardProbeScript = `import socket
 socket.create_connection(("127.0.0.1", 8265), timeout=3).close()
@@ -178,13 +176,12 @@ func TestKindRayEnforce(t *testing.T) {
 	// TracingPolicyNamespaced is live well within a second.
 	time.Sleep(10 * time.Second)
 
-	// Start a process from a shell spawned by python in the head pod, the
-	// way ray does. Without the KubeRay exemption the guard kills this
-	// shell before it can leave the sleep behind; with the exemption the
-	// shell exits 0 and the sleep keeps running.
-	code, log := runInHead(t, cs, ns, headName, "canary", startCanaryScript, time.Minute)
+	// Run a shell from python in the head pod, the way ray does. Without the
+	// KubeRay exemption the guard kills this shell at its execve; with the
+	// exemption the shell completes and answers.
+	code, log := runInHead(t, cs, ns, headName, "canary", canaryRunScript, time.Minute)
 	if code != 0 {
-		t.Fatalf("the guard killed a shell started inside the head pod: exit %d\nlog %.200s\n%s", code, log, dumpHead(t, cs, ns, headName))
+		t.Fatalf("the guard killed a shell started from python inside the head pod: exit %d\nlog %.200s\n%s", code, log, dumpHead(t, cs, ns, headName))
 	}
 
 	window := 2 * time.Minute
@@ -199,14 +196,15 @@ func TestKindRayEnforce(t *testing.T) {
 		assertHeadRunning(t, cs, ns, headName)
 		if time.Now().After(next) {
 			next = time.Now().Add(15 * time.Second)
-			assertProbe(t, cs, ns, headName, "canary", "the shell-started process is gone", canaryProbeScript, "CANARY_ALIVE")
+			assertProbe(t, cs, ns, headName, "canary", "the guard killed a shell", canaryRunScript, "CANARY_ALIVE")
 			assertProbe(t, cs, ns, headName, "dash", "the Ray dashboard is not reachable", dashboardProbeScript, "DASHBOARD_OK")
+			assertProbe(t, cs, ns, headName, "ray", "the ray processes are gone", rayProcessProbeScript, "RAY_OK")
 		}
 		if time.Now().After(deadline) {
 			break
 		}
 	}
-	t.Logf("the head pod survived %s of enforce mode: restarts=0, the shell-started process is alive, the dashboard answers", window)
+	t.Logf("the head pod survived %s of enforce mode: restarts=0, shells keep completing, the ray tree and the dashboard stay alive", window)
 }
 
 func versionsEnv(t *testing.T) map[string]string {
