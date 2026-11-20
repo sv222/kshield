@@ -127,6 +127,8 @@ const GatewayAuthKey = "kshield.io/gateway-auth"
 
 const gatewayAuthValue = "true"
 
+const declaredSuffix = "; gateway authentication is declared by " + GatewayAuthKey + ": \"" + gatewayAuthValue + "\", the scanner cannot verify it"
+
 var authFlags = []string{"--api-key", "--api-keys"}
 
 var engineAuthEnv = map[model.Stack][]string{
@@ -153,7 +155,7 @@ func gatewayAuth(w model.Workload) bool {
 }
 
 func declaredFinding(w model.Workload, c model.Container, path, what string) Finding {
-	f := violation(w, c.Spec.Name, path, fmt.Sprintf("%s; gateway authentication is declared by %s: %q, the scanner cannot verify it", what, GatewayAuthKey, gatewayAuthValue))
+	f := violation(w, c.Spec.Name, path, what+declaredSuffix)
 	f.Strength = Declared
 	return f
 }

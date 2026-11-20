@@ -167,7 +167,7 @@ func aiExposed(in *Input) Result {
 		res.Findings = appendExposures(res.Findings, seen, Exposures(in, w, nil), true, strength, func(e Exposure) string {
 			msg := exposureMessage(e, w, reason)
 			if declared {
-				msg += fmt.Sprintf("; gateway authentication is declared by %s: %q, the scanner cannot verify it", GatewayAuthKey, gatewayAuthValue)
+				msg += declaredSuffix
 			}
 			return msg
 		})

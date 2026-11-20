@@ -85,7 +85,8 @@ kustomize build "$work/bundle"
 	stepsAI006 = "Turn on Ray TLS: create a CA and certificates for the Ray pods (for example with cert-manager), mount them into the head and every worker group, " +
 		"and set `RAY_USE_TLS=1`, `RAY_TLS_SERVER_CERT`, `RAY_TLS_SERVER_KEY` and `RAY_TLS_CA_CERT` on every Ray container."
 	stepsAI007 = "Ollama has no authentication of its own. Keep its Service `type: ClusterIP`, " +
-		"and put an authenticating proxy in front of port 11434 for clients outside the namespace."
+		"and put an authenticating proxy in front of port 11434 for clients outside the namespace. " +
+		"If a gateway that kshield cannot see already authenticates the traffic, mark the workload with `kshield.io/gateway-auth: \"true\"` (label or annotation): kshield then reports INFO and does not verify the gateway."
 	stepsAI008 = "Set `QDRANT__SERVICE__API_KEY` from a Secret with `valueFrom.secretKeyRef`. " +
 		"Turn on TLS with `QDRANT__SERVICE__ENABLE_TLS=true`, and point `QDRANT__TLS__CERT` and `QDRANT__TLS__KEY` at a mounted certificate Secret."
 	stepsAI009 = "Set `common.security.authorizationEnabled: true` in the Milvus configuration (`milvus.yaml`, or `extraConfigFiles` in the Helm values). " +

@@ -103,3 +103,25 @@ func TestEngineExposure(t *testing.T) {
 		})
 	}
 }
+
+func TestGatewayAuthDeclaredOnOllamaExposure(t *testing.T) {
+	ollama := deployment("containers:\n  - name: ollama\n    image: ollama/ollama:0.5.0\n")
+	svc := svcDoc("ai", "svc", "LoadBalancer", "app: vllm", "port: 11434")
+	cases := []struct {
+		name string
+		doc  string
+		want Strength
+	}{
+		{"without the annotation", ollama + svc, Violation},
+		{"object label", labelled(ollama, "    kshield.io/gateway-auth: \"true\"\n") + svc, Declared},
+		{"template annotation", annotatedTemplate(ollama, "        kshield.io/gateway-auth: \"true\"\n") + svc, Declared},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			r := runWL(t, "KS-AI-007", c.doc)
+			if len(r.Findings) != 1 || r.Findings[0].Strength != c.want {
+				t.Fatalf("findings = %+v", r.Findings)
+			}
+		})
+	}
+}
