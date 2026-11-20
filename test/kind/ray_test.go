@@ -62,9 +62,13 @@ const (
 	rayHeadCName   = "ray-head"
 
 	// startCanaryScript leaves a sleep 600 process behind after the shell
-	// exits, the way ray leaves shell-started children behind.
-	startCanaryScript = "nohup sleep 600 >/dev/null 2>&1 &"
-	canaryProbeScript = `import sys
+	// exits, the way ray leaves shell-started children behind. Ray starts
+	// the shell from a python process, so the probe spawns it the same way:
+	// a process that a probe container runs directly is a child of PID 1
+	// in the shared PID namespace and the guard exempts it by design.
+	startCanaryScript = `import subprocess
+subprocess.Popen(["sh", "-c", "nohup sleep 600 >/dev/null 2>&1"])`
+	canaryProbeScript = `import os, sys
 for p in os.listdir("/proc"):
     if not p.isdigit():
         continue
@@ -174,11 +178,11 @@ func TestKindRayEnforce(t *testing.T) {
 	// TracingPolicyNamespaced is live well within a second.
 	time.Sleep(10 * time.Second)
 
-	// Start a process from a shell in the head pod, the way ray does. Without
-	// the KubeRay exemption the guard kills this shell before it can leave
-	// the sleep behind; with the exemption the shell exits 0 and the sleep
-	// keeps running.
-	code, log := runInHeadShell(t, cs, ns, headName, "canary", startCanaryScript, time.Minute)
+	// Start a process from a shell spawned by python in the head pod, the
+	// way ray does. Without the KubeRay exemption the guard kills this
+	// shell before it can leave the sleep behind; with the exemption the
+	// shell exits 0 and the sleep keeps running.
+	code, log := runInHead(t, cs, ns, headName, "canary", startCanaryScript, time.Minute)
 	if code != 0 {
 		t.Fatalf("the guard killed a shell started inside the head pod: exit %d\nlog %.200s\n%s", code, log, dumpHead(t, cs, ns, headName))
 	}
