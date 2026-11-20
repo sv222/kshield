@@ -82,6 +82,8 @@ func TestExtractPaths(t *testing.T) {
 		{"statefulset.yaml", []wantWorkload{{"StatefulSet/ai/qdrant", "/spec/template/spec", "", []string{"/spec/template/spec/containers/0"}}}},
 		{"daemonset.yaml", []wantWorkload{{"DaemonSet/ai/agent", "/spec/template/spec", "", []string{"/spec/template/spec/containers/0"}}}},
 		{"replicaset.yaml", []wantWorkload{{"ReplicaSet/ai/rs", "/spec/template/spec", "", []string{"/spec/template/spec/containers/0"}}}},
+		{"replicationcontroller.yaml", []wantWorkload{{"ReplicationController/ai/rc", "/spec/template/spec", "", []string{"/spec/template/spec/containers/0"}}}},
+		{"rollout.yaml", []wantWorkload{{"Rollout/ai/canary", "/spec/template/spec", "", []string{"/spec/template/spec/containers/0"}}}},
 		{"job.yaml", []wantWorkload{{"Job/ai/train", "/spec/template/spec", "", []string{"/spec/template/spec/initContainers/0", "/spec/template/spec/containers/0"}}}},
 		{"pod.yaml", []wantWorkload{{"Pod/ai/solo", "/spec", "", []string{"/spec/containers/0"}}}},
 		{"cronjob.yaml", []wantWorkload{{"CronJob/ai/dl", "/spec/jobTemplate/spec/template/spec", "", []string{"/spec/jobTemplate/spec/template/spec/containers/0"}}}},

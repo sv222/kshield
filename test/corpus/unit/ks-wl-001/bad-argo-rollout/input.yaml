@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: vllm
+  namespace: ai-inference
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vllm
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+  template:
+    metadata:
+      labels:
+        app: vllm
+    spec:
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai:v0.6.0
+          args: ["--model", "facebook/opt-125m"]

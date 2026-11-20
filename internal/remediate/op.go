@@ -73,6 +73,8 @@ func podSpecRoot(kind, apiVersion string) []string {
 	switch {
 	case kind == "Pod" && group == "":
 		return []string{"spec"}
+	case kind == "ReplicationController" && group == "":
+		return []string{"spec", "template", "spec"}
 	case group == "apps" && (kind == "Deployment" || kind == "StatefulSet" || kind == "DaemonSet" || kind == "ReplicaSet"):
 		return []string{"spec", "template", "spec"}
 	case group == "batch" && kind == "Job":

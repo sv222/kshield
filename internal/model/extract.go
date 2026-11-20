@@ -19,6 +19,7 @@ const (
 	groupBatch  = "batch"
 	groupRay    = "ray.io"
 	groupKServe = "serving.kserve.io"
+	groupArgo   = "argoproj.io"
 
 	groupHead = "head"
 
@@ -85,8 +86,11 @@ func sitesOf(o *load.Object) ([]site, error) {
 	gk := schema.FromAPIVersionAndKind(o.Ref.APIVersion, o.Ref.Kind).GroupKind()
 	switch gk.Group {
 	case "":
-		if gk.Kind == "Pod" {
+		switch gk.Kind {
+		case "Pod":
 			return []site{{spec: []string{"spec"}, meta: []string{"metadata"}}}, nil
+		case "ReplicationController":
+			return []site{templateSite("spec")}, nil
 		}
 	case groupApps:
 		switch gk.Kind {
@@ -99,6 +103,10 @@ func sitesOf(o *load.Object) ([]site, error) {
 			return []site{templateSite("spec")}, nil
 		case "CronJob":
 			return []site{templateSite("spec", "jobTemplate", "spec")}, nil
+		}
+	case groupArgo:
+		if gk.Kind == "Rollout" {
+			return []site{templateSite("spec")}, nil
 		}
 	case groupRay:
 		switch gk.Kind {
