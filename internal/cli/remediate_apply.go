@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"k8s.io/client-go/dynamic"
+
 	"github.com/sv222/kshield/internal/remediate"
 )
 
@@ -69,20 +71,30 @@ func applyBundle(b *remediate.Bundle, kubeconfig, kubeContext string, f applyFla
 		write(stdout, fmt.Sprintf("%s %s (%s)\n", verb, o.Label(), o.Role))
 	}
 	write(stdout, patchesNote(f))
-	if !f.dryRun && !f.yes {
-		if code := confirm(len(found), client.Context, stdin, stdout, stderr); code != ExitOK {
-			return code
-		}
-	}
 	ctx, stop := interruptContext()
 	defer stop()
-	ctx, cancel := context.WithTimeout(ctx, applyTimeout)
-	defer cancel()
-	if err := remediate.RunApply(ctx, client.Dynamic, found, remediate.ApplyOptions{ForceConflicts: f.force, DryRun: f.dryRun}, stdout); err != nil {
+	if !f.dryRun {
+		if err := runApply(ctx, client.Dynamic, found, f, true, io.Discard); err != nil {
+			write(stderr, "kshield: the server-side dry run failed, nothing was applied: "+err.Error()+"\n")
+			return ExitApplyFailed
+		}
+		if !f.yes {
+			if code := confirm(len(found), client.Context, stdin, stdout, stderr); code != ExitOK {
+				return code
+			}
+		}
+	}
+	if err := runApply(ctx, client.Dynamic, found, f, f.dryRun, stdout); err != nil {
 		write(stderr, "kshield: "+err.Error()+"\n")
 		return ExitApplyFailed
 	}
 	return ExitOK
+}
+
+func runApply(ctx context.Context, client dynamic.Interface, objs []remediate.ApplyObject, f applyFlags, dryRun bool, out io.Writer) error {
+	ctx, cancel := context.WithTimeout(ctx, applyTimeout)
+	defer cancel()
+	return remediate.RunApply(ctx, client, objs, remediate.ApplyOptions{ForceConflicts: f.force, DryRun: dryRun}, out)
 }
 
 func noPatchesNote(f applyFlags) string {

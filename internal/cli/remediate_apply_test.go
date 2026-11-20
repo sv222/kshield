@@ -68,7 +68,7 @@ func TestRemediateWithoutApplyDoesNotTouchTheCluster(t *testing.T) {
 	calls := useCluster(t, c)
 	patches := recordPatches(c)
 	code, _, errs, _ := applyRun(t, "", applyScan(t))
-	if code != ExitOK || errs != "" || len(*calls) != 0 || len(*patches) != 0 {
+	if code != ExitOK || errs != "" || len(*calls) != 0 || len(realPatches(*patches)) != 0 {
 		t.Fatalf("code=%d stderr=%q connects=%v patches=%v", code, errs, *calls, *patches)
 	}
 }
@@ -90,10 +90,10 @@ func TestRemediateApplyYesAppliesPoliciesOnly(t *testing.T) {
 		"tracingpoliciesnamespaced/ai/kshield-egress-connect",
 		"policies/ai/kshield-admission",
 	}
-	if got := patchNames(*patches); !slices.Equal(got, want) {
+	if got := patchNames(realPatches(*patches)); !slices.Equal(got, want) {
 		t.Fatalf("applied %q, want %q", got, want)
 	}
-	for _, p := range *patches {
+	for _, p := range realPatches(*patches) {
 		if p.options.FieldManager != "kshield" || p.options.Force != nil && *p.options.Force || len(p.options.DryRun) != 0 {
 			t.Errorf("%s: options %+v", p.name, p.options)
 		}
@@ -121,7 +121,7 @@ func TestRemediateApplyPatchesAddsTheWorkloads(t *testing.T) {
 	if code != ExitOK || errs != "" {
 		t.Fatalf("code=%d stderr=%q", code, errs)
 	}
-	if got := patchNames(*patches); len(got) != 5 || got[0] != "deployments/ai/vllm" {
+	if got := patchNames(realPatches(*patches)); len(got) != 5 || got[0] != "deployments/ai/vllm" {
 		t.Fatalf("applied %q", got)
 	}
 	if !strings.Contains(stdout, "workload patches are applied: the pods of the patched workloads restart") {
@@ -149,8 +149,8 @@ func TestRemediateApplyPrompt(t *testing.T) {
 			patches := recordPatches(c)
 			withTerminal(t, true)
 			code, stdout, errs, _ := applyRun(t, tc.answer, applyScan(t), "--apply")
-			if code != tc.code || len(*patches) != tc.applied {
-				t.Fatalf("code=%d applied=%d stderr=%q", code, len(*patches), errs)
+			if code != tc.code || len(realPatches(*patches)) != tc.applied {
+				t.Fatalf("code=%d applied=%d stderr=%q", code, len(realPatches(*patches)), errs)
 			}
 			if !strings.Contains(stdout, `Apply 4 objects to context "test-ctx"? [y/N] `) || !strings.Contains(stdout, "add --apply-patches") {
 				t.Errorf("stdout:\n%s", stdout)
@@ -168,8 +168,8 @@ func TestRemediateApplyWithoutTerminalNeedsYes(t *testing.T) {
 	patches := recordPatches(c)
 	withTerminal(t, false)
 	code, stdout, errs, _ := applyRun(t, "y\n", applyScan(t), "--apply")
-	if code != ExitUsage || len(*patches) != 0 || !strings.Contains(errs, "--yes") {
-		t.Fatalf("code=%d applied=%d stderr=%q", code, len(*patches), errs)
+	if code != ExitUsage || len(realPatches(*patches)) != 0 || !strings.Contains(errs, "--yes") {
+		t.Fatalf("code=%d applied=%d stderr=%q", code, len(realPatches(*patches)), errs)
 	}
 	if strings.Contains(stdout, "[y/N]") {
 		t.Errorf("prompted without a terminal:\n%s", stdout)
@@ -212,8 +212,8 @@ func TestRemediateApplyRefusesMissingCRDs(t *testing.T) {
 	useCluster(t, c)
 	patches := recordPatches(c)
 	code, _, errs, _ := applyRun(t, "", applyScan(t), "--apply", "--yes")
-	if code != ExitUsage || len(*patches) != 0 {
-		t.Fatalf("code=%d applied=%d stderr=%q", code, len(*patches), errs)
+	if code != ExitUsage || len(realPatches(*patches)) != 0 {
+		t.Fatalf("code=%d applied=%d stderr=%q", code, len(realPatches(*patches)), errs)
 	}
 	for _, want := range []string{"kyverno.io/v1 Policy is not served by the cluster (is Kyverno installed?)", "cilium.io/v2 CiliumNetworkPolicy is not served by the cluster (is Cilium installed?)", "cilium.io/v1alpha1 TracingPolicyNamespaced is not served by the cluster (is Tetragon installed?)", "--skip-missing-crds"} {
 		if !strings.Contains(errs, want) {
@@ -231,7 +231,7 @@ func TestRemediateApplySkipMissingCRDs(t *testing.T) {
 	if code != ExitOK || errs != "" {
 		t.Fatalf("code=%d stderr=%q", code, errs)
 	}
-	if got := patchNames(*patches); len(got) != 3 || slices.ContainsFunc(got, func(s string) bool { return strings.HasPrefix(s, "policies/") }) {
+	if got := patchNames(realPatches(*patches)); len(got) != 3 || slices.ContainsFunc(got, func(s string) bool { return strings.HasPrefix(s, "policies/") }) {
 		t.Errorf("applied %q", got)
 	}
 	if !strings.Contains(stdout, "skipping 1 object(s): kyverno.io/v1 Policy is not served by the cluster") {
@@ -254,7 +254,7 @@ func TestRemediateApplyConflictExitsWithApplyFailed(t *testing.T) {
 	if code != ExitApplyFailed || calls != 2 {
 		t.Fatalf("code=%d calls=%d stderr=%q", code, calls, errs)
 	}
-	if !strings.Contains(errs, "--force-conflicts") || !strings.Contains(stdout, "applied CiliumNetworkPolicy/ai/kshield-egress") {
+	if !strings.Contains(errs, "--force-conflicts") || strings.Contains(stdout, "\napplied ") {
 		t.Errorf("stdout:\n%s\nstderr:\n%s", stdout, errs)
 	}
 }
@@ -304,10 +304,43 @@ func TestRemediateApplyUsesTheScanContext(t *testing.T) {
 	sj := scanClusterFile(t)
 	patches := recordPatches(c)
 	code, _, errs, _ := applyRun(t, "", sj, "--apply", "--yes")
-	if code != ExitOK || len(*patches) == 0 {
-		t.Fatalf("code=%d applied=%d stderr=%q", code, len(*patches), errs)
+	if code != ExitOK || len(realPatches(*patches)) == 0 {
+		t.Fatalf("code=%d applied=%d stderr=%q", code, len(realPatches(*patches)), errs)
 	}
 	if last := (*calls)[len(*calls)-1]; last != (connectCall{"", clustertest.Context}) {
 		t.Errorf("apply connected with %v", last)
+	}
+}
+
+func realPatches(ps []appliedPatch) []appliedPatch {
+	var out []appliedPatch
+	for _, p := range ps {
+		if len(p.options.DryRun) == 0 {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
+func TestRemediateApplyDryRunsBeforeChangingAnything(t *testing.T) {
+	c := clustertest.New()
+	useCluster(t, c)
+	all := recordPatches(c)
+	c.Dynamic.PrependReactor("patch", "*", func(a clienttesting.Action) (bool, runtime.Object, error) {
+		pa := a.(clienttesting.PatchActionImpl)
+		if pa.GetName() == "kshield-admission" && len(pa.PatchOptions.DryRun) > 0 {
+			return true, nil, apierrors.NewInvalid(schema.GroupKind{Kind: "Policy"}, "kshield-admission", nil)
+		}
+		return false, nil, nil
+	})
+	code, stdout, errs, _ := applyRun(t, "", applyScan(t), "--apply", "--yes")
+	if code != ExitApplyFailed || !strings.Contains(errs, "dry run failed, nothing was applied") {
+		t.Fatalf("code=%d stderr=%q", code, errs)
+	}
+	if n := len(realPatches(*all)); n != 0 {
+		t.Errorf("%d objects were applied after a failed dry run", n)
+	}
+	if strings.Contains(stdout, "\napplied ") || strings.Contains(stdout, "[y/N]") {
+		t.Errorf("stdout:\n%s", stdout)
 	}
 }
