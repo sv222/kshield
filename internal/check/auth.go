@@ -17,6 +17,9 @@ const (
 	AuthIngressAnnotation AuthSource = "ingress-annotation"
 	AuthIstio             AuthSource = "istio"
 	AuthKong              AuthSource = "kong"
+	AuthEnvoyGateway      AuthSource = "envoy-gateway"
+	AuthRouteAnnotation   AuthSource = "route-annotation"
+	AuthRouteFilter       AuthSource = "route-filter"
 )
 
 type AuthEvidence struct {
@@ -60,7 +63,7 @@ func declaredAuth(w model.Workload) (AuthEvidence, bool) {
 
 var ingressAuthHints = []string{"auth-url", "auth-type", "auth-signin", "auth-secret", "oauth2"}
 
-func ingressAuth(o load.Object) (AuthEvidence, bool) {
+func annotationAuth(o load.Object, source AuthSource) (AuthEvidence, bool) {
 	annotations := mapOf(dig(o.U.Object, "metadata", "annotations"))
 	for _, k := range slices.Sorted(maps.Keys(annotations)) {
 		s, ok := scalarString(annotations[k])
@@ -69,20 +72,20 @@ func ingressAuth(o load.Object) (AuthEvidence, bool) {
 		}
 		if k == GatewayAuthKey {
 			if s == gatewayAuthValue {
-				return ingressEvidence(o, k), true
+				return annotationEvidence(o, source, k), true
 			}
 			continue
 		}
 		lk := strings.ToLower(k)
 		if slices.ContainsFunc(ingressAuthHints, func(h string) bool { return strings.Contains(lk, h) }) {
-			return ingressEvidence(o, k), true
+			return annotationEvidence(o, source, k), true
 		}
 	}
 	return AuthEvidence{}, false
 }
 
-func ingressEvidence(o load.Object, annotation string) AuthEvidence {
-	return AuthEvidence{Source: AuthIngressAnnotation, Ref: o.Ref, Detail: "has the annotation " + annotation}
+func annotationEvidence(o load.Object, source AuthSource, annotation string) AuthEvidence {
+	return AuthEvidence{Source: source, Ref: o.Ref, Detail: "has the annotation " + annotation}
 }
 
 type serverVerdict struct {

@@ -49,8 +49,9 @@ type Result struct {
 }
 
 type ClusterFacts struct {
-	ProbeRan bool
-	Nodes    []NodeFacts
+	ProbeRan   bool
+	Namespaces []string
+	Nodes      []NodeFacts
 }
 
 type NodeFacts struct {

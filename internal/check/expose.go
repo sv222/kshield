@@ -30,6 +30,7 @@ type Exposure struct {
 	Object load.Object
 	Kind   string
 	Auth   AuthEvidence
+	Doubt  string
 	Path   string
 }
 
@@ -99,7 +100,7 @@ func parseServicePort(item any) servicePort {
 }
 
 func parseIngress(o load.Object) indexedIngress {
-	auth, _ := ingressAuth(o)
+	auth, _ := annotationAuth(o, AuthIngressAnnotation)
 	ing := indexedIngress{obj: o, auth: auth}
 	if b, ok := parseBackend(dig(o.U.Object, "spec", "defaultBackend")); ok {
 		ing.defaultBackend = &b
@@ -301,6 +302,8 @@ func appendExposures(out []Finding, seen map[string]int, es []Exposure, honorAut
 			if s != Declared {
 				s, m = Declared, m+e.Auth.Suffix()
 			}
+		} else if honorAuth && e.Doubt != "" && s == Violation {
+			s, m = Suspect, m+" ("+e.Doubt+")"
 		}
 		key := e.Object.Ref.String()
 		if i, dup := seen[key]; dup {
