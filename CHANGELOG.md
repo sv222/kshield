@@ -28,10 +28,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Envoy Gateway auth evidence: a `SecurityPolicy` with `jwt`, `oidc`, `basicAuth`, `apiKeyAuth` or `extAuth` that targets the HTTPRoute or its Gateway.
 - KS-AI-001, KS-AI-004, KS-AI-007 and KS-AI-010 report INFO that names the Istio policy or Kong plugin instead of FAIL or WARN when such evidence protects the workload, its Ingress or its Service.
 - `scan cluster` reads Istio `authorizationpolicies` and `requestauthentications`, Kong `kongplugins` and `kongclusterplugins`, Gateway API `httproutes` and `gateways`, and Envoy Gateway `securitypolicies` when the CRDs exist. `deploy/rbac/kshield-scan.yaml` has the new get and list rules. A forbidden read gives UNKNOWN for KS-AI-004, KS-AI-007 and KS-AI-013 and exit code 3.
+- `kshield remediate --apply` applies the policies of the bundle with server-side apply (field manager `kshield`, no force). It prints the context and the objects, asks for confirmation (`--yes` skips it, no terminal needs `--yes`), checks that the Kyverno, Cilium and Tetragon kinds exist (`--skip-missing-crds`), and supports `--dry-run`, `--apply-patches` (workload patches restart pods, so they are off by default) and `--force-conflicts`. Exit code 4 means the apply failed.
+- `deploy/rbac/kshield-apply.yaml`: example ClusterRoles for `--apply` with create and patch only.
 
 ### Changed
 
 - The `dora` profile has 40 checks (7 new). The profile sha256 changed, so `docs/MAPPING-REVIEW.md` needs a new sign-off.
+- Scans stay read-only. `remediate` writes a bundle and changes the cluster only with `--apply`.
 - An Istio, Kong or Envoy Gateway object that protects an exposure is reported as INFO, and an Ingress with an auth annotation is still skipped without a finding, as before.
 
 ## [0.3.0] - 2026-11-20

@@ -12,7 +12,7 @@
 [![License](https://img.shields.io/github/license/sv222/kshield)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/sv222/kshield?include_prereleases&sort=semver)](https://github.com/sv222/kshield/releases)
 
-kshield is an open source Go CLI that scans Kubernetes manifests and live clusters that run AI and LLM workloads (vLLM, Ollama, Triton, Text Generation Inference, Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy, TensorRT-LLM, KubeRay, KServe, Qdrant, Milvus). It finds security misconfigurations such as root containers, unauthenticated inference APIs, `--trust-remote-code`, pickle model loading, hostPath and hostPort use, open Ray ports and missing ingress, egress or runtime guards. Each finding cites the verbatim text of the DORA requirement (Regulation (EU) 2022/2554 and RTS (EU) 2024/1774) that it supports evidence for. Reports come as text, JSON, HTML, PDF and SARIF, and can be packed into a signed evidence bundle. `kshield remediate` writes a kustomize bundle with workload patches and Cilium, Tetragon and Kyverno policies.
+kshield is an open source Go CLI that scans Kubernetes manifests and live clusters that run AI and LLM workloads (vLLM, Ollama, Triton, Text Generation Inference, Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy, TensorRT-LLM, KubeRay, KServe, Qdrant, Milvus). It finds security misconfigurations such as root containers, unauthenticated inference APIs, `--trust-remote-code`, pickle model loading, hostPath and hostPort use, open Ray ports and missing ingress, egress or runtime guards. Each finding cites the verbatim text of the DORA requirement (Regulation (EU) 2022/2554 and RTS (EU) 2024/1774) that it supports evidence for. Reports come as text, JSON, HTML, PDF and SARIF, and can be packed into a signed evidence bundle. `kshield remediate` writes a kustomize bundle with workload patches and Cilium, Tetragon and Kyverno policies, and changes the cluster only when you add `--apply`.
 
 > kshield reports support evidence for the requirements they cite. They are not an audit and do not state compliance with any regulation.
 
@@ -176,6 +176,26 @@ The `fix` directory is a kustomize bundle: `base/`, `workload-patch.yaml`, `work
 - `MANUAL.md` lists which non-AI workloads of a policy namespace break the Pod Security Standards `restricted` profile and which conform, and `remediation.json` carries the same list as `pssNonAI`.
 - The Ray API server egress policy is one per autoscaling RayCluster and selects on both `ray.io/node-type: head` and `ray.io/cluster`.
 
+#### Apply the bundle (optional)
+
+`remediate` writes a bundle and changes nothing in the cluster. Add `--apply` to also send the policies to the cluster with server-side apply (field manager `kshield`):
+
+```bash
+kshield remediate --from scan.json -f app.yaml --out fix --apply --dry-run
+```
+
+```bash
+kshield remediate --from scan.json -f app.yaml --out fix --apply
+```
+
+- Off by default. The bundle is written first, then applied. It uses the kubeconfig context from `--kubeconfig` and `--context` (for a cluster `scan.json`, the context of the scan).
+- Before it changes anything, kshield prints the context, the server and the objects (kind, namespace, name), and asks `Apply N objects to context X? [y/N]`. `--yes` skips the question. Without a terminal and without `--yes` it refuses (exit 2).
+- `--dry-run` runs a server-side dry run, prints the result and changes nothing.
+- By default only the policies are applied. The workload patches restart pods, so they are applied only with `--apply-patches`, and only for the workloads that the bundle patches.
+- It refuses when the cluster does not serve a kind of the bundle (Kyverno `Policy`, Cilium `CiliumNetworkPolicy`, Tetragon `TracingPolicyNamespaced`). `--skip-missing-crds` skips those objects.
+- A field that another field manager owns is a conflict and stops the apply (exit 4). `--force-conflicts` takes the field over. Review who owns it first.
+- RBAC: `deploy/rbac/kshield-apply.yaml` holds two ClusterRoles, `kshield-apply` (create and patch on the three policy kinds) and `kshield-apply-patches` (patch on the workload kinds, only for `--apply-patches`).
+
 ### Exit codes
 
 | Code | Meaning |
@@ -184,6 +204,9 @@ The `fix` directory is a kustomize bundle: `base/`, `workload-patch.yaml`, `work
 | 1 | findings at or above `--fail-on` |
 | 2 | usage or input error |
 | 3 | scan incomplete (a read was denied or failed) |
+| 4 | `remediate --apply` failed while applying (a conflict, a denied write or an API error) |
+
+`remediate --apply` returns 2 when it refuses: a missing CRD without `--skip-missing-crds`, no terminal without `--yes`, or an answer other than yes.
 
 ## DORA mapping
 
@@ -274,7 +297,7 @@ The flags and names change like this:
 | label `ai.infra.guard/enabled` | label or annotation `kshield.io/ai` |
 | annotation `ai.infra.guard/gateway-auth` | label or annotation `kshield.io/gateway-auth` |
 | `enforce` | `remediate` (a kustomize bundle) |
-| `enforce --apply` | none. Apply the bundle yourself with the cluster tool of your choice |
+| `enforce --apply` | `remediate --apply`. It is server-side apply without force, asks first, and applies policies only unless you add `--apply-patches` |
 | `--helm` | pipe `helm template` into `kshield scan manifest -f -` |
 | `--kustomize` | pipe `kustomize build` into `kshield scan manifest -f -` |
 
@@ -286,6 +309,7 @@ What is different:
 - kshield finds engines by image or command, not by workload name. Use the `kshield.io/ai` label for custom images.
 - kshield reads the Secret behind an `envFrom` key. A Secret that is not in the input gives a WARN, not a guess from its name.
 - Istio, Kong, Gateway API and Envoy Gateway auth evidence is ported, with objects read as `unstructured` data. A protected exposure is INFO that names the policy, not a skipped finding.
+- `remediate --apply` does not force by default. Ai-guard-k8s forced the apply.
 - The CPU and memory requests of AIG-007 are not checked.
 - `remediate` writes a namespaced Kyverno policy with the Pod Security Standards `restricted` profile, not the label-selected cluster policies of ai-guard-k8s.
 

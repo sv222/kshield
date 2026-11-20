@@ -31,6 +31,18 @@ Enforce mode of `kshield-egress-connect` uses `Override` on a `security_` hook. 
 
 Rollout order: patch the workloads, apply the policies in audit mode, review the Kyverno policy reports, Tetragon events and Hubble flows, then run `kshield remediate --mode enforce` for one namespace at a time. Enforce mode kills exec probes and lifecycle hooks that run a shell; see "Known limits" before you switch.
 
+## Apply with kshield
+
+`kshield remediate --apply` sends the objects of `infrastructure-policies.yaml` to the cluster with server-side apply (field manager `kshield`). It does not use force. Nothing changes without `--apply`.
+
+- Run `--apply --dry-run` first. It runs a server-side dry run and prints the result.
+- Without `--yes`, kshield prints the context, the server and the objects, and asks `Apply N objects to context X? [y/N]`. With no terminal it refuses.
+- It refuses when the cluster does not serve `Policy` (Kyverno), `CiliumNetworkPolicy` (Cilium) or `TracingPolicyNamespaced` (Tetragon). `--skip-missing-crds` leaves those objects out.
+- The workload patches restart pods, so they are applied only with `--apply-patches`.
+- A policy that already exists and has fields owned by another manager, for example a tool that applied it with a client-side command, is a conflict (exit 4). Review the owner, then use `--force-conflicts` if kshield should take the fields over.
+- The audit bundle first, then the enforce bundle of one namespace at a time, as in the rollout order above.
+
+
 ## Shell guard
 
 Most inference containers start through a shell wrapper (`sh -c "vllm serve ..."`). A rule "kill every exec of `/bin/sh`" kills them at start. The guard judges who starts the shell:
