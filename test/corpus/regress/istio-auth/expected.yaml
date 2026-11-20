@@ -1,0 +1,18 @@
+namespace: "llm"
+checks: ["KS-AI-007", "KS-AI-010"]
+expect:
+  - {check: "KS-AI-007", object: "Service/llm/lb-open", verdict: "FAIL"}
+  - {check: "KS-AI-007", object: "Service/llm/lb-jwt", verdict: "INFO"}
+  - {check: "KS-AI-007", object: "Service/llm/lb-deny", verdict: "INFO"}
+  - {check: "KS-AI-007", object: "Service/llm/lb-mtls", verdict: "INFO"}
+  - {check: "KS-AI-007", object: "Service/llm/lb-no-jwt-rule", verdict: "FAIL"}
+  - {check: "KS-AI-007", object: "Service/llm/lb-any-source", verdict: "FAIL"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-open", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-jwt", container: "server", verdict: "INFO"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-deny", container: "server", verdict: "INFO"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-mtls", container: "server", verdict: "INFO"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-no-jwt-rule", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/lb-any-source", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/route-jwt", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/route-open", container: "server", verdict: "WARN"}
+na: []
