@@ -449,13 +449,14 @@ func TestIsClusterScoped(t *testing.T) {
 		"ValidatingAdmissionPolicy", "ValidatingAdmissionPolicyBinding", "PriorityClass", "IngressClass",
 		"RuntimeClass", "CSIDriver", "APIService", "ClusterPolicy", "ClusterCleanupPolicy", "TracingPolicy",
 		"CiliumClusterwideNetworkPolicy", "ClusterServingRuntime", "ClusterStorageContainer", "ClusterIssuer",
+		"KongClusterPlugin", "GatewayClass",
 	}
 	for _, kind := range scoped {
 		if !IsClusterScoped(kind) {
 			t.Errorf("IsClusterScoped(%q) = false, want true", kind)
 		}
 	}
-	for _, kind := range []string{"Deployment", "Pod", "Service", "Role", "RoleBinding", "ServingRuntime", "InferenceService", "NetworkPolicy", "Policy", "namespace", ""} {
+	for _, kind := range []string{"Deployment", "Pod", "Service", "Role", "RoleBinding", "ServingRuntime", "InferenceService", "NetworkPolicy", "Policy", "KongPlugin", "HTTPRoute", "Gateway", "SecurityPolicy", "AuthorizationPolicy", "namespace", ""} {
 		if IsClusterScoped(kind) {
 			t.Errorf("IsClusterScoped(%q) = true, want false", kind)
 		}
@@ -672,5 +673,50 @@ func TestFileNamedDashIsNotStdin(t *testing.T) {
 		if len(objs) != 1 || objs[0].Source.File != "./-" {
 			t.Errorf("%s: objects = %+v", arg, objs)
 		}
+	}
+}
+
+func TestGatewayKindsKeepTheirScope(t *testing.T) {
+	const doc = `apiVersion: v1
+kind: List
+items:
+  - apiVersion: configuration.konghq.com/v1
+    kind: KongClusterPlugin
+    metadata:
+      name: jwt-all
+    plugin: jwt
+  - apiVersion: configuration.konghq.com/v1
+    kind: KongPlugin
+    metadata:
+      name: key
+    plugin: key-auth
+  - apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata:
+      name: chat
+    spec:
+      rules: []
+  - apiVersion: gateway.envoyproxy.io/v1alpha1
+    kind: SecurityPolicy
+    metadata:
+      name: jwt
+    spec:
+      jwt: {}
+  - apiVersion: security.istio.io/v1
+    kind: AuthorizationPolicy
+    metadata:
+      name: allow
+    spec: {}
+`
+	objs, err := Read([]string{"-"}, Options{DefaultNamespace: "llm", Stdin: strings.NewReader(doc)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []string{"KongClusterPlugin/jwt-all", "KongPlugin/llm/key", "HTTPRoute/llm/chat", "SecurityPolicy/llm/jwt", "AuthorizationPolicy/llm/allow"}
+	if got := refStrings(objs); !slices.Equal(got, want) {
+		t.Fatalf("refs = %v, want %v", got, want)
+	}
+	if ns := objs[0].U.GetNamespace(); ns != "" {
+		t.Errorf("KongClusterPlugin namespace = %q, want empty", ns)
 	}
 }

@@ -24,6 +24,8 @@ var clusterScoped = map[string]struct{}{
 	"ClusterServingRuntime":            {},
 	"ClusterStorageContainer":          {},
 	"ClusterIssuer":                    {},
+	"KongClusterPlugin":                {},
+	"GatewayClass":                     {},
 }
 
 func IsClusterScoped(kind string) bool {
