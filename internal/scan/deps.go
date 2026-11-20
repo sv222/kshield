@@ -19,6 +19,10 @@ const (
 	groupKServe     = "serving.kserve.io"
 	groupCilium     = "cilium.io"
 	groupKyverno    = "kyverno.io"
+	groupIstio      = "security.istio.io"
+	groupKong       = "configuration.konghq.com"
+	groupGatewayAPI = "gateway.networking.k8s.io"
+	groupEnvoy      = "gateway.envoyproxy.io"
 
 	resConfigMaps  = "configmaps"
 	resDaemonSets  = "daemonsets"
@@ -83,6 +87,20 @@ var (
 		gr("", "namespaces"),
 	}
 	configDeps = []dep{gr("", resConfigMaps)}
+	meshDeps   = []dep{
+		gr(groupIstio, "authorizationpolicies"),
+		gr(groupIstio, "requestauthentications"),
+	}
+	kongDeps = []dep{
+		gr(groupKong, "kongplugins"),
+		gr(groupKong, "kongclusterplugins"),
+	}
+	routeDeps = []dep{
+		gr("", "services"),
+		gr(groupGatewayAPI, "httproutes"),
+		gr(groupGatewayAPI, "gateways"),
+		gr(groupEnvoy, "securitypolicies"),
+	}
 )
 
 func deps(lists ...[]dep) []dep {
@@ -103,13 +121,13 @@ var clusterDeps = map[string][]dep{
 	"KS-WL-014":  deps(),
 	"KS-WL-015":  deps(),
 	"KS-WL-016":  deps(),
-	"KS-AI-004":  deps(exposureDeps, configDeps),
+	"KS-AI-004":  deps(exposureDeps, configDeps, meshDeps, kongDeps),
 	"KS-AI-005":  deps(exposureDeps),
 	"KS-AI-006":  deps(),
-	"KS-AI-007":  deps(exposureDeps),
+	"KS-AI-007":  deps(exposureDeps, meshDeps, kongDeps),
 	"KS-AI-008":  deps(configDeps),
 	"KS-AI-009":  deps(configDeps),
-	"KS-AI-013":  deps(exposureDeps),
+	"KS-AI-013":  deps(routeDeps, meshDeps, kongDeps),
 	"KS-NET-001": deps(policyDeps),
 	"KS-NET-002": deps(policyDeps),
 	"KS-NET-003": deps([]dep{prereqDep(resDaemonSets), {group: "", resource: resConfigMaps, outOfScope: true}}),

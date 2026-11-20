@@ -432,3 +432,46 @@ func TestFailedReadNoAIWorkloadsStillUnknown(t *testing.T) {
 		t.Errorf("KS-WL-001 %s, want UNKNOWN", v)
 	}
 }
+
+func TestFailedGatewayKindsMakeExposureChecksUnknown(t *testing.T) {
+	cases := []struct {
+		group, version, resource string
+		want                     []string
+	}{
+		{"security.istio.io", "v1", "authorizationpolicies", []string{"KS-AI-004", "KS-AI-007", "KS-AI-013"}},
+		{"security.istio.io", "v1", "requestauthentications", []string{"KS-AI-004", "KS-AI-007", "KS-AI-013"}},
+		{"configuration.konghq.com", "v1", "kongplugins", []string{"KS-AI-004", "KS-AI-007", "KS-AI-013"}},
+		{"configuration.konghq.com", "v1", "kongclusterplugins", []string{"KS-AI-004", "KS-AI-007", "KS-AI-013"}},
+		{"gateway.networking.k8s.io", "v1", "httproutes", []string{"KS-AI-013"}},
+		{"gateway.networking.k8s.io", "v1", "gateways", []string{"KS-AI-013"}},
+		{"gateway.envoyproxy.io", "v1alpha1", "securitypolicies", []string{"KS-AI-013"}},
+	}
+	base := failRun(t, ClusterOptions{})
+	for _, c := range cases {
+		t.Run(c.resource, func(t *testing.T) {
+			line := "cluster: list " + c.group + "/" + c.version + " " + c.resource + " in all namespaces: Forbidden: RBAC: denied"
+			r := failRun(t, ClusterOptions{
+				Errors: []string{line},
+				Failed: []cluster.FailedRead{{Group: c.group, Version: c.version, Resource: c.resource}},
+			})
+			assertUnknown(t, r, c.want...)
+			assertOthersUnchanged(t, base, r)
+			if !r.Summary.Incomplete || !slices.Equal(r.Errors, []string{line}) {
+				t.Errorf("incomplete %v errors %v", r.Summary.Incomplete, r.Errors)
+			}
+			f := checkByID(t, r, c.want[0]).Findings[0]
+			want := "not judged: cannot list " + c.group + "/" + c.version + " " + c.resource + " in all namespaces: Forbidden: RBAC: denied"
+			if f.Message != want {
+				t.Errorf("message %q, want %q", f.Message, want)
+			}
+		})
+	}
+}
+
+func TestFailedGatewayGroupDiscoveryCountsForEveryResource(t *testing.T) {
+	r := failRun(t, ClusterOptions{
+		Errors: []string{"cluster: discover gateway.networking.k8s.io/v1: ServiceUnavailable: down"},
+		Failed: []cluster.FailedRead{{Group: "gateway.networking.k8s.io", Version: "v1"}},
+	})
+	assertUnknown(t, r, "KS-AI-013")
+}
