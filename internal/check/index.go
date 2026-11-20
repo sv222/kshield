@@ -26,6 +26,9 @@ type inputIndex struct {
 	authz          []meshPolicy
 	requestAuth    []meshPolicy
 	kong           []kongPlugin
+	routes         []indexedRoute
+	gateways       map[string]bool
+	envoy          []envoyPolicy
 }
 
 func buildIndex(objs []load.Object) *inputIndex {
@@ -37,6 +40,7 @@ func buildIndex(objs []load.Object) *inputIndex {
 		tracingNS:      map[string][]load.Object{},
 		kyverno:        map[string][]load.Object{},
 		psaRestricted:  map[string]bool{},
+		gateways:       map[string]bool{},
 		tokenless:      tokenlessServiceAccounts(objs),
 		core:           map[coreKey][]load.Object{},
 	}
@@ -62,6 +66,14 @@ func buildIndex(objs []load.Object) *inputIndex {
 			}
 		case isKind(o, groupKong, kindKongPlugin, kindKongClusterPlugin):
 			x.kong = append(x.kong, parseKongPlugin(o))
+		case isKind(o, groupGatewayAPI, kindHTTPRoute):
+			x.routes = append(x.routes, parseHTTPRoute(o))
+		case isKind(o, groupGatewayAPI, kindGateway):
+			x.gateways[ns+"/"+o.Ref.Name] = true
+		case isKind(o, groupEnvoyGateway, kindSecurityPolicy):
+			if p, ok := parseEnvoyPolicy(o); ok {
+				x.envoy = append(x.envoy, p)
+			}
 		case isKind(o, groupCilium, kindCiliumPolicy):
 			x.ciliumPolicies[ns] = append(x.ciliumPolicies[ns], o)
 		case isKind(o, groupCilium, kindCiliumClusterPolicy):
