@@ -23,6 +23,8 @@ type inputIndex struct {
 	psaRestricted  map[string]bool
 	tokenless      map[string]bool
 	core           map[coreKey][]load.Object
+	authz          []meshPolicy
+	requestAuth    []meshPolicy
 }
 
 func buildIndex(objs []load.Object) *inputIndex {
@@ -49,6 +51,14 @@ func buildIndex(objs []load.Object) *inputIndex {
 			x.ingresses[ns] = append(x.ingresses[ns], parseIngress(o))
 		case isNetworkPolicy(o):
 			x.netpols[ns] = append(x.netpols[ns], o)
+		case isKind(o, groupIstioSecurity, kindAuthorizationPolicy):
+			if p, ok := parseMeshPolicy(o); ok {
+				x.authz = append(x.authz, p)
+			}
+		case isKind(o, groupIstioSecurity, kindRequestAuthentication):
+			if p, ok := parseMeshPolicy(o); ok {
+				x.requestAuth = append(x.requestAuth, p)
+			}
 		case isKind(o, groupCilium, kindCiliumPolicy):
 			x.ciliumPolicies[ns] = append(x.ciliumPolicies[ns], o)
 		case isKind(o, groupCilium, kindCiliumClusterPolicy):

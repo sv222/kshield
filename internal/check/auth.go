@@ -15,6 +15,7 @@ const (
 	AuthEngineKey         AuthSource = "engine-key"
 	AuthGatewayDeclared   AuthSource = "gateway-auth"
 	AuthIngressAnnotation AuthSource = "ingress-annotation"
+	AuthIstio             AuthSource = "istio"
 )
 
 type AuthEvidence struct {
@@ -94,6 +95,13 @@ func keyEvidence(c model.Container, how string) AuthEvidence {
 	return AuthEvidence{Source: AuthEngineKey, Detail: "container " + c.Spec.Name + " sets " + how}
 }
 
-func workloadAuth(_ *Input, w model.Workload) (AuthEvidence, bool) {
-	return declaredAuth(w)
+func workloadAuth(in *Input, w model.Workload) (AuthEvidence, bool) {
+	if a, ok := declaredAuth(w); ok {
+		return a, true
+	}
+	return meshAuth(in, w, "", nil)
+}
+
+func (a AuthEvidence) Silent() bool {
+	return a.Source == AuthIngressAnnotation
 }
