@@ -347,7 +347,9 @@ func runEphemeral(t *testing.T, cs kubernetes.Interface, ns, pod, prefix string,
 		t.Fatalf("logs of ephemeral container %s: %v", name, err)
 	}
 	out, err := io.ReadAll(logs)
-	logs.Close()
+	if cerr := logs.Close(); cerr != nil && err == nil {
+		err = cerr
+	}
 	if err != nil {
 		t.Fatalf("read logs of ephemeral container %s: %v", name, err)
 	}
@@ -472,13 +474,13 @@ func dumpHead(t *testing.T, cs kubernetes.Interface, ns, pod string) string {
 	}
 	fmt.Fprintf(&b, "head pod %s: phase=%s restarts=%d", pod, p.Status.Phase, totalRestarts(p))
 	if p.DeletionTimestamp != nil {
-		fmt.Fprintf(&b, " deleted=%s", p.DeletionTimestamp.Time.Format(time.RFC3339))
+		fmt.Fprintf(&b, " deleted=%s", p.DeletionTimestamp.Format(time.RFC3339))
 	}
 	b.WriteString("\n")
 	for _, st := range p.Status.ContainerStatuses {
 		fmt.Fprintf(&b, "  container %s: ready=%v restarts=%d", st.Name, st.Ready, st.RestartCount)
 		if t := st.LastTerminationState.Terminated; t != nil {
-			fmt.Fprintf(&b, " lastExit: reason=%s code=%d message=%q finished=%s", t.Reason, t.ExitCode, t.Message, t.FinishedAt.Time.Format(time.RFC3339))
+			fmt.Fprintf(&b, " lastExit: reason=%s code=%d message=%q finished=%s", t.Reason, t.ExitCode, t.Message, t.FinishedAt.Format(time.RFC3339))
 		}
 		b.WriteString("\n")
 	}
@@ -491,7 +493,7 @@ func dumpHead(t *testing.T, cs kubernetes.Interface, ns, pod string) string {
 			}
 		}
 		slices.SortFunc(mine, func(a, b corev1.Event) int {
-			return a.LastTimestamp.Time.Compare(b.LastTimestamp.Time)
+			return a.LastTimestamp.Compare(b.LastTimestamp.Time)
 		})
 		if len(mine) > 10 {
 			mine = mine[len(mine)-10:]
