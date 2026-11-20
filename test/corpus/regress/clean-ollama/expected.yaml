@@ -1,0 +1,8 @@
+# The gateway-auth annotation of ai-guard is kshield.io/gateway-auth here. kshield reports the declared
+# gateway as INFO. It does not verify the gateway.
+namespace: "llm"
+checks: ["KS-WL-001", "KS-WL-002", "KS-WL-009", "KS-WL-013", "KS-WL-015", "KS-WL-016", "KS-AI-004", "KS-AI-007", "KS-AI-010", "KS-AI-011", "KS-AI-012", "KS-NET-004"]
+expect:
+  - {check: "KS-AI-007", object: "Service/llm/genai", verdict: "INFO"}
+  - {check: "KS-AI-010", object: "StatefulSet/llm/genai", container: "ollama", verdict: "INFO"}
+na: []

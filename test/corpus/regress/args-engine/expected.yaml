@@ -1,0 +1,9 @@
+namespace: "llm"
+checks: ["KS-AI-001", "KS-AI-002", "KS-WL-001"]
+expect:
+  - {check: "KS-AI-001", object: "Deployment/llm/llm-gateway", container: "runtime", verdict: "FAIL"}
+  - {check: "KS-AI-001", object: "Deployment/llm/qa", container: "runtime", verdict: "FAIL"}
+  - {check: "KS-AI-002", object: "Deployment/llm/qa", container: "runtime", verdict: "FAIL"}
+  - {check: "KS-WL-001", object: "Deployment/llm/llm-gateway", container: "runtime", verdict: "FAIL"}
+  - {check: "KS-WL-001", object: "Deployment/llm/qa", container: "runtime", verdict: "FAIL"}
+na: []

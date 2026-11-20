@@ -1,0 +1,6 @@
+# ai-guard sets no --load-format either. kshield cannot rule out .bin weights and reports a suspect KS-AI-003.
+namespace: "llm"
+checks: ["KS-WL-001", "KS-WL-002", "KS-WL-009", "KS-WL-013", "KS-WL-015", "KS-WL-016", "KS-AI-001", "KS-AI-002", "KS-AI-003", "KS-AI-004", "KS-AI-010", "KS-AI-011", "KS-AI-012", "KS-NET-004"]
+expect:
+  - {check: "KS-AI-003", object: "Deployment/llm/vllm", container: "server", verdict: "WARN"}
+na: []

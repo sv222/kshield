@@ -1,0 +1,12 @@
+# The images are not known engines. The kshield.io/ai label makes both workloads AI workloads.
+# A single container is taken as the engine, so its findings are suspect (WARN). With two
+# containers kshield cannot tell the engine, so only the workload checks apply.
+namespace: "llm"
+checks: ["KS-AI-010", "KS-AI-012", "KS-WL-001"]
+expect:
+  - {check: "KS-AI-010", object: "Deployment/llm/genai", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-012", object: "Deployment/llm/genai", container: "server", verdict: "WARN"}
+  - {check: "KS-WL-001", object: "Deployment/llm/genai", container: "server", verdict: "FAIL"}
+  - {check: "KS-WL-001", object: "Deployment/llm/genai-mesh", container: "app", verdict: "FAIL"}
+  - {check: "KS-WL-001", object: "Deployment/llm/genai-mesh", container: "proxy", verdict: "FAIL"}
+na: []

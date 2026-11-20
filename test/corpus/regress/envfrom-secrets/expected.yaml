@@ -1,0 +1,8 @@
+# kshield reads the Secret instead of guessing from its name. Neither Secret is in the input,
+# so both vLLM containers get a suspect finding (WARN): the key may come from the Secret.
+namespace: "llm"
+checks: ["KS-AI-001"]
+expect:
+  - {check: "KS-AI-001", object: "Deployment/llm/vllm-hf", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-001", object: "Deployment/llm/vllm-keyed", container: "server", verdict: "WARN"}
+na: []

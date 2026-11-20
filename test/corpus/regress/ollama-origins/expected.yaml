@@ -1,0 +1,5 @@
+namespace: "llm"
+checks: ["KS-AI-011"]
+expect:
+  - {check: "KS-AI-011", object: "Deployment/llm/origins-wild", container: "server", verdict: "WARN"}
+na: []

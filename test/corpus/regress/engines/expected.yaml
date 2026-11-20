@@ -1,0 +1,9 @@
+namespace: "llm"
+checks: ["KS-AI-004", "KS-AI-010"]
+expect:
+  - {check: "KS-AI-004", object: "Service/llm/embed", verdict: "FAIL"}
+  - {check: "KS-AI-010", object: "Deployment/llm/embed", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/assistant", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/chat", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/chat", container: "cpu", verdict: "WARN"}
+na: []

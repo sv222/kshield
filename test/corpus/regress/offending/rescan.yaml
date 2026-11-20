@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-AI-003, object: Deployment/bad/vllm-bad, container: server, mode: both}

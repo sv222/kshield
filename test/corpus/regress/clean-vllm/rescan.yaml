@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-NET-002, object: NetworkPolicy/llm/vllm-isolate, mode: audit}

@@ -1,0 +1,8 @@
+namespace: "llm"
+checks: ["KS-AI-007", "KS-AI-010"]
+expect:
+  - {check: "KS-AI-007", object: "Ingress/llm/ollama-open", verdict: "FAIL"}
+  - {check: "KS-AI-010", object: "Deployment/llm/ollama-open", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/ollama-authed", container: "server", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/llm/ollama-internal", container: "server", verdict: "WARN"}
+na: []

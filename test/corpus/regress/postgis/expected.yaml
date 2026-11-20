@@ -1,0 +1,4 @@
+namespace: "gis"
+checks: ["KS-WL-001", "KS-WL-016", "KS-AI-010", "KS-NET-004"]
+expect: []
+na: ["KS-WL-001", "KS-WL-016", "KS-AI-010", "KS-NET-004"]
