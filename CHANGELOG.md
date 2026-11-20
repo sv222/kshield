@@ -6,8 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-11-20
-
 ### Added
 
 - Engine detection for Triton, Text Generation Inference (including `text-generation-launcher` and `text-generation-router`), Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy and TensorRT-LLM, and for Ray Serve by command. Triton, TGI and the other new engines now get findings: a scan of manifests with these engines reports more findings than before, because every check runs on AI workloads only. A non-AI pod stays non-AI.
@@ -24,12 +22,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `scan.json` records the `workloadSelector` of the scan when one is set.
 - `docs/hardened-engines.md` and the hardened Ollama and vLLM examples in `examples/hardened/`.
 - Corpus cases from ai-guard-k8s (regression files, the offending and clean samples) and the TGI, TEI, LocalAI and Triton charts. The chart renderer can render a chart from a git commit.
-- Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
-- In enforce mode each `kshield-egress-apiserver` policy also allows the Ray head to reach the pods of its own cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve).
 
 ### Changed
 
 - The `dora` profile has 39 checks (6 new). The profile sha256 changed, so `docs/MAPPING-REVIEW.md` needs a new sign-off.
+
+## [0.3.0] - 2026-11-20
+
+### Added
+
+- Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
+- In enforce mode each `kshield-egress-apiserver` policy also allows the Ray head to reach the pods of its own cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve).
 
 ### Fixed
 
