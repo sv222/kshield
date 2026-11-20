@@ -1,0 +1,2 @@
+residuals:
+  - {check: KS-RT-001, object: RayCluster/ai-inference/raycluster, mode: enforce}

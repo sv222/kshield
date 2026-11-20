@@ -1,2 +1,3 @@
 residuals:
   - {check: KS-AI-005, object: Ingress/ai-inference/ray-dashboard, mode: both}
+  - {check: KS-RT-001, object: RayCluster/ai-inference/raycluster, mode: enforce}

@@ -164,7 +164,7 @@ func rescanLoop(t *testing.T, fx rescanFixture, mode string) {
 	after, afterJSON := scanReport(t, fx.namespace, patchedPath)
 	assertResiduals(t, fx, mode, after)
 	assertPatchesFixed(t, fx, mode, b, after)
-	assertNoRegression(t, before, after)
+	assertNoRegression(t, before, after, activeResidualKeys(fx, mode))
 	again, err := Run(Options{ScanJSON: afterJSON, Mode: mode})
 	if err != nil {
 		t.Fatalf("second remediate: %v", err)
@@ -315,10 +315,26 @@ func worstByKey(r *report.Report) map[findingKey]string {
 	return out
 }
 
-func assertNoRegression(t *testing.T, before, after *report.Report) {
+// activeResidualKeys lists the keys of the residuals that apply in this mode:
+// findings named by a residual stay after remediation by design, so the
+// regression check skips them and the residual is their reviewed reason.
+func activeResidualKeys(fx rescanFixture, mode string) map[string]bool {
+	out := map[string]bool{}
+	for _, r := range fx.residuals {
+		if r.In(mode) {
+			out[residualKey(r)] = true
+		}
+	}
+	return out
+}
+
+func assertNoRegression(t *testing.T, before, after *report.Report, residual map[string]bool) {
 	t.Helper()
 	old := worstByKey(before)
 	for k, v := range worstByKey(after) {
+		if residual[k.String()] {
+			continue
+		}
 		prev, ok := old[k]
 		switch {
 		case !ok:

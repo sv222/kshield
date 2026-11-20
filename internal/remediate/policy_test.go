@@ -100,6 +100,39 @@ func TestPoliciesValidAgainstCRDs(t *testing.T) {
 	}
 }
 
+func TestShellExecPolicyRayExemption(t *testing.T) {
+	wantSel := map[string]any{"matchExpressions": []any{map[string]any{
+		"key": rayClusterLabel, "operator": "DoesNotExist",
+	}}}
+	enforce := mustPolicies(t, []string{policyNS}, PolicyOptions{Mode: "enforce"})
+	if got := lookupPath(enforce[1], "/spec/podSelector"); !reflect.DeepEqual(got, wantSel) {
+		t.Errorf("enforce shell-exec podSelector: %#v, want %#v", got, wantSel)
+	}
+	audit := mustPolicies(t, []string{policyNS}, PolicyOptions{Mode: "audit"})
+	if got := lookupPath(audit[1], "/spec/podSelector"); got != nil {
+		t.Errorf("audit shell-exec podSelector: %#v, want none", got)
+	}
+	// The guard keeps covering pods without the KubeRay label and stops
+	// covering the pods of a RayCluster (model.Workload carries the synthetic
+	// ray.io/cluster label), so the check reports the RayCluster unguarded.
+	ray := toYAML(t, `{"apiVersion":"ray.io/v1","kind":"RayCluster","metadata":{"name":"rc","namespace":"`+policyNS+`"},
+		"spec":{"headGroupSpec":{"template":{"spec":{"containers":[{"name":"ray-head","image":"rayproject/ray:2.52.0"}]}}},
+		"workerGroupSpecs":[{"groupName":"cpu","template":{"spec":{"containers":[{"name":"ray-worker","image":"rayproject/ray:2.52.0"}]}}}]}}`)
+	docs := append([]string{vllmIn(t, policyNS), ray}, policyDocs(t, enforce)...)
+	fs := findingsOf(t, loadInput(t, joinDocs(t, docs...)), "KS-RT-001")
+	if len(fs) == 0 {
+		t.Fatalf("KS-RT-001 findings %v, want findings on RayCluster/%s/rc (head and cpu groups)", fs, policyNS)
+	}
+	for _, f := range fs {
+		if f.Object.Name != "rc" || f.Object.Kind != "RayCluster" {
+			t.Errorf("KS-RT-001 finding on %s: %s", f.Object, f.Message)
+		}
+		if f.Message != "no Tetragon shell-exec guard covers this workload" {
+			t.Errorf("RayCluster finding %q", f.Message)
+		}
+	}
+}
+
 func TestPoliciesOrder(t *testing.T) {
 	objs := mustPolicies(t, []string{"b", "a", "b"}, PolicyOptions{Mode: "audit"})
 	var got []string
@@ -234,6 +267,24 @@ func TestPoliciesPeerRules(t *testing.T) {
 	}
 }
 
+// rayEgressWant is the egress of a per-cluster API server policy: the
+// kube-apiserver entity rule and the rule that lets the head reach the pods
+// of its own cluster on the Ray ports (GCS, dashboard, job submit, client,
+// serve).
+func rayEgressWant(cluster string) []any {
+	ports := []any{}
+	for _, p := range []string{"6379", "8265", "8266", "10001", "8000"} {
+		ports = append(ports, map[string]any{"port": p, "protocol": "TCP"})
+	}
+	return []any{
+		map[string]any{"toEntities": []any{entityAPIServer}},
+		map[string]any{
+			"toEndpoints": []any{map[string]any{"matchLabels": map[string]any{rayClusterLabel: cluster}}},
+			"toPorts":     []any{map[string]any{"ports": ports}},
+		},
+	}
+}
+
 func TestAPIServerPolicyHeadOnly(t *testing.T) {
 	for _, opt := range policyOpts {
 		objs := mustPolicies(t, []string{policyNS, "ai-train"}, opt)
@@ -262,7 +313,7 @@ func TestAPIServerPolicyHeadOnly(t *testing.T) {
 		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
 			t.Errorf("%s: endpointSelector %v, want %v", opt.Mode, got, wantSel)
 		}
-		wantEgress := []any{map[string]any{"toEntities": []any{"kube-apiserver"}}}
+		wantEgress := rayEgressWant("rc")
 		if got := lookupPath(o, "/spec/egress"); !reflect.DeepEqual(got, wantEgress) {
 			t.Errorf("%s: egress %v, want %v", opt.Mode, got, wantEgress)
 		}
@@ -303,7 +354,7 @@ func TestAPIServerPolicyPerCluster(t *testing.T) {
 		if got := lookupPath(o, "/spec/endpointSelector"); !reflect.DeepEqual(got, wantSel) {
 			t.Errorf("%s: endpointSelector %v, want %v", cluster, got, wantSel)
 		}
-		wantEgress := []any{map[string]any{"toEntities": []any{entityAPIServer}}}
+		wantEgress := rayEgressWant(cluster)
 		if got := lookupPath(o, "/spec/egress"); !reflect.DeepEqual(got, wantEgress) {
 			t.Errorf("%s: egress %v, want %v", cluster, got, wantEgress)
 		}

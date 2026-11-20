@@ -1006,8 +1006,9 @@ spec:
 	}
 	input := strings.Join([]string{ray("ai-inference", "rc"), ray("ai-inference", "batch")}, "---\n")
 	want := "- Ray starts shells from its Python processes: the dashboard, the client server, the autoscaler v2 monitor, `multiprocessing` spawn children and a `ray start` fork. " +
-		"In enforce mode the shell-exec guard kills them, and the Ray head does not start (measured with `rayproject/ray:2.52.0`). " +
-		"kshield has no allow-list for Ray. Keep the namespaces of these workloads in audit: `RayCluster/ai-inference/batch`, `RayCluster/ai-inference/rc`.\n"
+		"The enforce shell-exec guard exempts pods that carry the KubeRay `ray.io/cluster` label, so the head, worker and driver pods of a RayCluster start in enforce mode. " +
+		"A pod that starts Ray without that label is not exempt, and the guard kills it (measured with `rayproject/ray:2.52.0`): " +
+		"label such pods like KubeRay does, or keep the namespaces of these workloads in audit: `RayCluster/ai-inference/batch`, `RayCluster/ai-inference/rc`.\n"
 	for _, mode := range []string{"audit", "enforce"} {
 		b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, input)), Mode: mode})
 		if err != nil {
@@ -1028,6 +1029,44 @@ spec:
 	}
 	if strings.Contains(string(b.Files["MANUAL.md"]), "Ray starts shells") {
 		t.Errorf("MANUAL.md has the Ray item, but the input has no Ray workload:\n%s", b.Files["MANUAL.md"])
+	}
+}
+
+func TestManualRayEgressPorts(t *testing.T) {
+	ray := func(autoscaling string) string {
+		return `apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: rc
+  namespace: ai-inference
+spec:
+  enableInTreeAutoscaling: ` + autoscaling + `
+  headGroupSpec:
+    template:
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.52.0
+`
+	}
+	want := "The `kshield-egress-apiserver` policy of each autoscaling RayCluster also allows egress from its head pods " +
+		"to the pods of the same cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve). "
+	for _, tc := range []struct {
+		autoscaling, input string
+		wantPorts          bool
+	}{
+		{"true", ray("true"), true},
+		{"false", ray("false"), false},
+		{"none", manualDeployment("models", `["serve", "/models/m", "--port", "8000"]`, ""), false},
+	} {
+		b, err := Run(Options{ScanJSON: scanJSON(t, "ai-inference", writeInput(t, tc.input)), Mode: "enforce"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		manual := string(b.Files["MANUAL.md"])
+		if got := strings.Contains(manual, want); got != tc.wantPorts {
+			t.Errorf("autoscaling %s: MANUAL.md ports sentence is %v, want %v:\n%s", tc.autoscaling, got, tc.wantPorts, manual)
+		}
 	}
 }
 

@@ -70,6 +70,10 @@ spec:
         values:
         - 1
     syscall: false
+  podSelector:
+    matchExpressions:
+    - key: ray.io/cluster
+      operator: DoesNotExist
 ---
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicyNamespaced
