@@ -7,11 +7,15 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"slices"
+	"strings"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utiljson "k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/client-go/discovery"
 	"sigs.k8s.io/kustomize/api/krusty"
 	"sigs.k8s.io/kustomize/kyaml/filesys"
 
@@ -176,4 +180,70 @@ func PlanApply(b *Bundle, withPatches bool) ([]ApplyObject, error) {
 		out = append(out, ApplyObject{Role: RolePolicy, Object: u})
 	}
 	return out, nil
+}
+
+type MissingKind struct {
+	APIVersion string
+	Kind       string
+	Product    string
+	Objects    []ApplyObject
+}
+
+func productOf(apiVersion, kind string) string {
+	group, _ := splitAPIVersion(apiVersion)
+	switch {
+	case group == "kyverno.io":
+		return "Kyverno"
+	case group == "cilium.io" && strings.HasPrefix(kind, "Tracing"):
+		return "Tetragon"
+	case group == "cilium.io":
+		return "Cilium"
+	}
+	return ""
+}
+
+func Resolve(d discovery.DiscoveryInterface, objs []ApplyObject) ([]ApplyObject, []MissingKind, error) {
+	groups, err := d.ServerGroups()
+	if err != nil {
+		return nil, nil, fmt.Errorf("cluster: discover groups: %w", err)
+	}
+	served := map[string]bool{}
+	for _, g := range groups.Groups {
+		for _, v := range g.Versions {
+			served[v.GroupVersion] = true
+		}
+	}
+	resources := map[string][]metav1.APIResource{}
+	var found []ApplyObject
+	var missing []MissingKind
+	for _, o := range objs {
+		gv, kind := o.Object.GetAPIVersion(), o.Object.GetKind()
+		if served[gv] {
+			if _, ok := resources[gv]; !ok {
+				list, err := d.ServerResourcesForGroupVersion(gv)
+				if err != nil {
+					return nil, nil, fmt.Errorf("cluster: discover %s: %w", gv, err)
+				}
+				resources[gv] = list.APIResources
+			}
+		}
+		i := slices.IndexFunc(resources[gv], func(r metav1.APIResource) bool { return r.Kind == kind && !strings.Contains(r.Name, "/") })
+		if i < 0 {
+			j := slices.IndexFunc(missing, func(m MissingKind) bool { return m.APIVersion == gv && m.Kind == kind })
+			if j < 0 {
+				missing = append(missing, MissingKind{APIVersion: gv, Kind: kind, Product: productOf(gv, kind)})
+				j = len(missing) - 1
+			}
+			missing[j].Objects = append(missing[j].Objects, o)
+			continue
+		}
+		parsed, err := schema.ParseGroupVersion(gv)
+		if err != nil {
+			return nil, nil, err
+		}
+		o.Resource = parsed.WithResource(resources[gv][i].Name)
+		o.Namespaced = resources[gv][i].Namespaced
+		found = append(found, o)
+	}
+	return found, missing, nil
 }
