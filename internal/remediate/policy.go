@@ -51,6 +51,16 @@ const (
 	containersList  = "request.object.spec.[ephemeralContainers, initContainers, containers][]"
 )
 
+// rayHeadPorts lists the TCP ports that the head of an autoscaling RayCluster
+// talks to the pods of its own cluster on, and that the enforce egress
+// default-deny of the head must allow:
+//   - 6379: GCS (gRPC, also over IPv4-mapped IPv6)
+//   - 8265: dashboard
+//   - 8266: job submit (Jobs API)
+//   - 10001: Ray client
+//   - 8000: Ray Serve
+var rayHeadPorts = []string{"6379", "8265", "8266", "10001", "8000"}
+
 var (
 	policyChecks  = []string{"KS-NET-001", "KS-RT-001", "KS-RT-002", "KS-RT-003"}
 	shellSuffixes = []string{"/sh", "/bash", "/dash", "/ash", "/zsh", "/ksh", "/busybox"}
@@ -297,8 +307,12 @@ func egressPolicy(ns string, enforce bool, ep egressPeers) map[string]any {
 // of the namespace. The selector pins both ray.io/node-type: head and
 // ray.io/cluster: <name>, so a pod that merely sets the head label does not
 // get API server egress (spec section 4; any pod in the namespace can set
-// that label). One cluster keeps the plain policy name; more than one (or a
-// truncation collision) uses kshield-egress-apiserver-<cluster>.
+// that label). The egress allows the kube-apiserver entity for the autoscaler
+// and, for the head to reach the pods of its own cluster (workers, and the
+// client-side proxies of the same cluster), the rayHeadPorts. The port rule
+// is an allow rule: it matters when enforce turns the egress default-deny on
+// and is harmless in audit. One cluster keeps the plain policy name; more
+// than one (or a truncation collision) uses kshield-egress-apiserver-<cluster>.
 func apiServerPolicies(ns string, clusters []string, enforce bool) []map[string]any {
 	if len(clusters) == 0 {
 		return nil
@@ -328,8 +342,23 @@ func apiServerPolicies(ns string, clusters []string, enforce bool) []map[string]
 		out = append(out, policyObject(ciliumAPIVersion, kindCNP, ns, name, "", map[string]any{
 			"endpointSelector":  map[string]any{"matchLabels": map[string]any{rayHeadLabel: rayHeadValue, rayClusterLabel: cluster}},
 			"enableDefaultDeny": map[string]any{"egress": enforce, "ingress": false},
-			"egress":            []any{map[string]any{"toEntities": []any{entityAPIServer}}},
+			"egress": []any{
+				map[string]any{"toEntities": []any{entityAPIServer}},
+				map[string]any{
+					"toEndpoints": []any{map[string]any{"matchLabels": map[string]any{rayClusterLabel: cluster}}},
+					"toPorts":     []any{map[string]any{"ports": rayPorts()}},
+				},
+			},
 		}))
+	}
+	return out
+}
+
+// rayPorts builds the toPorts list of the per-cluster head egress rule.
+func rayPorts() []any {
+	out := make([]any, 0, len(rayHeadPorts))
+	for _, p := range rayHeadPorts {
+		out = append(out, map[string]any{"port": p, "protocol": "TCP"})
 	}
 	return out
 }

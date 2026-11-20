@@ -21,6 +21,11 @@ const (
 	nsPlaceholder   = "<namespace of the InferenceService>"
 	apiKeyValueHint = "<random API key>"
 
+	// rayPortText mirrors the rayHeadPorts of policy.go for the MANUAL.md:
+	// the ports the head of an autoscaling RayCluster may reach in its own
+	// cluster.
+	rayPortText = "6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve)"
+
 	helmPluginDir       = "kshield-postrender"
 	helmPostRenderFlags = "--post-renderer kshield-postrender --post-renderer-args <absolute path of this bundle dir> --post-renderer-args <namespace>"
 	helmScanSteps       = `helm template <release> <chart> -n <namespace> -f <values.yaml> >rendered.yaml
@@ -394,6 +399,9 @@ func (b *builder) rollout(m *manualWriter) {
 		}
 		m.f("- Ray starts shells from its Python processes: the dashboard, the client server, the autoscaler v2 monitor, `multiprocessing` spawn children and a `ray start` fork. ")
 		m.f("The enforce shell-exec guard exempts pods that carry the KubeRay `%s` label, so the head, worker and driver pods of a RayCluster start in enforce mode. ", rayClusterLabel)
+		if len(b.autoscalingClusters()) > 0 {
+			m.f("The `%s` policy of each autoscaling RayCluster also allows egress from its head pods to the pods of the same cluster on %s. ", apiServerPolicyName, rayPortText)
+		}
 		m.f("A pod that starts Ray without that label is not exempt, and the guard kills it (measured with `rayproject/ray:2.52.0`): ")
 		m.f("label such pods like KubeRay does, or keep the namespaces of these workloads in audit: %s.\n", strings.Join(names, ", "))
 	}
@@ -500,6 +508,19 @@ func (b *builder) rayWorkloads() []load.ObjectRef {
 	}
 	slices.SortFunc(out, compareRefs)
 	return out
+}
+
+// autoscalingClusters lists the RayClusters of the policy namespaces that run
+// the in-tree autoscaler; these are the clusters whose head pods get the
+// kshield-egress-apiserver policy.
+func (b *builder) autoscalingClusters() []string {
+	_, apiServer := PolicyPeers(b.in)
+	var out []string
+	for _, ns := range b.policyNS {
+		out = append(out, apiServer[ns]...)
+	}
+	slices.Sort(out)
+	return slices.Compact(out)
 }
 
 func (b *builder) volumePatched(w model.Workload, i int) bool {
