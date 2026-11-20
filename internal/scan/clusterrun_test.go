@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	clienttesting "k8s.io/client-go/testing"
@@ -238,5 +239,76 @@ func TestClusterReturnsObjects(t *testing.T) {
 	}
 	if in.Cluster == nil || len(in.Workloads) != 1 {
 		t.Errorf("input cluster %v workloads %d", in.Cluster, len(in.Workloads))
+	}
+}
+
+func routeObjects(extra ...*unstructured.Unstructured) []*unstructured.Unstructured {
+	svc := clustertest.WithSpec(clustertest.Object("v1", "Service", "ai", "svc"), map[string]any{
+		"selector": map[string]any{"app": "vllm"},
+		"ports":    []any{map[string]any{"port": int64(8000)}},
+	})
+	route := clustertest.WithSpec(clustertest.Object("gateway.networking.k8s.io/v1", "HTTPRoute", "ai", "chat"), map[string]any{
+		"parentRefs": []any{map[string]any{"name": "public", "namespace": "infra"}},
+		"rules":      []any{map[string]any{"backendRefs": []any{map[string]any{"name": "svc"}}}},
+	})
+	return append([]*unstructured.Unstructured{
+		clustertest.Object("v1", "Namespace", "", "ai"),
+		clustertest.Object("v1", "Namespace", "", "infra"),
+		clustertest.RootVLLM("ai"),
+		svc,
+		route,
+	}, extra...)
+}
+
+func routeFinding(t *testing.T, r *report.Report) report.Finding {
+	t.Helper()
+	c := checkByID(t, r, "KS-AI-013")
+	if len(c.Findings) != 1 || c.Findings[0].Object.String() != "HTTPRoute/ai/chat" {
+		t.Fatalf("KS-AI-013 %s %+v", c.Verdict, c.Findings)
+	}
+	return c.Findings[0]
+}
+
+func TestClusterHTTPRouteWithoutAuthFails(t *testing.T) {
+	r := scanCluster(t, clustertest.New(routeObjects()...), ClusterOptions{})
+	if f := routeFinding(t, r); f.Verdict != report.VerdictFail {
+		t.Errorf("verdict %s: %s", f.Verdict, f.Message)
+	}
+	if r.Summary.Incomplete {
+		t.Errorf("incomplete: %v", r.Errors)
+	}
+}
+
+func TestClusterHTTPRouteWithEnvoyPolicyIsInfo(t *testing.T) {
+	policy := clustertest.WithSpec(clustertest.Object("gateway.envoyproxy.io/v1alpha1", "SecurityPolicy", "infra", "jwt"), map[string]any{
+		"targetRefs": []any{map[string]any{"group": "gateway.networking.k8s.io", "kind": "Gateway", "name": "public"}},
+		"jwt":        map[string]any{"providers": []any{}},
+	})
+	r := scanCluster(t, clustertest.New(routeObjects(policy)...), ClusterOptions{})
+	f := routeFinding(t, r)
+	if f.Verdict != report.VerdictInfo || !strings.Contains(f.Message, "SecurityPolicy infra/jwt") {
+		t.Errorf("finding %+v", f)
+	}
+}
+
+func TestClusterHTTPRouteParentOutsideScopeIsWarn(t *testing.T) {
+	r := scanCluster(t, clustertest.New(routeObjects()...), ClusterOptions{Namespaces: []string{"ai"}})
+	f := routeFinding(t, r)
+	if f.Verdict != report.VerdictWarn || !strings.Contains(f.Message, "outside the scanned namespaces") {
+		t.Errorf("finding %+v", f)
+	}
+	r = scanCluster(t, clustertest.New(routeObjects()...), ClusterOptions{Namespaces: []string{"ai", "infra"}})
+	if f := routeFinding(t, r); f.Verdict != report.VerdictFail {
+		t.Errorf("both namespaces scanned: %+v", f)
+	}
+}
+
+func TestClusterForbiddenSecurityPoliciesIsUnknown(t *testing.T) {
+	c := clustertest.New(routeObjects()...)
+	c.Dynamic.PrependReactor("list", "securitypolicies", forbidden("securitypolicies"))
+	r := scanCluster(t, c, ClusterOptions{})
+	assertUnknown(t, r, "KS-AI-013")
+	if !r.Summary.Incomplete || len(r.Errors) != 1 || !strings.Contains(r.Errors[0], "securitypolicies") {
+		t.Fatalf("errors %v incomplete %v", r.Errors, r.Summary.Incomplete)
 	}
 }

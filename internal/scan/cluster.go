@@ -113,9 +113,12 @@ func clusterObjectsInput(objs []load.Object, facts *check.ClusterFacts, opt Clus
 	if err := validate(p, checks); err != nil {
 		return nil, nil, err
 	}
-	if facts == nil {
-		facts = &check.ClusterFacts{}
+	scoped := check.ClusterFacts{}
+	if facts != nil {
+		scoped = *facts
 	}
+	scoped.Namespaces = slices.Compact(slices.Sorted(slices.Values(opt.Namespaces)))
+	facts = &scoped
 	total := len(objs)
 	objs, skipped := splitShapes(objs)
 	opt.Errors = slices.Concat(opt.Errors, skipped)

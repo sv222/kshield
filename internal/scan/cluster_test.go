@@ -1,6 +1,7 @@
 package scan
 
 import (
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -212,7 +213,7 @@ func TestClusterObjectsFacts(t *testing.T) {
 	if _, err := clusterObjects(objs, facts, ClusterOptions{Deterministic: true}, oneCheckProfile(t), checks); err != nil {
 		t.Fatal(err)
 	}
-	if len(seen) != 1 || seen[0].Cluster != facts {
+	if len(seen) != 1 || seen[0].Cluster == nil || !reflect.DeepEqual(*seen[0].Cluster, *facts) {
 		t.Errorf("facts not passed through: %+v", seen)
 	}
 }
