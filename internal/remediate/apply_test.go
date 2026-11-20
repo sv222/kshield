@@ -1,14 +1,23 @@
 package remediate
 
 import (
+	"bytes"
+	"context"
 	"errors"
+	"io"
 	"slices"
 	"strconv"
 	"strings"
 	"testing"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	discoveryfake "k8s.io/client-go/discovery/fake"
+	dynamicfake "k8s.io/client-go/dynamic/fake"
 	clienttesting "k8s.io/client-go/testing"
 
 	"github.com/sv222/kshield/internal/cluster/clustertest"
@@ -214,5 +223,149 @@ func TestResolveDiscoveryError(t *testing.T) {
 	}
 	if _, _, err := Resolve(failingDiscovery{discoveryWith(clustertest.Kinds...)}, objs); err == nil || !strings.Contains(err.Error(), "connection refused") {
 		t.Fatalf("err %v", err)
+	}
+}
+
+type recordedPatch struct {
+	resource  string
+	namespace string
+	name      string
+	patchType types.PatchType
+	options   metav1.PatchOptions
+}
+
+func applyFixture(t *testing.T) (*dynamicfake.FakeDynamicClient, *[]recordedPatch, []ApplyObject) {
+	t.Helper()
+	objs, err := PlanApply(toxicBundle(t, "audit"), false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	found, missing, err := Resolve(discoveryWith(clustertest.Kinds...), objs)
+	if err != nil || len(missing) != 0 {
+		t.Fatalf("missing %v err %v", missing, err)
+	}
+	listKinds := map[schema.GroupVersionResource]string{}
+	for _, k := range clustertest.Kinds {
+		listKinds[k.GVR()] = k.Kind + "List"
+	}
+	client := dynamicfake.NewSimpleDynamicClientWithCustomListKinds(runtime.NewScheme(), listKinds)
+	var patches []recordedPatch
+	client.PrependReactor("patch", "*", func(a clienttesting.Action) (bool, runtime.Object, error) {
+		pa := a.(clienttesting.PatchActionImpl)
+		patches = append(patches, recordedPatch{pa.GetResource().Resource, pa.GetNamespace(), pa.GetName(), pa.GetPatchType(), pa.PatchOptions})
+		return true, &unstructured.Unstructured{Object: map[string]any{}}, nil
+	})
+	return client, &patches, found
+}
+
+func TestRunApplyUsesServerSideApply(t *testing.T) {
+	client, patches, objs := applyFixture(t)
+	var out bytes.Buffer
+	if err := RunApply(context.Background(), client, objs, ApplyOptions{}, &out); err != nil {
+		t.Fatal(err)
+	}
+	if len(*patches) != len(objs) {
+		t.Fatalf("%d patches, want %d", len(*patches), len(objs))
+	}
+	for i, p := range *patches {
+		if p.patchType != types.ApplyPatchType || p.options.FieldManager != "kshield" || p.options.Force != nil && *p.options.Force || len(p.options.DryRun) != 0 {
+			t.Errorf("patch %d: %+v", i, p)
+		}
+		if p.namespace != "ai-inference" || p.name != objs[i].Object.GetName() {
+			t.Errorf("patch %d targets %s/%s", i, p.namespace, p.name)
+		}
+	}
+	for _, want := range []string{"applied CiliumNetworkPolicy/ai-inference/kshield-egress", "applied Policy/ai-inference/kshield-admission"} {
+		if !strings.Contains(out.String(), want) {
+			t.Errorf("output lacks %q:\n%s", want, out.String())
+		}
+	}
+}
+
+func TestRunApplyForceConflicts(t *testing.T) {
+	client, patches, objs := applyFixture(t)
+	if err := RunApply(context.Background(), client, objs, ApplyOptions{ForceConflicts: true}, io.Discard); err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range *patches {
+		if p.options.Force == nil || !*p.options.Force {
+			t.Errorf("%s: force not set: %+v", p.name, p.options)
+		}
+	}
+}
+
+func TestRunApplyDryRun(t *testing.T) {
+	client, patches, objs := applyFixture(t)
+	var out bytes.Buffer
+	if err := RunApply(context.Background(), client, objs, ApplyOptions{DryRun: true}, &out); err != nil {
+		t.Fatal(err)
+	}
+	for _, p := range *patches {
+		if !slices.Equal(p.options.DryRun, []string{metav1.DryRunAll}) {
+			t.Errorf("%s: dry run %v", p.name, p.options.DryRun)
+		}
+	}
+	if !strings.Contains(out.String(), "dry run ok CiliumNetworkPolicy/ai-inference/kshield-egress") || strings.Contains(out.String(), "applied") {
+		t.Errorf("output:\n%s", out.String())
+	}
+}
+
+func TestRunApplyStopsAtAConflict(t *testing.T) {
+	client, patches, objs := applyFixture(t)
+	calls := 0
+	client.PrependReactor("patch", "*", func(a clienttesting.Action) (bool, runtime.Object, error) {
+		calls++
+		if calls == 2 {
+			return true, nil, apierrors.NewConflict(schema.GroupResource{Group: "kyverno.io", Resource: "policies"}, "x", errors.New("field owned by kubectl"))
+		}
+		return false, nil, nil
+	})
+	var out bytes.Buffer
+	err := RunApply(context.Background(), client, objs, ApplyOptions{}, &out)
+	var ae *ApplyError
+	if !errors.As(err, &ae) {
+		t.Fatalf("err %v", err)
+	}
+	if ae.Applied != 1 || !ae.Conflict || ae.Object.Label() != objs[1].Label() {
+		t.Errorf("apply error %+v", ae)
+	}
+	if !strings.Contains(err.Error(), "--force-conflicts") || !strings.Contains(err.Error(), objs[1].Label()) {
+		t.Errorf("message %q", err)
+	}
+	if len(*patches) != 1 {
+		t.Errorf("%d objects applied after the conflict", len(*patches))
+	}
+}
+
+func TestRunApplyOtherErrorHasNoForceHint(t *testing.T) {
+	client, _, objs := applyFixture(t)
+	client.PrependReactor("patch", "*", func(clienttesting.Action) (bool, runtime.Object, error) {
+		return true, nil, apierrors.NewForbidden(schema.GroupResource{Resource: "policies"}, "x", errors.New("RBAC: denied"))
+	})
+	err := RunApply(context.Background(), client, objs, ApplyOptions{}, io.Discard)
+	var ae *ApplyError
+	if !errors.As(err, &ae) || ae.Conflict || ae.Applied != 0 || strings.Contains(err.Error(), "--force-conflicts") {
+		t.Fatalf("err %v", err)
+	}
+}
+
+func TestRunApplyClusterScopedObject(t *testing.T) {
+	client := dynamicfake.NewSimpleDynamicClient(runtime.NewScheme())
+	var got []recordedPatch
+	client.PrependReactor("patch", "*", func(a clienttesting.Action) (bool, runtime.Object, error) {
+		pa := a.(clienttesting.PatchActionImpl)
+		got = append(got, recordedPatch{pa.GetResource().Resource, pa.GetNamespace(), pa.GetName(), pa.GetPatchType(), pa.PatchOptions})
+		return true, &unstructured.Unstructured{Object: map[string]any{}}, nil
+	})
+	obj := ApplyObject{
+		Role:     RolePolicy,
+		Object:   &unstructured.Unstructured{Object: map[string]any{"apiVersion": "cilium.io/v1alpha1", "kind": "TracingPolicy", "metadata": map[string]any{"name": "tp"}}},
+		Resource: schema.GroupVersionResource{Group: "cilium.io", Version: "v1alpha1", Resource: "tracingpolicies"},
+	}
+	if err := RunApply(context.Background(), client, []ApplyObject{obj}, ApplyOptions{}, io.Discard); err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 1 || got[0].namespace != "" || got[0].resource != "tracingpolicies" {
+		t.Errorf("patches %+v", got)
 	}
 }

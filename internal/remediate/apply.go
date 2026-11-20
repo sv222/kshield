@@ -2,6 +2,7 @@ package remediate
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,12 +11,14 @@ import (
 	"slices"
 	"strings"
 
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utiljson "k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/dynamic"
 	"sigs.k8s.io/kustomize/api/krusty"
 	"sigs.k8s.io/kustomize/kyaml/filesys"
 
@@ -246,4 +249,50 @@ func Resolve(d discovery.DiscoveryInterface, objs []ApplyObject) ([]ApplyObject,
 		found = append(found, o)
 	}
 	return found, missing, nil
+}
+
+type ApplyOptions struct {
+	ForceConflicts bool
+	DryRun         bool
+}
+
+type ApplyError struct {
+	Object   ApplyObject
+	Applied  int
+	Conflict bool
+	Err      error
+}
+
+func (e *ApplyError) Error() string {
+	msg := fmt.Sprintf("apply %s failed after %d applied: %v", e.Object.Label(), e.Applied, e.Err)
+	if e.Conflict {
+		msg += "; another field manager owns a field kshield changes: review who owns it, then run again with --force-conflicts to take it over"
+	}
+	return msg
+}
+
+func (e *ApplyError) Unwrap() error {
+	return e.Err
+}
+
+func RunApply(ctx context.Context, client dynamic.Interface, objs []ApplyObject, opt ApplyOptions, out io.Writer) error {
+	po := metav1.ApplyOptions{FieldManager: FieldManager, Force: opt.ForceConflicts}
+	verb := "applied"
+	if opt.DryRun {
+		po.DryRun = []string{metav1.DryRunAll}
+		verb = "dry run ok"
+	}
+	for i, o := range objs {
+		var ri dynamic.ResourceInterface = client.Resource(o.Resource)
+		if o.Namespaced {
+			ri = client.Resource(o.Resource).Namespace(o.Object.GetNamespace())
+		}
+		if _, err := ri.Apply(ctx, o.Object.GetName(), o.Object.DeepCopy(), po); err != nil {
+			return &ApplyError{Object: o, Applied: i, Conflict: apierrors.IsConflict(err), Err: err}
+		}
+		if _, err := fmt.Fprintf(out, "%s %s\n", verb, o.Label()); err != nil {
+			return err
+		}
+	}
+	return nil
 }
