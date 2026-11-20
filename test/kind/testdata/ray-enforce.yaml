@@ -1,0 +1,31 @@
+apiVersion: ray.io/v1
+kind: RayCluster
+metadata:
+  name: ray-enforce
+spec:
+  rayVersion: "2.52.0"
+  headGroupSpec:
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template:
+      spec:
+        containers:
+          - name: ray-head
+            # Pinned at the version the remediate manual measures the
+            # shell-exec guard against; never a floating tag.
+            image: rayproject/ray:2.52.0
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                cpu: "1"
+                memory: 2Gi
+            ports:
+              - name: gcs
+                containerPort: 6379
+              - name: dashboard
+                containerPort: 8265
+              - name: client
+                containerPort: 10001
+  workerGroupSpecs: []
