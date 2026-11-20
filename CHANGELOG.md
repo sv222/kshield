@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
 - In enforce mode each `kshield-egress-apiserver` policy also allows the Ray head to reach the pods of its own cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve).
 
+### Fixed
+
+- The KS-RT-001 check no longer rates the head and worker sites of a RayService or RayJob as covered by the enforce shell-exec guard: KubeRay labels those pods with `ray.io/cluster` too, so the guard exempts them, and the check now reports the workloads as unguarded like a RayCluster (the model carries the label with an empty value, because the name of the generated child cluster is unknown from the CR).
+
 ## [0.2.0] - 2026-11-18
 
 ### Added
