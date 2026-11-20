@@ -341,6 +341,12 @@ func ingressExposure(in *Input, i indexedIngress, selecting map[string]indexedSe
 	}
 	auth := i.auth
 	if !auth.Present() {
+		auth, _ = kongAuth(in, i.obj.Ref.Namespace, annotationsOf(i.obj), nil)
+	}
+	if !auth.Present() {
+		auth, _ = kongAuth(in, w.Owner.Namespace, annotationsOf(selecting[hit].obj), nil)
+	}
+	if !auth.Present() {
 		auth, _ = meshAuth(in, w, hit, nil)
 	}
 	return Exposure{Object: i.obj, Kind: ExposureIngress, Auth: auth, Path: path}, true
