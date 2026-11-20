@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sglang
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sglang
+  template:
+    metadata:
+      labels:
+        app: sglang
+    spec:
+      containers:
+        - name: sglang
+          image: lmsysorg/sglang:v0.4.6
+          args: ["--model-path", "/models/model.pt"]

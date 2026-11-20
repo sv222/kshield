@@ -130,5 +130,6 @@ kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 5 objects, 5 AI 
 [PASS] DORA-CH2-035 KS-WL-016 hostPort on an AI container
 [PASS] DORA-CH2-036 KS-AI-010 Inference engine other than vLLM without API key or gateway auth evidence
 [PASS] DORA-CH2-037 KS-AI-011 Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
+[PASS] DORA-CH2-038 KS-AI-012 Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
 
-Summary: 17 FAIL, 4 WARN, 11 PASS, 0 INFO, 5 N/A
+Summary: 17 FAIL, 4 WARN, 12 PASS, 0 INFO, 5 N/A

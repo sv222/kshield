@@ -374,3 +374,101 @@ func TestEngineAuthNotApplicable(t *testing.T) {
 		t.Errorf("generic workload: %+v", r)
 	}
 }
+
+func TestModelSourceFindings(t *testing.T) {
+	const ctr0 = podSpecPath + "/containers/0"
+	runEngineCases(t, "KS-AI-012", []engineCase{
+		{"tgi trust remote code", `
+containers:
+  - name: tgi
+    image: ghcr.io/huggingface/text-generation-inference:3.3.4
+    args: ["--model-id", "m", "--trust-remote-code"]
+`, []wantFinding{{"tgi", ctr0 + "/args"}}, nil},
+		{"vllm trust remote code is KS-AI-002", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    args: ["--model", "m", "--trust-remote-code"]
+`, nil, nil},
+		{"tgi pickle model path", `
+containers:
+  - name: tgi
+    image: ghcr.io/huggingface/text-generation-inference:3.3.4
+    args: ["--model-id=/models/llama.bin"]
+`, []wantFinding{{"tgi", ctr0 + "/args"}}, nil},
+		{"every pickle and keras suffix", `
+containers:
+  - name: sglang
+    image: lmsysorg/sglang:v0.4.6
+    args: ["--model-path", "a.pt", "--b", "b.PTH", "--c", "c.pkl", "--d", "d.pickle", "--e", "e.ckpt", "--f", "f.h5", "--g", "g.keras", "--h", "h.bin"]
+`, []wantFinding{{"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}, {"sglang", ctr0 + "/args"}}, nil},
+		{"query string after the suffix", `
+containers:
+  - name: llama
+    image: ghcr.io/ggml-org/llama.cpp:server
+    args: ["--model-url", "https://example.com/m.pt?download=1"]
+`, []wantFinding{{"llama", ctr0 + "/args"}}, nil},
+		{"safetensors and gguf", `
+containers:
+  - name: llama
+    image: ghcr.io/ggml-org/llama.cpp:server
+    args: ["-m", "/models/m.gguf", "--other", "/models/w.safetensors"]
+`, nil, nil},
+		{"model file in an env value", `
+containers:
+  - name: ollama
+    image: ollama/ollama:0.5.0
+    env:
+      - {name: MODEL_FILE, value: /models/m.pkl}
+`, []wantFinding{{"ollama", ctr0 + "/env/0"}}, nil},
+		{"s3 source on tgi", `
+containers:
+  - name: tgi
+    image: ghcr.io/huggingface/text-generation-inference:3.3.4
+    args: ["--model-id", "s3://bucket/model"]
+`, []wantFinding{{"tgi", ctr0 + "/args"}}, []Strength{Suspect}},
+		{"gs source with equals", `
+containers:
+  - name: tgi
+    image: ghcr.io/huggingface/text-generation-inference:3.3.4
+    args: ["--model-id=GS://bucket/model"]
+`, []wantFinding{{"tgi", ctr0 + "/args"}}, []Strength{Suspect}},
+		{"s3 source on vllm", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    args: ["--model", "s3://bucket/model"]
+`, []wantFinding{{"vllm", ctr0 + "/args"}}, []Strength{Suspect}},
+		{"pickle file on vllm is KS-AI-003", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    args: ["--model", "/models/llama.bin"]
+`, nil, nil},
+		{"source in the command field", `
+containers:
+  - name: triton
+    image: nvcr.io/nvidia/tritonserver:24.05-py3
+    command: ["tritonserver", "--model-repository=s3://bucket/repo"]
+`, []wantFinding{{"triton", ctr0 + "/command"}}, []Strength{Suspect}},
+		{"s3 only in a sibling command is a guess", `
+containers:
+  - name: sglang
+    image: lmsysorg/sglang:v0.4.6
+    command: ["sh", "-c", "aws s3 cp s3://bucket/m /m && prepare.sh"]
+`, []wantFinding{{"sglang", ctr0 + "/command"}}, []Strength{Suspect}},
+		{"plain registry model", `
+containers:
+  - name: tgi
+    image: ghcr.io/huggingface/text-generation-inference:3.3.4
+    args: ["--model-id", "bigscience/bloom-560m"]
+`, nil, nil},
+	})
+}
+
+func TestModelSourceNotApplicable(t *testing.T) {
+	c, _ := ByID("KS-AI-012")
+	if r := Evaluate(c, &Input{}); r.Applicable || len(r.Findings) != 0 {
+		t.Errorf("empty input: %+v", r)
+	}
+}

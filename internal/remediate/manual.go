@@ -76,6 +76,8 @@ kustomize build "$work/bundle"
 		"If a gateway already authenticates the traffic, mark the workload with `kshield.io/gateway-auth: \"true\"` (label or annotation): kshield then reports the finding as INFO and does not verify the gateway."
 	stepsAI011 = "Remove `--debug` and `--allow-http` from the engine command, and unset `OLLAMA_DEBUG`. Debug endpoints and verbose logs expose internals and prompts. " +
 		"Set `OLLAMA_ORIGINS` to the origins that need access, never `*`: with `*` any web page in a visitor's browser can call the engine."
+	stepsAI012 = "Remove `--trust-remote-code` unless you reviewed the model code. Use `.safetensors` model files, not pickle based files (`.bin`, `.pt`, `.pth`, `.pkl`, `.pickle`, `.ckpt`) or Keras files (`.h5`, `.keras`). " +
+		"Load models from a registry or storage you control, pinned by digest or signed, not from an `s3://` or `gs://` path that anyone with write access can change."
 	stepsAI004 = "Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001), " +
 		"or put an authenticating proxy or API gateway in front of it, " +
 		"or change the Service to `type: ClusterIP` and remove the Ingress path."
@@ -115,6 +117,7 @@ var manualSteps = map[string]string{
 	"KS-AI-009":  stepsAI009,
 	"KS-AI-010":  stepsAI010,
 	"KS-AI-011":  stepsAI011,
+	"KS-AI-012":  stepsAI012,
 	"KS-NET-003": stepsNET003,
 	"KS-PRE-001": stepsPRE001,
 	"KS-PRE-002": stepsPRE002,

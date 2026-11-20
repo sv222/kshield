@@ -69,7 +69,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <table class="kv">
 <tr><th>Tool</th><td>kshield 0.0.0-deterministic</td></tr>
 <tr><th>Profile</th><td>dora v1</td></tr>
-<tr><th>Profile sha256</th><td><code>81e76e464980e0acb4e24deb3c1d973648af49bae60c8e7173eab08be4c86a20</code></td></tr>
+<tr><th>Profile sha256</th><td><code>533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0</code></td></tr>
 <tr><th>Mode</th><td>manifest</td></tr>
 <tr><th>Inputs</th><td><code>test/corpus/baseline/toxic/input.yaml</code></td></tr>
 <tr><th>Input files</th><td>
@@ -87,7 +87,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <ul class="counts">
 <li class="v-fail"><b>17</b>FAIL</li>
 <li class="v-warn"><b>4</b>WARN</li>
-<li class="v-pass"><b>11</b>PASS</li>
+<li class="v-pass"><b>12</b>PASS</li>
 <li class="v-info"><b>0</b>INFO</li>
 <li class="v-na"><b>5</b>N/A</li>
 </ul>
@@ -134,6 +134,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <tr><td>DORA-CH2-035</td><td><code>KS-WL-016</code></td><td>hostPort on an AI container</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
 <tr><td>DORA-CH2-036</td><td><code>KS-AI-010</code></td><td>Inference engine other than vLLM without API key or gateway auth evidence</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-010)</td></tr>
 <tr><td>DORA-CH2-037</td><td><code>KS-AI-011</code></td><td>Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-011)</td></tr>
+<tr><td>DORA-CH2-038</td><td><code>KS-AI-012</code></td><td>Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-012)</td></tr>
 </tbody>
 </table>
 </section>

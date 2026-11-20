@@ -40,6 +40,7 @@ var catalog = []Check{
 	{ID: "KS-WL-016", Title: "hostPort on an AI container", Tier: Both, Fix: FixPatch, Run: wlHostPort},
 	{ID: "KS-AI-010", Title: "Inference engine other than vLLM without API key or gateway auth evidence", Tier: Manifest, Fix: FixManual, Run: aiEngineAuth},
 	{ID: "KS-AI-011", Title: "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)", Tier: Manifest, Fix: FixManual, Run: aiDebugFlags},
+	{ID: "KS-AI-012", Title: "Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)", Tier: Manifest, Fix: FixManual, Run: aiModelSource},
 }
 
 func All() []Check {

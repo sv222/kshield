@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keras
+  namespace: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keras
+  template:
+    metadata:
+      labels:
+        app: keras
+    spec:
+      containers:
+        - name: keras
+          image: quay.io/go-skynet/local-ai:latest
+          env:
+            - name: MODEL_FILE
+              value: /models/classifier.keras

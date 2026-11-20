@@ -488,6 +488,19 @@
                   "warn"
                 ]
               }
+            },
+            {
+              "id": "KS-AI-012",
+              "name": "DORA-CH2-038",
+              "shortDescription": {
+                "text": "Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
             }
           ]
         }

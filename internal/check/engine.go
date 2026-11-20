@@ -240,3 +240,89 @@ func aiEngineAuth(in *Input) Result {
 		return []Finding{engineFinding(w, c, certain, path, msg)}
 	})
 }
+
+var unsafeModelExts = []string{".bin", ".pt", ".pth", ".pkl", ".pickle", ".ckpt", ".h5", ".keras"}
+
+var objectStoragePrefixes = []string{"s3://", "gs://"}
+
+type modelValue struct {
+	kind, raw, value, path string
+}
+
+func argValue(word string) string {
+	if strings.HasPrefix(word, shortFlagPrefix) {
+		_, value, _ := strings.Cut(word, "=")
+		return value
+	}
+	return word
+}
+
+func wordField(c model.Container, word string) string {
+	holds := func(items []string) bool {
+		return slices.ContainsFunc(items, func(s string) bool { return strings.Contains(s, word) })
+	}
+	if !holds(c.Spec.Args) && holds(c.Spec.Command) {
+		return fieldCommand
+	}
+	return fieldArgs
+}
+
+func modelValues(c model.Container, words []string) []modelValue {
+	var out []modelValue
+	for _, word := range words {
+		if v := argValue(word); v != "" {
+			out = append(out, modelValue{kind: "arg", raw: word, value: v, path: c.Path + "/" + wordField(c, word)})
+		}
+	}
+	for i, e := range c.Spec.Env {
+		if e.ValueFrom == nil && e.Value != "" {
+			out = append(out, modelValue{kind: "env " + e.Name, raw: e.Value, value: e.Value, path: envPath(c, i)})
+		}
+	}
+	return out
+}
+
+func unsafeModelExt(v string) string {
+	if i := strings.IndexAny(v, "?#"); i >= 0 {
+		v = v[:i]
+	}
+	v = strings.ToLower(v)
+	for _, ext := range unsafeModelExts {
+		if strings.HasSuffix(v, ext) {
+			return ext
+		}
+	}
+	return ""
+}
+
+func isObjectStorage(v string) bool {
+	v = strings.ToLower(v)
+	return slices.ContainsFunc(objectStoragePrefixes, func(p string) bool { return strings.HasPrefix(v, p) })
+}
+
+func aiModelSource(in *Input) Result {
+	return engineContainers(in, func(w model.Workload, c model.Container) []Finding {
+		words, certain := c.EngineWords()
+		name := engineName(c.Stack)
+		pickleScope := c.Stack != model.VLLM
+		var out []Finding
+		if pickleScope && boolFlagOn(words, flagTrust) {
+			msg := fmt.Sprintf("%s runs with %s: it executes code from the model repository", name, flagTrust)
+			out = append(out, engineFinding(w, c, certain, c.Path+"/"+flagField(c, flagTrust), msg))
+		}
+		for _, v := range modelValues(c, words) {
+			if ext := unsafeModelExt(v.value); pickleScope && ext != "" {
+				msg := fmt.Sprintf("%s %q references a %s model file: this format can run code when it is loaded (use .safetensors)", v.kind, v.raw, ext)
+				out = append(out, engineFinding(w, c, certain, v.path, msg))
+				continue
+			}
+			if isObjectStorage(v.value) {
+				msg := fmt.Sprintf("%s %q loads the model from object storage that the scanner cannot verify (pin the source: a digest-verified registry or signed artifacts)", v.kind, v.raw)
+				f := engineFinding(w, c, certain, v.path, msg)
+				f.Strength = Suspect
+				out = append(out, f)
+			}
+		}
+		return out
+	})
+}

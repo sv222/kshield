@@ -1,0 +1,5 @@
+namespace: "ai-inference"
+checks: ["KS-AI-012"]
+expect:
+  - {check: "KS-AI-012", object: "Deployment/ai-inference/tgi", container: "tgi", verdict: "FAIL"}
+na: []

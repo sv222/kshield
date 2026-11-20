@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `81e76e464980e0acb4e24deb3c1d973648af49bae60c8e7173eab08be4c86a20`
-- Checks: 37
+- Profile sha256: `533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0`
+- Checks: 38
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -772,6 +772,31 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 - URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
 
 > implement policies and protocols for strong authentication mechanisms, based on relevant standards and dedicated control systems, and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes;
+
+## DORA-CH2-038 (KS-AI-012)
+
+- Check: `KS-AI-012`
+- Display ID: `DORA-CH2-038`
+- Title: Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
+- Severity: fail
+
+### DORA Art. 9(3)(b)
+
+- Ref: `dora-art9-3-b`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> minimise the risk of corruption or loss of data, unauthorised access and technical flaws that may hinder business activity;
+
+### DORA Art. 9(3)(c)
+
+- Ref: `dora-art9-3-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;
 
 <!-- kshield:signoff - everything below is kept by the generator -->
 

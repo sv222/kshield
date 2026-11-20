@@ -423,5 +423,17 @@
       "dora-art9-4-c",
       "dora-art9-4-d"
     ]
+  },
+  {
+    "id": "KS-AI-012",
+    "display": "DORA-CH2-038",
+    "title": "Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-3-b",
+      "dora-art9-3-c"
+    ]
   }
 ]

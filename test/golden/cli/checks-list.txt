@@ -36,3 +36,4 @@ DORA-CH2-034  KS-WL-015   fail      manifest+cluster  manual  hostPath volume ou
 DORA-CH2-035  KS-WL-016   fail      manifest+cluster  patch   hostPort on an AI container
 DORA-CH2-036  KS-AI-010   warn      manifest          manual  Inference engine other than vLLM without API key or gateway auth evidence
 DORA-CH2-037  KS-AI-011   warn      manifest          manual  Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
+DORA-CH2-038  KS-AI-012   fail      manifest          manual  Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
