@@ -99,7 +99,7 @@ echo "== go test -tags kind =="
 # 40m: the Ray enforce test pulls the ~2 GB rayproject/ray image into a fresh
 # node on every run, on top of the rest of the package.
 KSHIELD_KIND_KUBECONFIG="$kcfg" KSHIELD_KIND_CLUSTER="$name" \
-    go test -tags kind -count=1 -timeout 40m -v ./test/kind/...
+    go test -tags kind -count=1 -timeout 40m -v ${KSHIELD_KIND_RUN:+-run "$KSHIELD_KIND_RUN"} ./test/kind/...
 
 echo "== kind delete cluster $name =="
 cleanup
