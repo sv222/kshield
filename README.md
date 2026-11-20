@@ -218,7 +218,7 @@ The scanner has no network access other than the Kubernetes API, no telemetry an
 - Manifest-tier checks (secrets in env, digest pins, memory limits, vLLM flags) need the manifests. A cluster scan does not run them.
 - Cluster-tier checks (pod-to-pod encryption, Tetragon, Cilium and Kyverno health, BPF LSM) need a cluster.
 - KS-PRE-004 cannot pass on Kind nodes, which do not expose `/sys/kernel/security/lsm`.
-- The enforce-mode shell guard kills Ray head processes and exec probes that run a shell. Keep Ray namespaces in audit mode.
+- The enforce-mode shell guard still kills exec probes and lifecycle hooks that run a shell, and a bare `ray start` pod without the KubeRay `ray.io/cluster` label. The pods of a KubeRay RayCluster (head, worker, driver) are exempt.
 - The overhead of the runtime guards is not measured.
 - The Ollama root-mount move is unit-tested and corpus-verified, but it has not been verified on a cluster running the stock `ollama/ollama` image.
 - Only the `dora` profile exists today.
@@ -226,7 +226,6 @@ The scanner has no network access other than the Kubernetes API, no telemetry an
 ## Roadmap
 
 - Signed release binaries.
-- Ray in enforce mode without killing the head processes.
 - More AI serving stacks and checks.
 - More profiles beyond DORA.
 

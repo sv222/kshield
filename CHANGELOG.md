@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Enforce mode exempts the pods of a KubeRay RayCluster (the `ray.io/cluster` label) from the `kshield-shell-exec` sigkill guard, so the Ray head, worker and driver pods start under enforce; a bare `ray start` pod without the label stays guarded, and audit mode records every pod as before.
+- In enforce mode each `kshield-egress-apiserver` policy also allows the Ray head to reach the pods of its own cluster on 6379 (GCS), 8265 (dashboard), 8266 (job submit), 10001 (Ray client) and 8000 (Ray Serve).
+
 ## [0.2.0] - 2026-11-18
 
 ### Added
