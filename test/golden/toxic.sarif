@@ -436,6 +436,19 @@
                   "warn"
                 ]
               }
+            },
+            {
+              "id": "KS-AI-011",
+              "name": "DORA-CH2-037",
+              "shortDescription": {
+                "text": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
             }
           ]
         }

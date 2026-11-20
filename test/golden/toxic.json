@@ -8,7 +8,7 @@
     "id": "dora",
     "version": 1,
     "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
-    "sha256": "a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90"
+    "sha256": "3dd14e4286731bff57afcba9c643a4692c5647eff7259a45858d011c42a33a0b"
   },
   "scan": {
     "mode": "manifest",
@@ -27,7 +27,7 @@
     "aiWorkloads": 5
   },
   "summary": {
-    "pass": 7,
+    "pass": 8,
     "fail": 17,
     "warn": 4,
     "info": 0,
@@ -1871,6 +1871,29 @@
         {
           "id": "dora-art10-1",
           "label": "DORA Art. 10(1)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-AI-011",
+      "display": "DORA-CH2-037",
+      "title": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)",
+      "verdict": "PASS",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-d",
+          "label": "DORA Art. 9(4)(d)",
           "source": "dora",
           "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
         }

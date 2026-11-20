@@ -69,7 +69,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <table class="kv">
 <tr><th>Tool</th><td>kshield 0.0.0-deterministic</td></tr>
 <tr><th>Profile</th><td>dora v1</td></tr>
-<tr><th>Profile sha256</th><td><code>a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90</code></td></tr>
+<tr><th>Profile sha256</th><td><code>3dd14e4286731bff57afcba9c643a4692c5647eff7259a45858d011c42a33a0b</code></td></tr>
 <tr><th>Mode</th><td>manifest</td></tr>
 <tr><th>Inputs</th><td><code>test/corpus/baseline/toxic/input.yaml</code></td></tr>
 <tr><th>Input files</th><td>
@@ -87,7 +87,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <ul class="counts">
 <li class="v-fail"><b>17</b>FAIL</li>
 <li class="v-warn"><b>4</b>WARN</li>
-<li class="v-pass"><b>7</b>PASS</li>
+<li class="v-pass"><b>8</b>PASS</li>
 <li class="v-info"><b>0</b>INFO</li>
 <li class="v-na"><b>5</b>N/A</li>
 </ul>
@@ -130,6 +130,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <tr><td>DORA-CH2-031</td><td><code>KS-PRE-002</code></td><td>CNI is not Cilium (L7/FQDN egress not possible)</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-002)</td></tr>
 <tr><td>DORA-CH2-032</td><td><code>KS-PRE-003</code></td><td>Kyverno missing or unhealthy</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-003)</td></tr>
 <tr><td>DORA-CH2-033</td><td><code>KS-PRE-004</code></td><td>Node kernel lacks BPF LSM (--node-probe)</td><td>warn</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-004)</td></tr>
+<tr><td>DORA-CH2-037</td><td><code>KS-AI-011</code></td><td>Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-011)</td></tr>
 </tbody>
 </table>
 </section>

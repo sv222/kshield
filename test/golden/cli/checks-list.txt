@@ -32,3 +32,4 @@ DORA-CH2-030  KS-PRE-001  fail      cluster           manual  Tetragon missing o
 DORA-CH2-031  KS-PRE-002  fail      cluster           manual  CNI is not Cilium (L7/FQDN egress not possible)
 DORA-CH2-032  KS-PRE-003  fail      cluster           manual  Kyverno missing or unhealthy
 DORA-CH2-033  KS-PRE-004  warn      cluster           manual  Node kernel lacks BPF LSM (--node-probe)
+DORA-CH2-037  KS-AI-011   warn      manifest          manual  Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)

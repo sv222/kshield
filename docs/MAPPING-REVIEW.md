@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90`
-- Checks: 33
+- Profile sha256: `3dd14e4286731bff57afcba9c643a4692c5647eff7259a45858d011c42a33a0b`
+- Checks: 34
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -691,6 +691,31 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 >
 > All detection mechanisms referred to in the first subparagraph shall be regularly tested in accordance with Article 25.
 
+## DORA-CH2-037 (KS-AI-011)
+
+- Check: `KS-AI-011`
+- Display ID: `DORA-CH2-037`
+- Title: Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
+- Severity: warn
+
+### DORA Art. 9(4)(c)
+
+- Ref: `dora-art9-4-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;
+
+### DORA Art. 9(4)(d)
+
+- Ref: `dora-art9-4-d`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> implement policies and protocols for strong authentication mechanisms, based on relevant standards and dedicated control systems, and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes;
+
 <!-- kshield:signoff - everything below is kept by the generator -->
 
 ## Sign-off
@@ -698,3 +723,5 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 | Date | Name | Profile sha256 | Review sha256 | Decision |
 |---|---|---|---|---|
 | 2026-10-18 | Stanislav | a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90 | f4af4a8037239c86080c98483525cd588e1b4997a1aee63db7d4412a5614f2a8 | approved |
+
+Pending owner sign-off for the profile sha256 at the top of this file: the owner adds the row.

@@ -68,6 +68,8 @@ kustomize build "$work/bundle"
 		"Scan again: KS-WL-002 can then be patched."
 	stepsAI001 = "Turn on vLLM authentication: create a Secret with a long random key and set `VLLM_API_KEY` from it with `valueFrom.secretKeyRef`, " +
 		"or pass `--api-key $(VLLM_API_KEY)`. Clients send the key as `Authorization: Bearer <key>`."
+	stepsAI011 = "Remove `--debug` and `--allow-http` from the engine command, and unset `OLLAMA_DEBUG`. Debug endpoints and verbose logs expose internals and prompts. " +
+		"Set `OLLAMA_ORIGINS` to the origins that need access, never `*`: with `*` any web page in a visitor's browser can call the engine."
 	stepsAI004 = "Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001), " +
 		"or put an authenticating proxy or API gateway in front of it, " +
 		"or change the Service to `type: ClusterIP` and remove the Ingress path."
@@ -104,6 +106,7 @@ var manualSteps = map[string]string{
 	"KS-AI-007":  stepsAI007,
 	"KS-AI-008":  stepsAI008,
 	"KS-AI-009":  stepsAI009,
+	"KS-AI-011":  stepsAI011,
 	"KS-NET-003": stepsNET003,
 	"KS-PRE-001": stepsPRE001,
 	"KS-PRE-002": stepsPRE002,

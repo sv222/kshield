@@ -1,6 +1,6 @@
 # kshield remediation
 
-Mode: `enforce`. Profile: `dora` (sha256 `a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90`). scan.json sha256: `452914acb97462fce166a4a17a7ec7bad94e2d8ca44d412889f3b9d495160806`.
+Mode: `enforce`. Profile: `dora` (sha256 `3dd14e4286731bff57afcba9c643a4692c5647eff7259a45858d011c42a33a0b`). scan.json sha256: `7835cfe05d6b106b6b2f011b569da8a043cc9e635e44be29eb30d28c8d5849b6`.
 
 ## Before you apply
 

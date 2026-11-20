@@ -88,3 +88,26 @@ func isRayServe(repo []string, cmds []Command) bool {
 		return false
 	})
 }
+
+func runsStack(s Stack, c Command) bool {
+	switch s {
+	case VLLM:
+		return runsVLLM(c)
+	case Ollama:
+		return program(c) == "ollama"
+	}
+	i := slices.IndexFunc(engines, func(e engine) bool { return e.stack == s })
+	return i >= 0 && engines[i].runs(c)
+}
+
+func (c Container) EngineWords() (words []string, certain bool) {
+	for _, cmd := range c.Commands {
+		if runsStack(c.Stack, cmd) {
+			return cmd.Words, true
+		}
+	}
+	for _, cmd := range c.Commands {
+		words = append(words, cmd.Words...)
+	}
+	return words, len(c.Commands) <= 1
+}

@@ -1,6 +1,7 @@
 package check
 
 import (
+	"slices"
 	"testing"
 )
 
@@ -283,9 +284,9 @@ func TestGuardChecksRegistered(t *testing.T) {
 		{"KS-PRE-004", "Node kernel lacks BPF LSM (--node-probe)", Cluster, FixManual},
 	}
 	all := All()
-	const first = 23
-	if len(all) != 33 {
-		t.Fatalf("catalog has %d checks, want 33", len(all))
+	first := slices.IndexFunc(all, func(c Check) bool { return c.ID == want[0].id })
+	if len(all) != 34 {
+		t.Fatalf("catalog has %d checks, want 34", len(all))
 	}
 	for i, w := range want {
 		c := all[first+i]

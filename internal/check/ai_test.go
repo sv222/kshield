@@ -675,7 +675,7 @@ func TestVLLMChecksRegistered(t *testing.T) {
 		{"KS-AI-004", "Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth", FixManual, Both},
 	}
 	all := All()
-	const first = 14
+	first := slices.IndexFunc(all, func(c Check) bool { return c.ID == want[0].id })
 	if len(all) < first+len(want) {
 		t.Fatalf("catalog has %d checks", len(all))
 	}

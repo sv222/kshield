@@ -377,5 +377,17 @@
     "refs": [
       "dora-art10-1"
     ]
+  },
+  {
+    "id": "KS-AI-011",
+    "display": "DORA-CH2-037",
+    "title": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-c",
+      "dora-art9-4-d"
+    ]
   }
 ]

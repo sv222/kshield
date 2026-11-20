@@ -36,6 +36,7 @@ var catalog = []Check{
 	{ID: "KS-PRE-002", Title: "CNI is not Cilium (L7/FQDN egress not possible)", Tier: Cluster, Fix: FixManual, Run: prePresenceCilium},
 	{ID: "KS-PRE-003", Title: "Kyverno missing or unhealthy", Tier: Cluster, Fix: FixManual, Run: prePresenceKyverno},
 	{ID: "KS-PRE-004", Title: "Node kernel lacks BPF LSM (--node-probe)", Tier: Cluster, Fix: FixManual, Run: preBPFLSM},
+	{ID: "KS-AI-011", Title: "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)", Tier: Manifest, Fix: FixManual, Run: aiDebugFlags},
 }
 
 func All() []Check {

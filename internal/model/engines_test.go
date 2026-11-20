@@ -1,6 +1,7 @@
 package model
 
 import (
+	"reflect"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -60,6 +61,35 @@ func TestClassifyEngines(t *testing.T) {
 			}
 			if w.IsAI() != (c.want != Generic) {
 				t.Fatalf("IsAI = %v", w.IsAI())
+			}
+		})
+	}
+}
+
+func TestEngineWords(t *testing.T) {
+	cases := []struct {
+		name      string
+		c         corev1.Container
+		want      []string
+		certain   bool
+		wantStack Stack
+	}{
+		{"args of an image-detected engine", img("ghcr.io/huggingface/text-generation-inference:3", nil, []string{"--model-id", "m", "--debug"}), []string{"--model-id", "m", "--debug"}, true, TGI},
+		{"engine command picked from a script", img("busybox", []string{"sh", "-c", "pip install x --debug && exec tritonserver --model-repository=/m"}, nil), []string{"tritonserver", "--model-repository=/m"}, true, Triton},
+		{"several commands and no engine command", img("lmsysorg/sglang", []string{"sh", "-c", "a --x && b --y"}, nil), []string{"a", "--x", "b", "--y"}, false, SGLang},
+		{"single command that is not the engine", img("lmsysorg/sglang", []string{"python", "serve.py", "--x"}, nil), []string{"python", "serve.py", "--x"}, true, SGLang},
+		{"no command", img("lmsysorg/sglang", nil, nil), nil, true, SGLang},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			w := wl("Deployment", c.c)
+			Classify(w)
+			if w.Containers[0].Stack != c.wantStack {
+				t.Fatalf("Stack = %q, want %q", w.Containers[0].Stack, c.wantStack)
+			}
+			words, certain := w.Containers[0].EngineWords()
+			if !reflect.DeepEqual(words, c.want) || certain != c.certain {
+				t.Fatalf("EngineWords = %q, %v; want %q, %v", words, certain, c.want, c.certain)
 			}
 		})
 	}

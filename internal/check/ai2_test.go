@@ -436,7 +436,7 @@ func TestAIChecks2Registered(t *testing.T) {
 		{"KS-AI-009", "Milvus authorization disabled", FixManual},
 	}
 	all := All()
-	const first = 18
+	first := slices.IndexFunc(all, func(c Check) bool { return c.ID == want[0].id })
 	if len(all) < first+len(want) {
 		t.Fatalf("catalog has %d checks", len(all))
 	}

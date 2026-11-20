@@ -933,7 +933,7 @@ func TestWorkloadChecks2Registered(t *testing.T) {
 		{"KS-WL-014", "GPU access via hostPath /dev/nvidia* or privileged, not device plugin", FixManual, Both},
 	}
 	all := All()
-	const first = 7
+	first := slices.IndexFunc(all, func(c Check) bool { return c.ID == want[0].id })
 	if len(all) < first+len(want) {
 		t.Fatalf("catalog has %d checks", len(all))
 	}
