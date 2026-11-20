@@ -214,10 +214,11 @@ func Exposures(in *Input, w model.Workload, ports []int32) []Exposure {
 		if s.kind == "" || !servicePortMatches(s, w, ports) {
 			continue
 		}
-		out = append(out, Exposure{Object: s.obj, Kind: s.kind, Path: serviceTypePath})
+		auth, _ := meshAuth(in, w, s.obj.Ref.Name, nil)
+		out = append(out, Exposure{Object: s.obj, Kind: s.kind, Auth: auth, Path: serviceTypePath})
 	}
 	for _, i := range x.ingresses[w.Owner.Namespace] {
-		if e, ok := ingressExposure(i, selecting, w, ports); ok {
+		if e, ok := ingressExposure(in, i, selecting, w, ports); ok {
 			out = append(out, e)
 		}
 	}
@@ -290,31 +291,44 @@ func exposureWhat(e Exposure) string {
 	return "Ingress"
 }
 
-func appendExposures(out []Finding, seen map[string]int, es []Exposure, skipAuthenticated bool, strength Strength, msg func(Exposure) string) []Finding {
+func appendExposures(out []Finding, seen map[string]int, es []Exposure, honorAuth bool, strength Strength, msg func(Exposure) string) []Finding {
 	for _, e := range es {
-		if skipAuthenticated && e.Auth.Present() {
-			continue
+		s, m := strength, msg(e)
+		if honorAuth && e.Auth.Present() {
+			if e.Auth.Silent() {
+				continue
+			}
+			if s != Declared {
+				s, m = Declared, m+e.Auth.Suffix()
+			}
 		}
 		key := e.Object.Ref.String()
 		if i, dup := seen[key]; dup {
 			if e.Path == ingressRulesPath {
 				out[i].Path = e.Path
 			}
-			if strength < out[i].Strength {
-				out[i].Message, out[i].Strength = msg(e), strength
+			if s < out[i].Strength {
+				out[i].Message, out[i].Strength = m, s
 			}
 			continue
 		}
 		seen[key] = len(out)
-		out = append(out, Finding{Object: e.Object.Ref, Path: e.Path, Message: msg(e), Strength: strength})
+		out = append(out, Finding{Object: e.Object.Ref, Path: e.Path, Message: m, Strength: s})
 	}
 	return out
 }
 
-func ingressExposure(i indexedIngress, selecting map[string]indexedService, w model.Workload, ports []int32) (Exposure, bool) {
+func ingressExposure(in *Input, i indexedIngress, selecting map[string]indexedService, w model.Workload, ports []int32) (Exposure, bool) {
+	var hit string
 	hits := func(b ingressBackend) bool {
 		s, ok := selecting[b.service]
-		return ok && backendMatches(s, b, w, ports)
+		if !ok || !backendMatches(s, b, w, ports) {
+			return false
+		}
+		if hit == "" {
+			hit = b.service
+		}
+		return true
 	}
 	path := ""
 	switch {
@@ -325,5 +339,9 @@ func ingressExposure(i indexedIngress, selecting map[string]indexedService, w mo
 	default:
 		return Exposure{}, false
 	}
-	return Exposure{Object: i.obj, Kind: ExposureIngress, Auth: i.auth, Path: path}, true
+	auth := i.auth
+	if !auth.Present() {
+		auth, _ = meshAuth(in, w, hit, nil)
+	}
+	return Exposure{Object: i.obj, Kind: ExposureIngress, Auth: auth, Path: path}, true
 }
