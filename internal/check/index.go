@@ -25,6 +25,7 @@ type inputIndex struct {
 	core           map[coreKey][]load.Object
 	authz          []meshPolicy
 	requestAuth    []meshPolicy
+	kong           []kongPlugin
 }
 
 func buildIndex(objs []load.Object) *inputIndex {
@@ -59,6 +60,8 @@ func buildIndex(objs []load.Object) *inputIndex {
 			if p, ok := parseMeshPolicy(o); ok {
 				x.requestAuth = append(x.requestAuth, p)
 			}
+		case isKind(o, groupKong, kindKongPlugin, kindKongClusterPlugin):
+			x.kong = append(x.kong, parseKongPlugin(o))
 		case isKind(o, groupCilium, kindCiliumPolicy):
 			x.ciliumPolicies[ns] = append(x.ciliumPolicies[ns], o)
 		case isKind(o, groupCilium, kindCiliumClusterPolicy):

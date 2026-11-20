@@ -16,6 +16,7 @@ const (
 	AuthGatewayDeclared   AuthSource = "gateway-auth"
 	AuthIngressAnnotation AuthSource = "ingress-annotation"
 	AuthIstio             AuthSource = "istio"
+	AuthKong              AuthSource = "kong"
 )
 
 type AuthEvidence struct {
