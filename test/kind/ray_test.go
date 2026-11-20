@@ -235,6 +235,7 @@ func helmRun(t *testing.T, helm string, args ...string) {
 	home := t.TempDir()
 	cmd := exec.Command(helm, args...)
 	cmd.Env = append(os.Environ(),
+		"KUBECONFIG="+kubeconfig(t),
 		"HELM_CACHE_HOME="+filepath.Join(home, "cache"),
 		"HELM_CONFIG_HOME="+filepath.Join(home, "config"),
 		"HELM_DATA_HOME="+filepath.Join(home, "data"),
