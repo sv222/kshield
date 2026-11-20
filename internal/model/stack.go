@@ -55,7 +55,11 @@ func stackOf(spec corev1.Container, cmds []Command) Stack {
 		return Qdrant
 	case slices.Contains(repo, "milvus"):
 		return Milvus
-	case isRayImage(repo):
+	}
+	if s, ok := engineOf(repo, cmds); ok {
+		return s
+	}
+	if isRayImage(repo) || isRayServe(repo, cmds) {
 		return Ray
 	}
 	return Generic

@@ -18,6 +18,15 @@ const (
 	Qdrant  Stack = "qdrant"
 	Milvus  Stack = "milvus"
 	KServe  Stack = "kserve"
+
+	Triton   Stack = "triton"
+	TGI      Stack = "tgi"
+	TEI      Stack = "tei"
+	LocalAI  Stack = "localai"
+	SGLang   Stack = "sglang"
+	LlamaCpp Stack = "llamacpp"
+	LMDeploy Stack = "lmdeploy"
+	TRTLLM   Stack = "tensorrt-llm"
 )
 
 type Command struct {
