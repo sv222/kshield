@@ -340,13 +340,12 @@ type ingressVerdict struct {
 
 func ingressIsolation(in *Input, w model.Workload) ingressVerdict {
 	x := in.idx()
-	var selecting, noIngress, open []string
+	var noIngress, open []string
 	restricted, audit := false, false
 	for _, o := range x.netpols[w.Owner.Namespace] {
 		if !netpolSelects(o, w) {
 			continue
 		}
-		selecting = append(selecting, o.Ref.Name)
 		if !netpolIngress(o) {
 			noIngress = append(noIngress, o.Ref.Name)
 			continue
@@ -361,7 +360,6 @@ func ingressIsolation(in *Input, w model.Workload) ingressVerdict {
 			if !ciliumRuleSelects(o, r, w) {
 				continue
 			}
-			selecting = append(selecting, o.Ref.Name)
 			deny, auditForm := ciliumIngressDefaultDeny(r.body)
 			audit = audit || auditForm
 			if !deny {
