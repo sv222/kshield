@@ -18,7 +18,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery/cached/memory"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -276,26 +275,11 @@ func installKubeRayOperator(t *testing.T, helm string, env map[string]string) {
 	if !ok {
 		t.Skip("KUBERAY_CHART_VERSION missing in versions.env")
 	}
-	dyn, _ := clients(t)
-	crds := dyn.Resource(schema.GroupVersionResource{Group: "apiextensions.k8s.io", Version: "v1", Resource: "customresourcedefinitions"})
-	// The vendored rayclusters CRD of the other tests would fight the chart
-	// CRDs in helm's apply. This test runs before those tests created any
-	// RayCluster, so deleting the vendored CRD is safe here.
-	if err := crds.Delete(t.Context(), "rayclusters.ray.io", metav1.DeleteOptions{}); err == nil {
-		t.Log("deleted the vendored rayclusters.ray.io CRD; the KubeRay chart installs its own")
-		waitFor(t, time.Minute, "the old rayclusters CRD to be deleted", func() (bool, string) {
-			_, err := crds.Get(t.Context(), "rayclusters.ray.io", metav1.GetOptions{})
-			if apierrors.IsNotFound(err) {
-				return true, ""
-			}
-			if err != nil {
-				return false, err.Error()
-			}
-			return false, "still present"
-		})
-	} else if !apierrors.IsNotFound(err) {
-		t.Fatalf("delete the rayclusters.ray.io CRD: %v", err)
-	}
+	// Never delete a RayCluster CRD to make room for the chart's own: helm
+	// installs CRDs only on the first install of a release, so on any later
+	// run the cluster would be left without the CRD entirely. An existing
+	// vendored CRD is fine: helm skips it and the operator serves ray.io/v1
+	// from it just as well.
 	helmRun(t, helm, "upgrade", "--install", "kuberay-operator", "kuberay-operator",
 		"--repo", "https://ray-project.github.io/kuberay-helm",
 		"--version", ver,
