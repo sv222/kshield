@@ -191,6 +191,7 @@ kshield remediate --from scan.json -f app.yaml --out fix --apply
 - Off by default. The bundle is written first, then applied. It uses the kubeconfig context from `--kubeconfig` and `--context` (for a cluster `scan.json`, the context of the scan).
 - Before it changes anything, kshield prints the context, the server and the objects (kind, namespace, name), and asks `Apply N objects to context X? [y/N]`. `--yes` skips the question. Without a terminal and without `--yes` it refuses (exit 2).
 - `--dry-run` runs a server-side dry run, prints the result and changes nothing.
+- A real apply first dry-runs every object on the server. If the server rejects one, nothing is applied (exit 4). Server-side apply cannot remove a field that another manager owns, so a patch that swaps a volume type (the `/dev/shm` hostPath fix of KS-WL-005) is rejected on an object that was created by another tool. Apply that patch with the kustomize bundle by hand.
 - By default only the policies are applied. The workload patches restart pods, so they are applied only with `--apply-patches`, and only for the workloads that the bundle patches.
 - It refuses when the cluster does not serve a kind of the bundle (Kyverno `Policy`, Cilium `CiliumNetworkPolicy`, Tetragon `TracingPolicyNamespaced`). `--skip-missing-crds` skips those objects.
 - A field that another field manager owns is a conflict and stops the apply (exit 4). `--force-conflicts` takes the field over. Review who owns it first.
