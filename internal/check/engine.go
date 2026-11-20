@@ -146,16 +146,8 @@ func authEnvNames(s model.Stack) []string {
 	return engineAuthEnv[s]
 }
 
-func gatewayAuth(w model.Workload) bool {
-	maps := []map[string]string{w.Labels, w.Annotations}
-	if w.Object != nil && w.Object.U != nil {
-		maps = append(maps, w.Object.U.GetLabels(), w.Object.U.GetAnnotations())
-	}
-	return slices.ContainsFunc(maps, func(m map[string]string) bool { return m[GatewayAuthKey] == gatewayAuthValue })
-}
-
-func declaredFinding(w model.Workload, c model.Container, path, what string) Finding {
-	f := violation(w, c.Spec.Name, path, what+declaredSuffix)
+func declaredFinding(w model.Workload, c model.Container, path, what string, a AuthEvidence) Finding {
+	f := violation(w, c.Spec.Name, path, what+a.Suffix())
 	f.Strength = Declared
 	return f
 }
@@ -228,16 +220,16 @@ func aiEngineAuth(in *Input) Result {
 			return nil
 		case keyUnknown:
 			msg := fmt.Sprintf("%s API key may come from envFrom %s, not in the input: the scanner cannot see if the key is set", name, strings.Join(missing, ", "))
-			if gatewayAuth(w) {
-				return []Finding{declaredFinding(w, c, path, msg)}
+			if a, ok := workloadAuth(in, w); ok {
+				return []Finding{declaredFinding(w, c, path, msg, a)}
 			}
 			f = engineFinding(w, c, certain, path, msg)
 			f.Strength = Suspect
 			return []Finding{f}
 		}
 		msg := fmt.Sprintf("%s container %s has no authentication evidence: %s", name, c.Spec.Name, authEvidenceText(c.Stack))
-		if gatewayAuth(w) {
-			return []Finding{declaredFinding(w, c, path, msg)}
+		if a, ok := workloadAuth(in, w); ok {
+			return []Finding{declaredFinding(w, c, path, msg, a)}
 		}
 		return []Finding{engineFinding(w, c, certain, path, msg)}
 	})

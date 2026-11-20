@@ -160,7 +160,7 @@ func aiOllamaExposed(in *Input) Result {
 		if !w.HasStack(model.Ollama) {
 			continue
 		}
-		declared := gatewayAuth(w)
+		auth, declared := workloadAuth(in, w)
 		strength := Violation
 		if declared {
 			strength = Declared
@@ -168,7 +168,7 @@ func aiOllamaExposed(in *Input) Result {
 		res.Findings = appendExposures(res.Findings, seen, Exposures(in, w, nil), true, strength, func(e Exposure) string {
 			msg := fmt.Sprintf("%s exposes Ollama in %s outside the cluster without an auth proxy (Ollama has no authentication of its own)", exposureWhat(e), w.Owner)
 			if declared {
-				msg += declaredSuffix
+				msg += auth.Suffix()
 			}
 			return msg
 		})

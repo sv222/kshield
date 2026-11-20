@@ -100,7 +100,7 @@ type wantExposure struct {
 func gotExposures(es []Exposure) []wantExposure {
 	out := make([]wantExposure, len(es))
 	for i, e := range es {
-		out[i] = wantExposure{e.Object.Ref.String(), e.Kind, e.Authenticated, e.Path}
+		out[i] = wantExposure{e.Object.Ref.String(), e.Kind, e.Auth.Present(), e.Path}
 	}
 	return out
 }

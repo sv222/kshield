@@ -77,14 +77,14 @@ func aiAPIKey(in *Input) Result {
 			return nil
 		case keyUnknown:
 			msg := fmt.Sprintf("vLLM API key may come from envFrom %s, not in the input: the scanner cannot see if %s is set", strings.Join(missing, ", "), vllmAPIKeyEnv)
-			if gatewayAuth(w) {
-				return []Finding{declaredFinding(w, c, path, msg)}
+			if a, ok := workloadAuth(in, w); ok {
+				return []Finding{declaredFinding(w, c, path, msg, a)}
 			}
 			return []Finding{suspect(violation(w, c.Spec.Name, path, msg))}
 		}
 		msg := "vLLM serves without authentication: neither " + flagAPIKey + " nor the " + vllmAPIKeyEnv + " env var is set"
-		if gatewayAuth(w) {
-			return []Finding{declaredFinding(w, c, path, msg)}
+		if a, ok := workloadAuth(in, w); ok {
+			return []Finding{declaredFinding(w, c, path, msg, a)}
 		}
 		return []Finding{violation(w, c.Spec.Name, path, msg)}
 	})
@@ -160,14 +160,14 @@ func aiExposed(in *Input) Result {
 		if !ok {
 			continue
 		}
-		declared := gatewayAuth(w)
+		auth, declared := workloadAuth(in, w)
 		if declared {
 			strength = Declared
 		}
 		res.Findings = appendExposures(res.Findings, seen, Exposures(in, w, nil), true, strength, func(e Exposure) string {
 			msg := exposureMessage(e, w, reason)
 			if declared {
-				msg += declaredSuffix
+				msg += auth.Suffix()
 			}
 			return msg
 		})
@@ -176,8 +176,14 @@ func aiExposed(in *Input) Result {
 }
 
 func unauthenticatedServer(in *Input, w model.Workload) (string, Strength, bool) {
+	v := serverAuth(in, w)
+	return v.reason, v.strength, v.open
+}
+
+func serverAuth(in *Input, w model.Workload) serverVerdict {
 	server := false
 	reason, unsure := "", false
+	var keyed AuthEvidence
 	for _, c := range w.Containers {
 		if c.Init {
 			continue
@@ -187,9 +193,11 @@ func unauthenticatedServer(in *Input, w model.Workload) (string, Strength, bool)
 			r, s, final := engineAuthReason(in, w, c)
 			switch {
 			case final:
-				return r, Violation, true
+				return serverVerdict{reason: r, strength: Violation, open: true}
 			case s && !unsure:
 				reason, unsure = r, true
+			case r == "" && !keyed.Present():
+				keyed = keyEvidence(c, flagAPIKey+" or an auth env var")
 			}
 			continue
 		}
@@ -201,20 +209,22 @@ func unauthenticatedServer(in *Input, w model.Workload) (string, Strength, bool)
 		state, missing := vllmKeyState(in, w, c, a)
 		switch {
 		case state == keyMissing && !a.Opaque:
-			return "vLLM container " + c.Spec.Name + " has no " + flagAPIKey + " and no " + vllmAPIKeyEnv, Violation, true
+			return serverVerdict{reason: "vLLM container " + c.Spec.Name + " has no " + flagAPIKey + " and no " + vllmAPIKeyEnv, strength: Violation, open: true}
 		case state == keyMissing:
 			reason, unsure = "vLLM container "+c.Spec.Name+" has no "+flagAPIKey+" and no "+vllmAPIKeyEnv+" that the scanner can see"+opaqueCommandSuffix, true
 		case state == keyUnknown && !unsure:
 			reason, unsure = "vLLM container "+c.Spec.Name+" may take "+vllmAPIKeyEnv+" from envFrom "+strings.Join(missing, ", ")+", not in the input", true
+		case state == keySet && !keyed.Present():
+			keyed = keyEvidence(c, flagAPIKey+" or "+vllmAPIKeyEnv)
 		}
 	}
 	switch {
 	case unsure:
-		return reason, Suspect, true
+		return serverVerdict{reason: reason, strength: Suspect, open: true}
 	case !server && w.HasStack(model.KServe):
-		return "the KServe predictor has no authentication in the manifests", Violation, true
+		return serverVerdict{reason: "the KServe predictor has no authentication in the manifests", strength: Violation, open: true}
 	}
-	return "", Violation, false
+	return serverVerdict{strength: Violation, keyed: keyed}
 }
 
 func exposureMessage(e Exposure, w model.Workload, reason string) string {

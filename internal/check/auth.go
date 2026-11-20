@@ -1,0 +1,99 @@
+package check
+
+import (
+	"maps"
+	"slices"
+	"strings"
+
+	"github.com/sv222/kshield/internal/load"
+	"github.com/sv222/kshield/internal/model"
+)
+
+type AuthSource string
+
+const (
+	AuthEngineKey         AuthSource = "engine-key"
+	AuthGatewayDeclared   AuthSource = "gateway-auth"
+	AuthIngressAnnotation AuthSource = "ingress-annotation"
+)
+
+type AuthEvidence struct {
+	Source AuthSource
+	Ref    load.ObjectRef
+	Detail string
+}
+
+func (a AuthEvidence) Present() bool {
+	return a.Source != ""
+}
+
+func (a AuthEvidence) Text() string {
+	if a.Ref.Name == "" {
+		return a.Detail
+	}
+	name := a.Ref.Name
+	if a.Ref.Namespace != "" {
+		name = a.Ref.Namespace + "/" + name
+	}
+	return strings.TrimSpace(a.Ref.Kind + " " + name + " " + a.Detail)
+}
+
+func (a AuthEvidence) Suffix() string {
+	if a.Source == AuthGatewayDeclared {
+		return declaredSuffix
+	}
+	return "; authentication is in front of it: " + a.Text() + " (the scanner reads the object, it cannot check that the gateway or mesh enforces it)"
+}
+
+func declaredAuth(w model.Workload) (AuthEvidence, bool) {
+	ws := []map[string]string{w.Labels, w.Annotations}
+	if w.Object != nil && w.Object.U != nil {
+		ws = append(ws, w.Object.U.GetLabels(), w.Object.U.GetAnnotations())
+	}
+	if !slices.ContainsFunc(ws, func(m map[string]string) bool { return m[GatewayAuthKey] == gatewayAuthValue }) {
+		return AuthEvidence{}, false
+	}
+	return AuthEvidence{Source: AuthGatewayDeclared, Detail: GatewayAuthKey + ": \"" + gatewayAuthValue + "\""}, true
+}
+
+var ingressAuthHints = []string{"auth-url", "auth-type", "auth-signin", "auth-secret", "oauth2"}
+
+func ingressAuth(o load.Object) (AuthEvidence, bool) {
+	annotations := mapOf(dig(o.U.Object, "metadata", "annotations"))
+	for _, k := range slices.Sorted(maps.Keys(annotations)) {
+		s, ok := scalarString(annotations[k])
+		if !ok || s == "" {
+			continue
+		}
+		if k == GatewayAuthKey {
+			if s == gatewayAuthValue {
+				return ingressEvidence(o, k), true
+			}
+			continue
+		}
+		lk := strings.ToLower(k)
+		if slices.ContainsFunc(ingressAuthHints, func(h string) bool { return strings.Contains(lk, h) }) {
+			return ingressEvidence(o, k), true
+		}
+	}
+	return AuthEvidence{}, false
+}
+
+func ingressEvidence(o load.Object, annotation string) AuthEvidence {
+	return AuthEvidence{Source: AuthIngressAnnotation, Ref: o.Ref, Detail: "has the annotation " + annotation}
+}
+
+type serverVerdict struct {
+	reason   string
+	strength Strength
+	open     bool
+	keyed    AuthEvidence
+}
+
+func keyEvidence(c model.Container, how string) AuthEvidence {
+	return AuthEvidence{Source: AuthEngineKey, Detail: "container " + c.Spec.Name + " sets " + how}
+}
+
+func workloadAuth(_ *Input, w model.Workload) (AuthEvidence, bool) {
+	return declaredAuth(w)
+}

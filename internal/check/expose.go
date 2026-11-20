@@ -27,10 +27,10 @@ const (
 )
 
 type Exposure struct {
-	Object        load.Object
-	Kind          string
-	Authenticated bool
-	Path          string
+	Object load.Object
+	Kind   string
+	Auth   AuthEvidence
+	Path   string
 }
 
 type servicePort struct {
@@ -60,7 +60,7 @@ type indexedIngress struct {
 	obj            load.Object
 	rules          []ingressBackend
 	defaultBackend *ingressBackend
-	authenticated  bool
+	auth           AuthEvidence
 }
 
 func parseService(o load.Object) indexedService {
@@ -99,10 +99,8 @@ func parseServicePort(item any) servicePort {
 }
 
 func parseIngress(o load.Object) indexedIngress {
-	ing := indexedIngress{
-		obj:           o,
-		authenticated: ingressAuthenticated(o),
-	}
+	auth, _ := ingressAuth(o)
+	ing := indexedIngress{obj: o, auth: auth}
 	if b, ok := parseBackend(dig(o.U.Object, "spec", "defaultBackend")); ok {
 		ing.defaultBackend = &b
 	}
@@ -130,28 +128,6 @@ func parseBackend(v any) (ingressBackend, bool) {
 		b.portName, b.portKnown = name, true
 	}
 	return b, true
-}
-
-var ingressAuthHints = []string{"auth-url", "auth-type", "auth-signin", "auth-secret", "oauth2"}
-
-func ingressAuthenticated(o load.Object) bool {
-	for k, v := range mapOf(dig(o.U.Object, "metadata", "annotations")) {
-		s, ok := scalarString(v)
-		if !ok || s == "" {
-			continue
-		}
-		if k == GatewayAuthKey {
-			if s == gatewayAuthValue {
-				return true
-			}
-			continue
-		}
-		lk := strings.ToLower(k)
-		if slices.ContainsFunc(ingressAuthHints, func(h string) bool { return strings.Contains(lk, h) }) {
-			return true
-		}
-	}
-	return false
 }
 
 func dig(v any, keys ...string) any {
@@ -316,7 +292,7 @@ func exposureWhat(e Exposure) string {
 
 func appendExposures(out []Finding, seen map[string]int, es []Exposure, skipAuthenticated bool, strength Strength, msg func(Exposure) string) []Finding {
 	for _, e := range es {
-		if skipAuthenticated && e.Authenticated {
+		if skipAuthenticated && e.Auth.Present() {
 			continue
 		}
 		key := e.Object.Ref.String()
@@ -349,5 +325,5 @@ func ingressExposure(i indexedIngress, selecting map[string]indexedService, w mo
 	default:
 		return Exposure{}, false
 	}
-	return Exposure{Object: i.obj, Kind: ExposureIngress, Authenticated: i.authenticated, Path: path}, true
+	return Exposure{Object: i.obj, Kind: ExposureIngress, Auth: i.auth, Path: path}, true
 }
