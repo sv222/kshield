@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `2785c888c36af0cff89ca8978d84519cc078fefa57c64c3f0203288869c6b6ec`
-- Checks: 35
+- Profile sha256: `292d4ba37a8297a9395b5b9a3270f3c1468ced05c8e069de8ad605f4145fc9a2`
+- Checks: 36
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -696,6 +696,22 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 - Check: `KS-WL-015`
 - Display ID: `DORA-CH2-034`
 - Title: hostPath volume outside /dev, /dev/shm and GPU devices
+- Severity: fail
+
+### DORA Art. 9(3)(c)
+
+- Ref: `dora-art9-3-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;
+
+## DORA-CH2-035 (KS-WL-016)
+
+- Check: `KS-WL-016`
+- Display ID: `DORA-CH2-035`
+- Title: hostPort on an AI container
 - Severity: fail
 
 ### DORA Art. 9(3)(c)

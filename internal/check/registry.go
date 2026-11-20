@@ -37,6 +37,7 @@ var catalog = []Check{
 	{ID: "KS-PRE-003", Title: "Kyverno missing or unhealthy", Tier: Cluster, Fix: FixManual, Run: prePresenceKyverno},
 	{ID: "KS-PRE-004", Title: "Node kernel lacks BPF LSM (--node-probe)", Tier: Cluster, Fix: FixManual, Run: preBPFLSM},
 	{ID: "KS-WL-015", Title: "hostPath volume outside /dev, /dev/shm and GPU devices", Tier: Both, Fix: FixManual, Run: wlHostPath},
+	{ID: "KS-WL-016", Title: "hostPort on an AI container", Tier: Both, Fix: FixPatch, Run: wlHostPort},
 	{ID: "KS-AI-011", Title: "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)", Tier: Manifest, Fix: FixManual, Run: aiDebugFlags},
 }
 

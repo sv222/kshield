@@ -8,7 +8,7 @@
     "id": "dora",
     "version": 1,
     "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
-    "sha256": "2785c888c36af0cff89ca8978d84519cc078fefa57c64c3f0203288869c6b6ec"
+    "sha256": "292d4ba37a8297a9395b5b9a3270f3c1468ced05c8e069de8ad605f4145fc9a2"
   },
   "scan": {
     "mode": "manifest",
@@ -27,7 +27,7 @@
     "aiWorkloads": 5
   },
   "summary": {
-    "pass": 9,
+    "pass": 10,
     "fail": 17,
     "warn": 4,
     "info": 0,
@@ -1884,6 +1884,23 @@
       "verdict": "PASS",
       "severity": "fail",
       "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-3-c",
+          "label": "DORA Art. 9(3)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "KS-WL-016",
+      "display": "DORA-CH2-035",
+      "title": "hostPort on an AI container",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "patch",
       "refs": [
         {
           "id": "dora-art9-3-c",

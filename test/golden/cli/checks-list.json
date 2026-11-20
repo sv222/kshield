@@ -390,6 +390,17 @@
     ]
   },
   {
+    "id": "KS-WL-016",
+    "display": "DORA-CH2-035",
+    "title": "hostPort on an AI container",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "dora-art9-3-c"
+    ]
+  },
+  {
     "id": "KS-AI-011",
     "display": "DORA-CH2-037",
     "title": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)",

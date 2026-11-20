@@ -102,6 +102,7 @@ var clusterDeps = map[string][]dep{
 	"KS-WL-010":  deps([]dep{gr("", "serviceaccounts")}),
 	"KS-WL-014":  deps(),
 	"KS-WL-015":  deps(),
+	"KS-WL-016":  deps(),
 	"KS-AI-004":  deps(exposureDeps, configDeps),
 	"KS-AI-005":  deps(exposureDeps),
 	"KS-AI-006":  deps(),

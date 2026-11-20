@@ -23,7 +23,7 @@ const (
 
 var wlChecks = []string{
 	"KS-WL-001", "KS-WL-002", "KS-WL-003", "KS-WL-004", "KS-WL-005",
-	"KS-WL-006", "KS-WL-007", "KS-WL-008", "KS-WL-009", "KS-WL-010",
+	"KS-WL-006", "KS-WL-007", "KS-WL-008", "KS-WL-009", "KS-WL-010", "KS-WL-016",
 }
 
 func toYAML(t *testing.T, s string) string {
@@ -252,6 +252,9 @@ func TestWLFixes(t *testing.T) {
 		{"WL-006", "KS-WL-006", `{"containers":[{"name":"vllm","image":"vllm/vllm-openai:v0.31.0",
 			"volumeMounts":[{"name":"shm","mountPath":"/dev/shm"}]}],"volumes":[{"name":"shm","emptyDir":{"medium":"Memory"}}]}`, `[
 			{"op":"add","path":"` + wlPod + `/volumes/0/emptyDir/sizeLimit","value":"8Gi"}]`},
+		{"WL-016", "KS-WL-016", `{"containers":[{"name":"vllm","image":"vllm/vllm-openai:v0.31.0","ports":[{"containerPort":8000,"hostPort":8000},{"containerPort":9000},{"containerPort":9100,"hostPort":9100}]}]}`, `[
+			{"op":"remove","path":"` + wlC0 + `/ports/0/hostPort"},
+			{"op":"remove","path":"` + wlC0 + `/ports/2/hostPort"}]`},
 		{"WL-007", "KS-WL-007", `{"shareProcessNamespace":true,"containers":[` + wlVLLM + `]}`, `[
 			{"op":"replace","path":"` + wlPod + `/shareProcessNamespace","value":false}]`},
 		{"WL-008", "KS-WL-008", `{"containers":[` + wlVLLM + `]}`, `[

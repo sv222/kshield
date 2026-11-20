@@ -451,6 +451,19 @@
               }
             },
             {
+              "id": "KS-WL-016",
+              "name": "DORA-CH2-035",
+              "shortDescription": {
+                "text": "hostPort on an AI container"
+              },
+              "properties": {
+                "tags": [
+                  "patch",
+                  "fail"
+                ]
+              }
+            },
+            {
               "id": "KS-AI-011",
               "name": "DORA-CH2-037",
               "shortDescription": {

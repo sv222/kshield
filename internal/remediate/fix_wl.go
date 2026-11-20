@@ -588,3 +588,10 @@ func apiGroupOf(apiVersion string) string {
 	}
 	return group
 }
+
+func fixHostPort(w model.Workload, f check.Finding, _ *check.Input, _ string) ([]Op, string) {
+	if !strings.HasPrefix(f.Path, w.SpecPath+"/") || !strings.HasSuffix(f.Path, "/hostPort") {
+		return nil, "the finding path " + f.Path + " names no hostPort of the workload"
+	}
+	return []Op{Remove(f.Path)}, ""
+}

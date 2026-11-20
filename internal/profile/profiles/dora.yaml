@@ -142,3 +142,7 @@ checks:
     display: "DORA-CH2-034"
     severity: "fail"
     refs: ["dora-art9-3-c"]
+  "KS-WL-016":
+    display: "DORA-CH2-035"
+    severity: "fail"
+    refs: ["dora-art9-3-c"]

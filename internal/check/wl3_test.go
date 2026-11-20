@@ -78,3 +78,51 @@ func TestHostPathNotApplicable(t *testing.T) {
 		t.Errorf("generic workload: %+v", r)
 	}
 }
+
+func TestHostPortFindings(t *testing.T) {
+	const ctr0 = podSpecPath + "/containers/0"
+	const ctr1 = podSpecPath + "/containers/1"
+	runEngineCases(t, "KS-WL-016", []engineCase{
+		{"one hostPort", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    ports:
+      - {containerPort: 8000, hostPort: 8000}
+`, []wantFinding{{"vllm", ctr0 + "/ports/0/hostPort"}}, nil},
+		{"two ports, one hostPort", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    ports:
+      - {containerPort: 8000}
+      - {containerPort: 9000, hostPort: 9000}
+`, []wantFinding{{"vllm", ctr0 + "/ports/1/hostPort"}}, nil},
+		{"sidecar of an AI workload", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+  - name: proxy
+    image: envoyproxy/envoy:v1.31
+    ports:
+      - {containerPort: 443, hostPort: 443}
+`, []wantFinding{{"proxy", ctr1 + "/ports/0/hostPort"}}, nil},
+		{"no hostPort", `
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+    ports:
+      - {containerPort: 8000}
+`, nil, nil},
+		{"init container is not checked", `
+initContainers:
+  - name: init
+    image: busybox
+    ports:
+      - {containerPort: 80, hostPort: 80}
+containers:
+  - name: vllm
+    image: vllm/vllm-openai:v0.6.0
+`, nil, nil},
+	})
+}

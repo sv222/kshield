@@ -39,6 +39,7 @@ func Fixers() map[string]Fixer {
 		"KS-WL-008":  onContainer(fixReadOnlyRootFS),
 		"KS-WL-009":  onContainer(fixSeccomp),
 		"KS-WL-010":  fixAutomountToken,
+		"KS-WL-016":  fixHostPort,
 		"KS-AI-001":  onContainer(fixAPIKey),
 		"KS-AI-002":  onContainer(fixTrustRemoteCode),
 		"KS-AI-003":  onContainer(fixLoadFormat),
