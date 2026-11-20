@@ -96,8 +96,10 @@ docker exec "$node" ctr -n k8s.io images tag --force "$pause_ref" kshield.test/v
 echo "tagged $pause_ref as kshield.test/vllm-pause:1 on $node"
 
 echo "== go test -tags kind =="
+# 40m: the Ray enforce test pulls the ~2 GB rayproject/ray image into a fresh
+# node on every run, on top of the rest of the package.
 KSHIELD_KIND_KUBECONFIG="$kcfg" KSHIELD_KIND_CLUSTER="$name" \
-    go test -tags kind -count=1 -timeout 20m -v ./test/kind/...
+    go test -tags kind -count=1 -timeout 40m -v ./test/kind/...
 
 echo "== kind delete cluster $name =="
 cleanup
