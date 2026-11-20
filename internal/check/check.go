@@ -31,6 +31,7 @@ const (
 	Violation Strength = iota
 	Suspect
 	Unknown
+	Declared
 )
 
 type Finding struct {

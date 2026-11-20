@@ -122,3 +122,121 @@ func envTruthy(v string) bool {
 	}
 	return false
 }
+
+const GatewayAuthKey = "kshield.io/gateway-auth"
+
+const gatewayAuthValue = "true"
+
+var authFlags = []string{"--api-key", "--api-keys"}
+
+var engineAuthEnv = map[model.Stack][]string{
+	model.TEI:      {"API_KEY"},
+	model.LlamaCpp: {"LLAMA_API_KEY"},
+	model.LocalAI:  {"LOCALAI_API_KEY", "API_KEY"},
+}
+
+var customEngineAuthEnv = []string{"API_KEY", "VLLM_API_KEY", "LLAMA_API_KEY", "LOCALAI_API_KEY"}
+
+func authEnvNames(s model.Stack) []string {
+	if s == model.Custom {
+		return customEngineAuthEnv
+	}
+	return engineAuthEnv[s]
+}
+
+func gatewayAuth(w model.Workload) bool {
+	maps := []map[string]string{w.Labels, w.Annotations}
+	if w.Object != nil && w.Object.U != nil {
+		maps = append(maps, w.Object.U.GetLabels(), w.Object.U.GetAnnotations())
+	}
+	return slices.ContainsFunc(maps, func(m map[string]string) bool { return m[GatewayAuthKey] == gatewayAuthValue })
+}
+
+func declaredFinding(w model.Workload, c model.Container, path, what string) Finding {
+	f := violation(w, c.Spec.Name, path, fmt.Sprintf("%s; gateway authentication is declared by %s: %q, the scanner cannot verify it", what, GatewayAuthKey, gatewayAuthValue))
+	f.Strength = Declared
+	return f
+}
+
+func valueFlagSet(words []string, flag string) bool {
+	for i, word := range words {
+		name, value, inline := strings.Cut(word, "=")
+		if NormalizeFlag(name) != flag {
+			continue
+		}
+		if inline && value != "" {
+			return true
+		}
+		if !inline && i+1 < len(words) && !strings.HasPrefix(words[i+1], shortFlagPrefix) {
+			return true
+		}
+	}
+	return false
+}
+
+func engineKeyState(in *Input, w model.Workload, c model.Container, words []string) (keyState, []string) {
+	for _, flag := range authFlags {
+		if valueFlagSet(words, flag) {
+			return keySet, nil
+		}
+	}
+	var missing []string
+	for _, name := range authEnvNames(c.Stack) {
+		if e, explicit := lastEnv(c.Spec.Env, name); explicit {
+			if e.ValueFrom != nil || e.Value != "" {
+				return keySet, nil
+			}
+			continue
+		}
+		found, refs := EnvFromKey(in, w.Owner.Namespace, c, name)
+		if found {
+			return keySet, nil
+		}
+		for _, r := range refs {
+			if !slices.Contains(missing, r) {
+				missing = append(missing, r)
+			}
+		}
+	}
+	if len(missing) > 0 {
+		return keyUnknown, missing
+	}
+	return keyMissing, nil
+}
+
+func authEvidenceText(s model.Stack) string {
+	if names := authEnvNames(s); len(names) > 0 {
+		return "no " + flagAPIKey + " flag and none of the env vars " + strings.Join(names, ", ") + " is set"
+	}
+	return "no " + flagAPIKey + " flag and no auth env var"
+}
+
+func aiEngineAuth(in *Input) Result {
+	return forContainers(in, func(w model.Workload, c model.Container) []Finding {
+		if c.Init || !isGenericEngine(c.Stack) {
+			return nil
+		}
+		words, certain := c.EngineWords()
+		state, missing := engineKeyState(in, w, c, words)
+		path := c.Path + "/" + fieldArgs
+		name := engineName(c.Stack)
+		var f Finding
+		switch state {
+		case keySet:
+			return nil
+		case keyUnknown:
+			msg := fmt.Sprintf("%s API key may come from envFrom %s, not in the input: the scanner cannot see if the key is set", name, strings.Join(missing, ", "))
+			if gatewayAuth(w) {
+				return []Finding{declaredFinding(w, c, path, msg)}
+			}
+			f = engineFinding(w, c, certain, path, msg)
+			f.Strength = Suspect
+			return []Finding{f}
+		}
+		msg := fmt.Sprintf("%s container %s has no authentication evidence: %s", name, c.Spec.Name, authEvidenceText(c.Stack))
+		if gatewayAuth(w) {
+			return []Finding{declaredFinding(w, c, path, msg)}
+		}
+		return []Finding{engineFinding(w, c, certain, path, msg)}
+	})
+}

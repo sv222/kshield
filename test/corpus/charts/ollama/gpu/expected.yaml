@@ -9,6 +9,7 @@ expect:
   - {check: "KS-WL-010", object: "Deployment/ai-inference/ollama", verdict: "FAIL"}
   - {check: "KS-WL-012", object: "Deployment/ai-inference/ollama", container: "ollama", verdict: "WARN"}
   - {check: "KS-WL-013", object: "Deployment/ai-inference/ollama", container: "ollama", verdict: "WARN"}
+  - {check: "KS-AI-010", object: "Deployment/ai-inference/ollama", container: "ollama", verdict: "WARN"}
   - {check: "KS-NET-001", object: "Deployment/ai-inference/ollama", verdict: "FAIL"}
   - {check: "KS-RT-001", object: "Deployment/ai-inference/ollama", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "Deployment/ai-inference/ollama", verdict: "FAIL"}

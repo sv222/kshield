@@ -464,6 +464,19 @@
               }
             },
             {
+              "id": "KS-AI-010",
+              "name": "DORA-CH2-036",
+              "shortDescription": {
+                "text": "Inference engine other than vLLM without API key or gateway auth evidence"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
+            },
+            {
               "id": "KS-AI-011",
               "name": "DORA-CH2-037",
               "shortDescription": {

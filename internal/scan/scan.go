@@ -203,6 +203,8 @@ func FindingVerdict(sev profile.Severity, s check.Strength) string {
 	switch {
 	case s == check.Unknown:
 		return report.VerdictUnknown
+	case s == check.Declared:
+		return report.VerdictInfo
 	case sev == profile.SevInfo:
 		return report.VerdictInfo
 	case sev == profile.SevFail && s == check.Violation:

@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `292d4ba37a8297a9395b5b9a3270f3c1468ced05c8e069de8ad605f4145fc9a2`
-- Checks: 36
+- Profile sha256: `81e76e464980e0acb4e24deb3c1d973648af49bae60c8e7173eab08be4c86a20`
+- Checks: 37
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -722,6 +722,31 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 - URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
 
 > prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;
+
+## DORA-CH2-036 (KS-AI-010)
+
+- Check: `KS-AI-010`
+- Display ID: `DORA-CH2-036`
+- Title: Inference engine other than vLLM without API key or gateway auth evidence
+- Severity: warn
+
+### DORA Art. 9(4)(c)
+
+- Ref: `dora-art9-4-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;
+
+### DORA Art. 9(4)(d)
+
+- Ref: `dora-art9-4-d`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> implement policies and protocols for strong authentication mechanisms, based on relevant standards and dedicated control systems, and protection measures of cryptographic keys whereby data is encrypted based on results of approved data classification and ICT risk assessment processes;
 
 ## DORA-CH2-037 (KS-AI-011)
 

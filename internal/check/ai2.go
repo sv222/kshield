@@ -89,7 +89,9 @@ func firstContainer(w model.Workload, match func(model.Container) bool) (model.C
 }
 
 func suspect(f Finding) Finding {
-	f.Strength = Suspect
+	if f.Strength != Declared {
+		f.Strength = Suspect
+	}
 	return f
 }
 

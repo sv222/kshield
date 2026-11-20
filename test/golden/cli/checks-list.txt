@@ -34,4 +34,5 @@ DORA-CH2-032  KS-PRE-003  fail      cluster           manual  Kyverno missing or
 DORA-CH2-033  KS-PRE-004  warn      cluster           manual  Node kernel lacks BPF LSM (--node-probe)
 DORA-CH2-034  KS-WL-015   fail      manifest+cluster  manual  hostPath volume outside /dev, /dev/shm and GPU devices
 DORA-CH2-035  KS-WL-016   fail      manifest+cluster  patch   hostPort on an AI container
+DORA-CH2-036  KS-AI-010   warn      manifest          manual  Inference engine other than vLLM without API key or gateway auth evidence
 DORA-CH2-037  KS-AI-011   warn      manifest          manual  Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)

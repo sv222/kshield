@@ -71,6 +71,9 @@ kustomize build "$work/bundle"
 		"Move the data first, then remove the volume and its mounts."
 	stepsAI001 = "Turn on vLLM authentication: create a Secret with a long random key and set `VLLM_API_KEY` from it with `valueFrom.secretKeyRef`, " +
 		"or pass `--api-key $(VLLM_API_KEY)`. Clients send the key as `Authorization: Bearer <key>`."
+	stepsAI010 = "Turn on the engine key if the engine has one: `--api-key` or the env var of the engine (for example `API_KEY` for Text Embeddings Inference, `LLAMA_API_KEY` for llama.cpp, `LOCALAI_API_KEY` for LocalAI), set from a Secret with `valueFrom.secretKeyRef`. " +
+		"Engines with no authentication of their own (for example Triton, Text Generation Inference and Ollama) need an authenticating proxy or API gateway in front. " +
+		"If a gateway already authenticates the traffic, mark the workload with `kshield.io/gateway-auth: \"true\"` (label or annotation): kshield then reports the finding as INFO and does not verify the gateway."
 	stepsAI011 = "Remove `--debug` and `--allow-http` from the engine command, and unset `OLLAMA_DEBUG`. Debug endpoints and verbose logs expose internals and prompts. " +
 		"Set `OLLAMA_ORIGINS` to the origins that need access, never `*`: with `*` any web page in a visitor's browser can call the engine."
 	stepsAI004 = "Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001), " +
@@ -110,6 +113,7 @@ var manualSteps = map[string]string{
 	"KS-AI-007":  stepsAI007,
 	"KS-AI-008":  stepsAI008,
 	"KS-AI-009":  stepsAI009,
+	"KS-AI-010":  stepsAI010,
 	"KS-AI-011":  stepsAI011,
 	"KS-NET-003": stepsNET003,
 	"KS-PRE-001": stepsPRE001,

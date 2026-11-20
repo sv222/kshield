@@ -76,9 +76,17 @@ func aiAPIKey(in *Input) Result {
 		case keySet:
 			return nil
 		case keyUnknown:
-			return []Finding{suspect(violation(w, c.Spec.Name, path, fmt.Sprintf("vLLM API key may come from envFrom %s, not in the input: the scanner cannot see if %s is set", strings.Join(missing, ", "), vllmAPIKeyEnv)))}
+			msg := fmt.Sprintf("vLLM API key may come from envFrom %s, not in the input: the scanner cannot see if %s is set", strings.Join(missing, ", "), vllmAPIKeyEnv)
+			if gatewayAuth(w) {
+				return []Finding{declaredFinding(w, c, path, msg)}
+			}
+			return []Finding{suspect(violation(w, c.Spec.Name, path, msg))}
 		}
-		return []Finding{violation(w, c.Spec.Name, path, "vLLM serves without authentication: neither "+flagAPIKey+" nor the "+vllmAPIKeyEnv+" env var is set")}
+		msg := "vLLM serves without authentication: neither " + flagAPIKey + " nor the " + vllmAPIKeyEnv + " env var is set"
+		if gatewayAuth(w) {
+			return []Finding{declaredFinding(w, c, path, msg)}
+		}
+		return []Finding{violation(w, c.Spec.Name, path, msg)}
 	})
 }
 

@@ -70,6 +70,8 @@ func TestFindingVerdict(t *testing.T) {
 		{profile.SevFail, check.Suspect, "WARN"},
 		{profile.SevWarn, check.Suspect, "WARN"},
 		{profile.SevInfo, check.Suspect, "INFO"},
+		{profile.SevFail, check.Declared, "INFO"},
+		{profile.SevWarn, check.Declared, "INFO"},
 	}
 	for _, tc := range cases {
 		if got := FindingVerdict(tc.sev, tc.s); got != tc.want {
