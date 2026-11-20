@@ -8,7 +8,7 @@
     "id": "dora",
     "version": 1,
     "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
-    "sha256": "162dd79bbb06ab3454d5c3b3b07d3ca276d93a311fa03f1562704c064d473eca"
+    "sha256": "1d2c21415f6fd520238984cece96638b375545ed2055b3a8c5fb77d1358de97a"
   },
   "scan": {
     "mode": "manifest",
@@ -27,7 +27,7 @@
     "aiWorkloads": 5
   },
   "summary": {
-    "pass": 12,
+    "pass": 13,
     "fail": 17,
     "warn": 5,
     "info": 0,
@@ -2075,6 +2075,29 @@
           "verdict": "WARN"
         }
       ]
+    },
+    {
+      "id": "KS-AI-013",
+      "display": "DORA-CH2-040",
+      "title": "HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)",
+      "verdict": "PASS",
+      "severity": "fail",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        },
+        {
+          "id": "dora-art9-4-c",
+          "label": "DORA Art. 9(4)(c)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": []
     }
   ],
   "errors": []

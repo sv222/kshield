@@ -446,5 +446,17 @@
     "refs": [
       "dora-art9-4-b"
     ]
+  },
+  {
+    "id": "KS-AI-013",
+    "display": "DORA-CH2-040",
+    "title": "HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-b",
+      "dora-art9-4-c"
+    ]
   }
 ]

@@ -109,6 +109,7 @@ var clusterDeps = map[string][]dep{
 	"KS-AI-007":  deps(exposureDeps),
 	"KS-AI-008":  deps(configDeps),
 	"KS-AI-009":  deps(configDeps),
+	"KS-AI-013":  deps(exposureDeps),
 	"KS-NET-001": deps(policyDeps),
 	"KS-NET-002": deps(policyDeps),
 	"KS-NET-003": deps([]dep{prereqDep(resDaemonSets), {group: "", resource: resConfigMaps, outOfScope: true}}),

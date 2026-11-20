@@ -42,6 +42,7 @@ var catalog = []Check{
 	{ID: "KS-AI-011", Title: "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)", Tier: Manifest, Fix: FixManual, Run: aiDebugFlags},
 	{ID: "KS-AI-012", Title: "Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)", Tier: Manifest, Fix: FixManual, Run: aiModelSource},
 	{ID: "KS-NET-004", Title: "AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)", Tier: Both, Fix: FixManual, Run: netIngressIsolation},
+	{ID: "KS-AI-013", Title: "HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)", Tier: Both, Fix: FixManual, Run: aiRouteExposed},
 }
 
 func All() []Check {

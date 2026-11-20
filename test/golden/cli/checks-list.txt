@@ -38,3 +38,4 @@ DORA-CH2-036  KS-AI-010   warn      manifest          manual  Inference engine o
 DORA-CH2-037  KS-AI-011   warn      manifest          manual  Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
 DORA-CH2-038  KS-AI-012   fail      manifest          manual  Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
 DORA-CH2-039  KS-NET-004  warn      manifest+cluster  manual  AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)
+DORA-CH2-040  KS-AI-013   fail      manifest+cluster  manual  HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)

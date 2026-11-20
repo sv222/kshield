@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `162dd79bbb06ab3454d5c3b3b07d3ca276d93a311fa03f1562704c064d473eca`
-- Checks: 39
+- Profile sha256: `1d2c21415f6fd520238984cece96638b375545ed2055b3a8c5fb77d1358de97a`
+- Checks: 40
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -813,6 +813,31 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 - URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
 
 > following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;
+
+## DORA-CH2-040 (KS-AI-013)
+
+- Check: `KS-AI-013`
+- Display ID: `DORA-CH2-040`
+- Title: HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)
+- Severity: fail
+
+### DORA Art. 9(4)(b)
+
+- Ref: `dora-art9-4-b`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;
+
+### DORA Art. 9(4)(c)
+
+- Ref: `dora-art9-4-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> implement policies that limit the physical or logical access to information assets and ICT assets to what is required for legitimate and approved functions and activities only, and establish to that end a set of policies, procedures and controls that address access rights and ensure a sound administration thereof;
 
 <!-- kshield:signoff - everything below is kept by the generator -->
 

@@ -138,5 +138,6 @@ kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 5 objects, 5 AI 
        WARN RayCluster/ai-inference/rc group=gpu: no NetworkPolicy or Cilium policy restricts ingress to this workload
        WARN RayCluster/ai-inference/rc group=head: no NetworkPolicy or Cilium policy restricts ingress to this workload
        fix: manual (kshield checks explain KS-NET-004) | supports evidence for: DORA Art. 9(4)(b)
+[PASS] DORA-CH2-040 KS-AI-013 HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)
 
-Summary: 17 FAIL, 5 WARN, 12 PASS, 0 INFO, 5 N/A
+Summary: 17 FAIL, 5 WARN, 13 PASS, 0 INFO, 5 N/A

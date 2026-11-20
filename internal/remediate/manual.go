@@ -82,6 +82,11 @@ kustomize build "$work/bundle"
 		"or put an authenticating proxy or API gateway in front of it (an Ingress with an `auth-url`, `auth-signin` or `oauth2` annotation counts), " +
 		"or change the Service to `type: ClusterIP` and remove the Ingress path. " +
 		"If an API gateway that kshield cannot see authenticates the traffic, mark the workload with `kshield.io/gateway-auth: \"true\"` (label or annotation): kshield then reports INFO and does not verify the gateway."
+	stepsAI013 = "Do not route outside traffic to an inference API through a Gateway API HTTPRoute without authentication. Set the engine key (KS-AI-001, KS-AI-010), " +
+		"or attach authentication to the route or its Gateway: an Envoy Gateway SecurityPolicy with `jwt`, `oidc`, `basicAuth`, `apiKeyAuth` or `extAuth`, " +
+		"an Istio AuthorizationPolicy (with a RequestAuthentication for JWT) on the Gateway or the Service, or a Kong auth plugin bound with `konghq.com/plugins` or an `ExtensionRef` filter. " +
+		"kshield then reports INFO with the name of the policy and does not check that the gateway enforces it. " +
+		"If a gateway that kshield cannot see authenticates the traffic, mark the workload or the route with `kshield.io/gateway-auth: \"true\"`."
 	stepsAI006 = "Turn on Ray TLS: create a CA and certificates for the Ray pods (for example with cert-manager), mount them into the head and every worker group, " +
 		"and set `RAY_USE_TLS=1`, `RAY_TLS_SERVER_CERT`, `RAY_TLS_SERVER_KEY` and `RAY_TLS_CA_CERT` on every Ray container."
 	stepsAI007 = "Ollama has no authentication of its own. Keep its Service `type: ClusterIP`, " +
@@ -123,6 +128,7 @@ var manualSteps = map[string]string{
 	"KS-AI-010":  stepsAI010,
 	"KS-AI-011":  stepsAI011,
 	"KS-AI-012":  stepsAI012,
+	"KS-AI-013":  stepsAI013,
 	"KS-NET-003": stepsNET003,
 	"KS-NET-004": stepsNET004,
 	"KS-PRE-001": stepsPRE001,

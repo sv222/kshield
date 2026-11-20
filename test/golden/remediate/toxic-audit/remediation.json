@@ -6,10 +6,10 @@
   },
   "profile": {
     "id": "dora",
-    "sha256": "162dd79bbb06ab3454d5c3b3b07d3ca276d93a311fa03f1562704c064d473eca"
+    "sha256": "1d2c21415f6fd520238984cece96638b375545ed2055b3a8c5fb77d1358de97a"
   },
   "mode": "audit",
-  "scanSha256": "79da49d5af5301cc1ab5054467dfe57c5d2cfe5a13ec3d01002f74c5f852eb2e",
+  "scanSha256": "8eeba5525041736d055e01a3e963b5295fd9bc0ba0b5d95ba6f7586cdb2f5ed5",
   "items": [
     {
       "check": "KS-WL-001",
