@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	k8slabels "k8s.io/apimachinery/pkg/labels"
+
 	"github.com/sv222/kshield/internal/check"
 	"github.com/sv222/kshield/internal/cluster"
 	"github.com/sv222/kshield/internal/load"
@@ -23,18 +25,19 @@ const (
 )
 
 type ClusterOptions struct {
-	ProfileID     string
-	Deterministic bool
-	Now           func() time.Time
-	Info          report.ClusterInfo
-	Errors        []string
-	Failed        []cluster.FailedRead
-	Kubeconfig    string
-	Context       string
-	Namespaces    []string
-	NodeProbe     bool
-	Probe         cluster.ProbeOptions
-	Client        *cluster.Client
+	ProfileID        string
+	WorkloadSelector string
+	Deterministic    bool
+	Now              func() time.Time
+	Info             report.ClusterInfo
+	Errors           []string
+	Failed           []cluster.FailedRead
+	Kubeconfig       string
+	Context          string
+	Namespaces       []string
+	NodeProbe        bool
+	Probe            cluster.ProbeOptions
+	Client           *cluster.Client
 }
 
 func CheckProfile(id string) error {
@@ -116,12 +119,16 @@ func clusterObjectsInput(objs []load.Object, facts *check.ClusterFacts, opt Clus
 	total := len(objs)
 	objs, skipped := splitShapes(objs)
 	opt.Errors = slices.Concat(opt.Errors, skipped)
-	resolved := cluster.Resolve(objs)
-	workloads, err := model.Extract(resolved.Objects)
+	sel, err := model.ParseSelector(opt.WorkloadSelector)
 	if err != nil {
 		return nil, nil, err
 	}
-	live, err := newLivePass(objs, resolved, facts)
+	resolved := cluster.Resolve(objs)
+	workloads, err := model.Extract(resolved.Objects, model.WithSelector(sel))
+	if err != nil {
+		return nil, nil, err
+	}
+	live, err := newLivePass(objs, resolved, facts, sel)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -137,13 +144,14 @@ func clusterObjectsInput(objs []load.Object, facts *check.ClusterFacts, opt Clus
 		Tool:          toolInfo(clock),
 		Profile:       report.ProfileInfo{ID: p.ID, Version: p.Version, Title: p.Title, SHA256: p.SHA256},
 		Scan: report.ScanInfo{
-			Mode:         report.ModeCluster,
-			Inputs:       []string{},
-			InputDigests: []load.Digest{},
-			StartedAt:    startedAt(clock),
-			Objects:      total,
-			AIWorkloads:  countAI(workloads),
-			Cluster:      &info,
+			Mode:             report.ModeCluster,
+			Inputs:           []string{},
+			InputDigests:     []load.Digest{},
+			StartedAt:        startedAt(clock),
+			Objects:          total,
+			AIWorkloads:      countAI(workloads),
+			WorkloadSelector: opt.WorkloadSelector,
+			Cluster:          &info,
 		},
 		Checks: []report.CheckResult{},
 	}
@@ -198,7 +206,7 @@ func compareRefs(a, b load.ObjectRef) int {
 	return cmp.Or(cmp.Compare(a.String(), b.String()), cmp.Compare(a.APIVersion, b.APIVersion))
 }
 
-func newLivePass(objs []load.Object, resolved cluster.Resolved, facts *check.ClusterFacts) (*livePass, error) {
+func newLivePass(objs []load.Object, resolved cluster.Resolved, facts *check.ClusterFacts, sel k8slabels.Selector) (*livePass, error) {
 	byRef := make(map[load.ObjectRef]load.Object, len(objs))
 	for _, o := range objs {
 		if _, ok := byRef[o.Ref]; !ok {
@@ -208,7 +216,7 @@ func newLivePass(objs []load.Object, resolved cluster.Resolved, facts *check.Clu
 	lp := &livePass{owners: map[load.ObjectRef]podOwner{}, pods: map[load.ObjectRef]model.Workload{}}
 	var pods []load.Object
 	for _, ref := range slices.SortedFunc(maps.Keys(resolved.Live), compareRefs) {
-		ws, err := model.Extract([]load.Object{byRef[ref]})
+		ws, err := model.Extract([]load.Object{byRef[ref]}, model.WithSelector(sel))
 		if err != nil {
 			return nil, err
 		}
@@ -221,7 +229,7 @@ func newLivePass(objs []load.Object, resolved cluster.Resolved, facts *check.Clu
 			pods = append(pods, p)
 		}
 	}
-	podWorkloads, err := model.Extract(pods)
+	podWorkloads, err := model.Extract(pods, model.WithSelector(sel))
 	if err != nil {
 		return nil, err
 	}

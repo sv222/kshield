@@ -581,3 +581,25 @@ func TestSourceOfNeedsALine(t *testing.T) {
 		t.Errorf("source = %v", s)
 	}
 }
+
+func TestManifestWorkloadSelector(t *testing.T) {
+	doc := strings.Replace(vllmDeployment, "vllm/vllm-openai:v0.6.0", "registry.example.com/platform/genai-service:1.2", 1)
+	path := writeFile(t, t.TempDir(), "in.yaml", doc)
+	r, err := manifest(Options{Inputs: []string{path}, Namespace: "ai", WorkloadSelector: "app=vllm"}, emptyProfile(t), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.Scan.AIWorkloads != 1 || r.Scan.WorkloadSelector != "app=vllm" {
+		t.Errorf("aiWorkloads=%d selector=%q", r.Scan.AIWorkloads, r.Scan.WorkloadSelector)
+	}
+	r, err = manifest(Options{Inputs: []string{path}, Namespace: "ai"}, emptyProfile(t), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if r.Scan.AIWorkloads != 0 || r.Scan.WorkloadSelector != "" {
+		t.Errorf("aiWorkloads=%d selector=%q", r.Scan.AIWorkloads, r.Scan.WorkloadSelector)
+	}
+	if _, err := manifest(Options{Inputs: []string{path}, WorkloadSelector: "app in ("}, emptyProfile(t), nil); err == nil {
+		t.Error("an invalid selector must fail")
+	}
+}

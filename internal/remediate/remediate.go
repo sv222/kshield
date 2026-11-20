@@ -260,14 +260,14 @@ func manifestRescan(opt Options, sr *report.Report) (*report.Report, *check.Inpu
 	if ns == "" {
 		ns = sr.Scan.Namespace
 	}
-	return scan.ManifestInput(scan.Options{Inputs: inputs, Namespace: ns, ProfileID: sr.Profile.ID, Deterministic: true, Stdin: opt.Stdin})
+	return scan.ManifestInput(scan.Options{Inputs: inputs, Namespace: ns, ProfileID: sr.Profile.ID, WorkloadSelector: sr.Scan.WorkloadSelector, Deterministic: true, Stdin: opt.Stdin})
 }
 
 func clusterRescan(opt Options, sr *report.Report) (*report.Report, *check.Input, error) {
 	if len(opt.Inputs) > 0 {
 		return nil, nil, ErrClusterFiles
 	}
-	return scan.ClusterObjectsInput(opt.Objects, nil, scan.ClusterOptions{ProfileID: sr.Profile.ID, Deterministic: true})
+	return scan.ClusterObjectsInput(opt.Objects, nil, scan.ClusterOptions{ProfileID: sr.Profile.ID, WorkloadSelector: sr.Scan.WorkloadSelector, Deterministic: true})
 }
 
 func isPod(ref load.ObjectRef) bool {

@@ -51,7 +51,11 @@ type site struct {
 	synth map[string]string
 }
 
-func Extract(objs []load.Object) ([]Workload, error) {
+func Extract(objs []load.Object, opts ...ExtractOption) ([]Workload, error) {
+	var cfg extractConfig
+	for _, opt := range opts {
+		opt(&cfg)
+	}
 	var out []Workload
 	for i := range objs {
 		o := &objs[i]
@@ -69,6 +73,7 @@ func Extract(objs []load.Object) ([]Workload, error) {
 			}
 			if ok {
 				Classify(&w)
+				markOptIn(&w, o.U.GetLabels(), o.U.GetAnnotations(), cfg.selector)
 				out = append(out, w)
 			}
 		}

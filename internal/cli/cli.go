@@ -40,8 +40,8 @@ const (
 )
 
 const usage = `usage:
-  kshield scan manifest -f <file|dir|-> [-f ...] [-n <ns>] [--profile dora] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
-  kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--profile dora] [--node-probe [--probe-namespace kube-system] [--probe-timeout 60s] [--probe-image <ref>]] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
+  kshield scan manifest -f <file|dir|-> [-f ...] [-n <ns>] [--profile dora] [--workload-selector <selector>] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
+  kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--profile dora] [--workload-selector <selector>] [--node-probe [--probe-namespace kube-system] [--probe-timeout 60s] [--probe-image <ref>]] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
   kshield remediate --from <scan.json> [-f <file|dir|-> ...] [-n <ns>] [--kubeconfig <file>] [--context <name>] [--mode audit|enforce] [--allow-fqdn <name> ...] [--allow-cidr <cidr> ...] [--out <dir>]
   kshield checks list [--profile dora] [--format text|json]
   kshield checks explain <check-id|display-id> [--profile dora]
@@ -60,7 +60,7 @@ exit codes:
   3  scan incomplete
 `
 
-const manifestUsage = `usage: kshield scan manifest -f <file|dir|-> [-f ...] [-n <ns>] [--profile dora] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
+const manifestUsage = `usage: kshield scan manifest -f <file|dir|-> [-f ...] [-n <ns>] [--profile dora] [--workload-selector <selector>] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
 --format pdf needs --out.
 `
 
@@ -138,6 +138,7 @@ func scanManifest(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 	fs.StringVar(&namespace, "namespace", defaultNamespace, "namespace for objects without one")
 	profileID := fs.String("profile", defaultProfile, "profile id")
 	format := fs.String("format", formatText, "report format")
+	workloadSelector := fs.String("workload-selector", "", "label selector for workloads to scan as AI workloads")
 	out := fs.String("out", "", "report file (default stdout)")
 	failOn := fs.String("fail-on", failOnFail, "fail, warn or never")
 	deterministic := fs.Bool("deterministic", false, "byte-identical output for the same input")
@@ -167,11 +168,12 @@ func scanManifest(args []string, stdin io.Reader, stdout, stderr io.Writer) int 
 	}
 
 	r, err := scan.Manifest(scan.Options{
-		Inputs:        inputs,
-		Namespace:     namespace,
-		ProfileID:     *profileID,
-		Deterministic: *deterministic,
-		Stdin:         stdin,
+		Inputs:           inputs,
+		Namespace:        namespace,
+		ProfileID:        *profileID,
+		WorkloadSelector: *workloadSelector,
+		Deterministic:    *deterministic,
+		Stdin:            stdin,
 	})
 	if err != nil {
 		return usageError(stderr, "%v", err)

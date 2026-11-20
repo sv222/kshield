@@ -27,6 +27,8 @@ const (
 	LlamaCpp Stack = "llamacpp"
 	LMDeploy Stack = "lmdeploy"
 	TRTLLM   Stack = "tensorrt-llm"
+
+	Custom Stack = "custom"
 )
 
 type Command struct {
@@ -52,6 +54,7 @@ type Workload struct {
 	Spec        corev1.PodSpec
 	Containers  []Container
 	Stacks      []Stack
+	OptIn       bool
 }
 
 func (w Workload) IsAI() bool {

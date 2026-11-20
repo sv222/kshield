@@ -32,14 +32,15 @@ type ProfileInfo struct {
 }
 
 type ScanInfo struct {
-	Mode         string        `json:"mode"`
-	Inputs       []string      `json:"inputs"`
-	InputDigests []load.Digest `json:"inputDigests"`
-	Namespace    string        `json:"namespace"`
-	StartedAt    string        `json:"startedAt"`
-	Objects      int           `json:"objects"`
-	AIWorkloads  int           `json:"aiWorkloads"`
-	Cluster      *ClusterInfo  `json:"cluster,omitempty"`
+	Mode             string        `json:"mode"`
+	Inputs           []string      `json:"inputs"`
+	InputDigests     []load.Digest `json:"inputDigests"`
+	Namespace        string        `json:"namespace"`
+	StartedAt        string        `json:"startedAt"`
+	Objects          int           `json:"objects"`
+	AIWorkloads      int           `json:"aiWorkloads"`
+	WorkloadSelector string        `json:"workloadSelector,omitempty"`
+	Cluster          *ClusterInfo  `json:"cluster,omitempty"`
 }
 
 type ClusterInfo struct {

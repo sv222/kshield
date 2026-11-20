@@ -12,11 +12,12 @@ import (
 
 	"github.com/sv222/kshield/internal/cluster"
 	"github.com/sv222/kshield/internal/load"
+	"github.com/sv222/kshield/internal/model"
 	"github.com/sv222/kshield/internal/report"
 	"github.com/sv222/kshield/internal/scan"
 )
 
-const clusterUsage = `usage: kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--profile dora] [--node-probe [--probe-namespace kube-system] [--probe-timeout 60s] [--probe-image <ref>]] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
+const clusterUsage = `usage: kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--profile dora] [--workload-selector <selector>] [--node-probe [--probe-namespace kube-system] [--probe-timeout 60s] [--probe-image <ref>]] [--format text|json|html|pdf|sarif] [--out <path>] [--fail-on fail|warn|never] [--deterministic] [--evidence <dir> [--sign-key <file>]]
 --format pdf needs --out.
 --probe-namespace, --probe-timeout and --probe-image need --node-probe.
 --node-probe creates one short-lived pod per Linux node in the probe namespace. A node can take about 3 x timeout + 15 s.
@@ -45,6 +46,7 @@ func scanCluster(args []string, stdout, stderr io.Writer) int {
 	kubeContext := fs.String("context", "", "kubeconfig context (default: the current context)")
 	profileID := fs.String("profile", defaultProfile, "profile id")
 	format := fs.String("format", formatText, "report format")
+	workloadSelector := fs.String("workload-selector", "", "label selector for workloads to scan as AI workloads")
 	out := fs.String("out", "", "report file (default stdout)")
 	failOn := fs.String("fail-on", failOnFail, "fail, warn or never")
 	deterministic := fs.Bool("deterministic", false, "byte-identical output for the same cluster state")
@@ -93,6 +95,9 @@ func scanCluster(args []string, stdout, stderr io.Writer) int {
 	if err := scan.CheckProfile(*profileID); err != nil {
 		return usageError(stderr, "%v", err)
 	}
+	if _, err := model.ParseSelector(*workloadSelector); err != nil {
+		return usageError(stderr, "%v", err)
+	}
 	client, err := connect(*kubeconfig, *kubeContext)
 	if err != nil {
 		return usageError(stderr, "%v", err)
@@ -100,12 +105,13 @@ func scanCluster(args []string, stdout, stderr io.Writer) int {
 	ctx, stop := interruptContext()
 	defer stop()
 	r, _, err := scan.Cluster(ctx, scan.ClusterOptions{
-		ProfileID:     *profileID,
-		Deterministic: *deterministic,
-		Namespaces:    namespaces,
-		NodeProbe:     *nodeProbe,
-		Probe:         cluster.ProbeOptions{Namespace: *probeNamespace, Image: *probeImage, Timeout: *probeTimeout},
-		Client:        client,
+		ProfileID:        *profileID,
+		WorkloadSelector: *workloadSelector,
+		Deterministic:    *deterministic,
+		Namespaces:       namespaces,
+		NodeProbe:        *nodeProbe,
+		Probe:            cluster.ProbeOptions{Namespace: *probeNamespace, Image: *probeImage, Timeout: *probeTimeout},
+		Client:           client,
 	})
 	if err != nil {
 		return usageError(stderr, "%v", err)
@@ -143,7 +149,7 @@ func rescanCluster(sr *report.Report, kubeconfig, kubeContext string, stderr io.
 	}
 	ctx, stop := interruptContext()
 	defer stop()
-	r, objs, err := scan.Cluster(ctx, scan.ClusterOptions{ProfileID: sr.Profile.ID, Deterministic: true, Namespaces: namespaces, Client: client})
+	r, objs, err := scan.Cluster(ctx, scan.ClusterOptions{ProfileID: sr.Profile.ID, WorkloadSelector: sr.Scan.WorkloadSelector, Deterministic: true, Namespaces: namespaces, Client: client})
 	if err != nil {
 		return nil, usageError(stderr, "%v", err)
 	}

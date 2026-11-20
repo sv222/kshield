@@ -23,12 +23,13 @@ const (
 )
 
 type Options struct {
-	Inputs        []string
-	Namespace     string
-	ProfileID     string
-	Deterministic bool
-	Stdin         io.Reader
-	Now           func() time.Time
+	Inputs           []string
+	Namespace        string
+	ProfileID        string
+	Deterministic    bool
+	WorkloadSelector string
+	Stdin            io.Reader
+	Now              func() time.Time
 }
 
 func Manifest(opt Options) (*report.Report, error) {
@@ -53,6 +54,10 @@ func manifestInput(opt Options, p *profile.Profile, checks []check.Check) (*repo
 	if err := validate(p, checks); err != nil {
 		return nil, nil, err
 	}
+	sel, err := model.ParseSelector(opt.WorkloadSelector)
+	if err != nil {
+		return nil, nil, err
+	}
 	digests := []load.Digest{}
 	objs, err := load.Read(opt.Inputs, load.Options{DefaultNamespace: opt.Namespace, Stdin: opt.Stdin, Digests: &digests})
 	if err != nil {
@@ -61,7 +66,7 @@ func manifestInput(opt Options, p *profile.Profile, checks []check.Check) (*repo
 	if len(objs) == 0 {
 		return nil, nil, fmt.Errorf("no Kubernetes objects found in %s", strings.Join(slashed(opt.Inputs), ", "))
 	}
-	workloads, err := model.Extract(objs)
+	workloads, err := model.Extract(objs, model.WithSelector(sel))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -71,13 +76,14 @@ func manifestInput(opt Options, p *profile.Profile, checks []check.Check) (*repo
 		Tool:          toolInfo(opt),
 		Profile:       report.ProfileInfo{ID: p.ID, Version: p.Version, Title: p.Title, SHA256: p.SHA256},
 		Scan: report.ScanInfo{
-			Mode:         report.ModeManifest,
-			Inputs:       slashed(opt.Inputs),
-			InputDigests: digests,
-			Namespace:    opt.Namespace,
-			StartedAt:    startedAt(opt),
-			Objects:      len(objs),
-			AIWorkloads:  countAI(workloads),
+			Mode:             report.ModeManifest,
+			Inputs:           slashed(opt.Inputs),
+			InputDigests:     digests,
+			Namespace:        opt.Namespace,
+			StartedAt:        startedAt(opt),
+			Objects:          len(objs),
+			AIWorkloads:      countAI(workloads),
+			WorkloadSelector: opt.WorkloadSelector,
 		},
 		Checks: []report.CheckResult{},
 		Errors: []string{},
