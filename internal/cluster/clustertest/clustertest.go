@@ -55,6 +55,13 @@ var Kinds = []Kind{
 	{"cilium.io", "v1alpha1", "tracingpoliciesnamespaced", "TracingPolicyNamespaced", true},
 	{"kyverno.io", "v1", "policies", "Policy", true},
 	{"kyverno.io", "v1", "clusterpolicies", "ClusterPolicy", false},
+	{"security.istio.io", "v1", "authorizationpolicies", "AuthorizationPolicy", true},
+	{"security.istio.io", "v1", "requestauthentications", "RequestAuthentication", true},
+	{"configuration.konghq.com", "v1", "kongplugins", "KongPlugin", true},
+	{"configuration.konghq.com", "v1", "kongclusterplugins", "KongClusterPlugin", false},
+	{"gateway.networking.k8s.io", "v1", "httproutes", "HTTPRoute", true},
+	{"gateway.networking.k8s.io", "v1", "gateways", "Gateway", true},
+	{"gateway.envoyproxy.io", "v1alpha1", "securitypolicies", "SecurityPolicy", true},
 }
 
 var secrets = Kind{"", "v1", "secrets", "Secret", true}

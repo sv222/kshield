@@ -64,6 +64,13 @@ var readSet = []schema.GroupResource{
 	{Group: "cilium.io", Resource: "tracingpoliciesnamespaced"},
 	{Group: "kyverno.io", Resource: "policies"},
 	{Group: "kyverno.io", Resource: "clusterpolicies"},
+	{Group: "security.istio.io", Resource: "authorizationpolicies"},
+	{Group: "security.istio.io", Resource: "requestauthentications"},
+	{Group: "configuration.konghq.com", Resource: "kongplugins"},
+	{Group: "configuration.konghq.com", Resource: "kongclusterplugins"},
+	{Group: "gateway.networking.k8s.io", Resource: "httproutes"},
+	{Group: "gateway.networking.k8s.io", Resource: "gateways"},
+	{Group: "gateway.envoyproxy.io", Resource: "securitypolicies"},
 }
 
 type ReadOptions struct {

@@ -57,6 +57,13 @@ var testKinds = []testKind{
 	{"cilium.io", "v1alpha1", "tracingpoliciesnamespaced", "TracingPolicyNamespaced", true},
 	{"kyverno.io", "v1", "policies", "Policy", true},
 	{"kyverno.io", "v1", "clusterpolicies", "ClusterPolicy", false},
+	{"security.istio.io", "v1", "authorizationpolicies", "AuthorizationPolicy", true},
+	{"security.istio.io", "v1", "requestauthentications", "RequestAuthentication", true},
+	{"configuration.konghq.com", "v1", "kongplugins", "KongPlugin", true},
+	{"configuration.konghq.com", "v1", "kongclusterplugins", "KongClusterPlugin", false},
+	{"gateway.networking.k8s.io", "v1", "httproutes", "HTTPRoute", true},
+	{"gateway.networking.k8s.io", "v1", "gateways", "Gateway", true},
+	{"gateway.envoyproxy.io", "v1alpha1", "securitypolicies", "SecurityPolicy", true},
 }
 
 var secretKind = testKind{"", "v1", "secrets", "Secret", true}
@@ -812,6 +819,13 @@ func TestReadSetNonWorkloadKinds(t *testing.T) {
 		"cilium.io/TracingPolicyNamespaced",
 		"kyverno.io/Policy",
 		"kyverno.io/ClusterPolicy",
+		"security.istio.io/AuthorizationPolicy",
+		"security.istio.io/RequestAuthentication",
+		"configuration.konghq.com/KongPlugin",
+		"configuration.konghq.com/KongClusterPlugin",
+		"gateway.networking.k8s.io/HTTPRoute",
+		"gateway.networking.k8s.io/Gateway",
+		"gateway.envoyproxy.io/SecurityPolicy",
 	}
 	if !slices.Equal(got, want) {
 		t.Fatalf("non-workload kinds in the read set changed (check that none owns the Cilium, Tetragon or Kyverno workloads):\n got %q\nwant %q", got, want)
@@ -819,3 +833,79 @@ func TestReadSetNonWorkloadKinds(t *testing.T) {
 }
 
 var _ discovery.DiscoveryInterface = failingDiscovery{}
+
+func TestReadGatewayKinds(t *testing.T) {
+	f := newFixture(t, testKinds,
+		live("v1", "Namespace", "", "a"),
+		live("gateway.networking.k8s.io/v1", "HTTPRoute", "a", "chat"),
+		live("gateway.networking.k8s.io/v1", "Gateway", "infra", "public"),
+		live("gateway.envoyproxy.io/v1alpha1", "SecurityPolicy", "a", "jwt"),
+		live("security.istio.io/v1", "AuthorizationPolicy", "a", "allow"),
+		live("security.istio.io/v1", "RequestAuthentication", "a", "jwt"),
+		live("configuration.konghq.com/v1", "KongPlugin", "a", "key"),
+		live("configuration.konghq.com/v1", "KongClusterPlugin", "", "jwt-all"),
+	)
+	snap := mustRead(t, f, ReadOptions{})
+	assertRefs(t, snap.Objects, []string{
+		"configuration.konghq.com/v1 KongClusterPlugin/jwt-all",
+		"v1 Namespace/a",
+		"security.istio.io/v1 AuthorizationPolicy/a/allow",
+		"gateway.networking.k8s.io/v1 HTTPRoute/a/chat",
+		"configuration.konghq.com/v1 KongPlugin/a/key",
+		"security.istio.io/v1 RequestAuthentication/a/jwt",
+		"gateway.envoyproxy.io/v1alpha1 SecurityPolicy/a/jwt",
+		"gateway.networking.k8s.io/v1 Gateway/infra/public",
+	})
+	assertErrors(t, snap.Errors, nil)
+	assertFailed(t, snap.Failed, nil)
+}
+
+func TestReadGatewayKindsInScope(t *testing.T) {
+	f := newFixture(t, testKinds,
+		live("v1", "Namespace", "", "a"),
+		live("gateway.networking.k8s.io/v1", "HTTPRoute", "a", "chat"),
+		live("gateway.networking.k8s.io/v1", "Gateway", "infra", "public"),
+		live("configuration.konghq.com/v1", "KongClusterPlugin", "", "jwt-all"),
+	)
+	snap := mustRead(t, f, ReadOptions{Namespaces: []string{"a"}})
+	assertRefs(t, snap.Objects, []string{
+		"configuration.konghq.com/v1 KongClusterPlugin/jwt-all",
+		"v1 Namespace/a",
+		"gateway.networking.k8s.io/v1 HTTPRoute/a/chat",
+	})
+}
+
+func TestReadSkipsUnservedGatewayGroups(t *testing.T) {
+	var kinds []testKind
+	for _, k := range testKinds {
+		switch k.group {
+		case "security.istio.io", "configuration.konghq.com", "gateway.networking.k8s.io", "gateway.envoyproxy.io":
+		default:
+			kinds = append(kinds, k)
+		}
+	}
+	f := newFixture(t, kinds, live("v1", "Pod", "a", "p1"))
+	snap := mustRead(t, f, ReadOptions{})
+	assertRefs(t, snap.Objects, []string{"v1 Pod/a/p1"})
+	assertErrors(t, snap.Errors, nil)
+	assertFailed(t, snap.Failed, nil)
+	for _, a := range f.dyn.Actions() {
+		switch a.GetResource().Group {
+		case "security.istio.io", "configuration.konghq.com", "gateway.networking.k8s.io", "gateway.envoyproxy.io":
+			t.Errorf("read of unserved %v", a.GetResource())
+		}
+	}
+}
+
+func TestReadForbiddenGatewayKind(t *testing.T) {
+	f := newFixture(t, testKinds,
+		live("v1", "Pod", "a", "p1"),
+		live("gateway.envoyproxy.io/v1alpha1", "SecurityPolicy", "a", "jwt"),
+	)
+	f.dyn.PrependReactor("list", "securitypolicies", func(clienttesting.Action) (bool, runtime.Object, error) {
+		return true, nil, apierrors.NewForbidden(schema.GroupResource{Group: "gateway.envoyproxy.io", Resource: "securitypolicies"}, "", errors.New("RBAC: denied"))
+	})
+	snap := mustRead(t, f, ReadOptions{})
+	assertRefs(t, snap.Objects, []string{"v1 Pod/a/p1"})
+	assertFailed(t, snap.Failed, []FailedRead{{Group: "gateway.envoyproxy.io", Version: "v1alpha1", Resource: "securitypolicies"}})
+}
