@@ -18,14 +18,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - KS-WL-016 (DORA-CH2-035): hostPort on an AI container, with a `remediate` patch that removes it.
 - KS-NET-004 (DORA-CH2-039): no NetworkPolicy or Cilium policy restricts ingress to the workload. A policy rule that allows every source does not count.
 - KS-AI-004 also checks engines other than vLLM, and accepts the Ingress annotations `auth-signin`, `auth-secret` and `oauth2` as auth evidence besides `auth-url` and `auth-type`.
-- The label or annotation `kshield.io/gateway-auth: "true"` on a workload makes KS-AI-001, KS-AI-004, KS-AI-007 and KS-AI-010 report INFO that names the annotation, instead of FAIL or WARN. kshield does not verify the gateway. On an Ingress it counts as auth evidence.
+- The label or annotation `kshield.io/gateway-auth: "true"` on a workload makes KS-AI-001, KS-AI-004, KS-AI-007, KS-AI-010 and KS-AI-013 report INFO that names the annotation, instead of FAIL or WARN. kshield does not verify the gateway. On an Ingress it counts as auth evidence.
 - `scan.json` records the `workloadSelector` of the scan when one is set.
 - `docs/hardened-engines.md` and the hardened Ollama and vLLM examples in `examples/hardened/`.
 - Corpus cases from ai-guard-k8s (regression files, the offending and clean samples) and the TGI, TEI, LocalAI and Triton charts. The chart renderer can render a chart from a git commit.
+- KS-AI-013 (DORA-CH2-040): a Gateway API `HTTPRoute` with a Gateway parent that reaches an AI engine Service with no auth evidence. FAIL when nothing protects it, WARN when a Kong plugin is not in the input or the parent Gateway is outside the scanned namespaces.
+- Istio auth evidence: an `AuthorizationPolicy` (ALLOW with principals or request principals, DENY of requests without a principal, or a CUSTOM provider) that selects the workload, its Service or the ingress Gateway counts. A policy that relies on JWT principals needs a `RequestAuthentication` on the same target.
+- Kong auth evidence: a `KongPlugin` or `KongClusterPlugin` with an auth plugin, bound by `konghq.com/plugins` on an Ingress, Service or HTTPRoute, or by an `ExtensionRef` filter on an HTTPRoute.
+- Envoy Gateway auth evidence: a `SecurityPolicy` with `jwt`, `oidc`, `basicAuth`, `apiKeyAuth` or `extAuth` that targets the HTTPRoute or its Gateway.
+- KS-AI-001, KS-AI-004, KS-AI-007 and KS-AI-010 report INFO that names the Istio policy or Kong plugin instead of FAIL or WARN when such evidence protects the workload, its Ingress or its Service.
+- `scan cluster` reads Istio `authorizationpolicies` and `requestauthentications`, Kong `kongplugins` and `kongclusterplugins`, Gateway API `httproutes` and `gateways`, and Envoy Gateway `securitypolicies` when the CRDs exist. `deploy/rbac/kshield-scan.yaml` has the new get and list rules. A forbidden read gives UNKNOWN for KS-AI-004, KS-AI-007 and KS-AI-013 and exit code 3.
 
 ### Changed
 
-- The `dora` profile has 39 checks (6 new). The profile sha256 changed, so `docs/MAPPING-REVIEW.md` needs a new sign-off.
+- The `dora` profile has 40 checks (7 new). The profile sha256 changed, so `docs/MAPPING-REVIEW.md` needs a new sign-off.
+- An Istio, Kong or Envoy Gateway object that protects an exposure is reported as INFO, and an Ingress with an auth annotation is still skipped without a finding, as before.
 
 ## [0.3.0] - 2026-11-20
 

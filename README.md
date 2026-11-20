@@ -61,7 +61,7 @@ kshield dev | profile dora v1 | manifest scan | 5 objects, 5 AI workloads
        FAIL Deployment/ai-inference/vllm: volume "shm" mounts hostPath /dev/shm
        fix: workload patch (kshield remediate) | supports evidence for: DORA Art. 9(3)(c)
 ...
-Summary: 17 FAIL, 5 WARN, 12 PASS, 0 INFO, 5 N/A
+Summary: 17 FAIL, 5 WARN, 13 PASS, 0 INFO, 5 N/A
 ```
 
 The exit code is 1 because there are findings. The hardened version of the same stack is clean:
@@ -71,10 +71,10 @@ kshield scan manifest -f test/corpus/baseline/hardened/input.yaml
 ```
 
 ```text
-Summary: 0 FAIL, 0 WARN, 34 PASS, 0 INFO, 5 N/A
+Summary: 0 FAIL, 0 WARN, 35 PASS, 0 INFO, 5 N/A
 ```
 
-Scan your own cluster (read-only):
+Scan your own cluster. Scans are read-only:
 
 ```bash
 kshield scan cluster -n ai-inference --format html --out report.html
@@ -84,12 +84,12 @@ kshield scan cluster -n ai-inference --format html --out report.html
 
 ### Checks
 
-39 checks in the `dora` profile. List them with `kshield checks list` and read one with `kshield checks explain KS-AI-002`.
+40 checks in the `dora` profile. List them with `kshield checks list` and read one with `kshield checks explain KS-AI-002`.
 
 | Group | Checks | Examples |
 |---|---|---|
 | Workload hardening | KS-WL-001..016 | root containers, privilege escalation, capabilities, host namespaces, `/dev/shm` hostPath, any other hostPath, hostPort, seccomp, token automount, secrets in env, images not pinned by digest, GPU access through hostPath |
-| AI serving | KS-AI-001..012 | vLLM without API key, `--trust-remote-code`, pickle model load, inference API exposed without auth, Ray GCS, client or dashboard exposed, Ray TLS off, Ollama exposed, Qdrant without API key or TLS, Milvus authorization off, other engines without API key, debug and insecure flags, unsafe model sources and formats |
+| AI serving | KS-AI-001..013 | vLLM without API key, `--trust-remote-code`, pickle model load, inference API exposed without auth, Ray GCS, client or dashboard exposed, Ray TLS off, Ollama exposed, Qdrant without API key or TLS, Milvus authorization off, other engines without API key, debug and insecure flags, unsafe model sources and formats, Gateway API HTTPRoute exposure without auth |
 | Network | KS-NET-001..004 | no default-deny egress, egress to the whole internet, pod-to-pod encryption off, no ingress isolation |
 | Runtime guards | KS-RT-001..003 | no Tetragon shell-exec guard, no Tetragon egress-connect guard, no Kyverno admission guard |
 | Cluster prerequisites | KS-PRE-001..004 | Tetragon, Cilium and Kyverno present and healthy, BPF LSM on the nodes |
@@ -101,7 +101,16 @@ How kshield decides that a container is an AI engine:
 - Image or command names it: vLLM, Ollama, Triton (`tritonserver`), Text Generation Inference (`text-generation-inference`, `tgi`, `text-generation-launcher`), Text Embeddings Inference (`text-embeddings-router`), LocalAI (`local-ai`), SGLang, llama.cpp (`llama-server`), lmdeploy, TensorRT-LLM (`trtllm-serve`), Qdrant, Milvus, Ray images and Ray Serve commands. The workload name is not used.
 - An Ollama container is also found by port 11434, an `OLLAMA_` env var or a mount path that contains `.ollama`.
 - A custom image can opt in with the label or annotation `kshield.io/ai: "true"` on the workload or its pod template, or with `--workload-selector <label selector>` on `scan manifest` and `scan cluster`. The engine of an opted-in workload is a guess, so the engine checks report WARN, not FAIL.
-- If a gateway that kshield cannot see already authenticates the traffic, set `kshield.io/gateway-auth: "true"` on the workload. KS-AI-001, KS-AI-004, KS-AI-007 and KS-AI-010 then report INFO and name the annotation. kshield does not verify the gateway.
+- If a gateway that kshield cannot see already authenticates the traffic, set `kshield.io/gateway-auth: "true"` on the workload. KS-AI-001, KS-AI-004, KS-AI-007, KS-AI-010 and KS-AI-013 then report INFO and name the annotation. kshield does not verify the gateway.
+
+Auth evidence in front of a workload:
+
+- The engine key (`--api-key` or the engine env var), an Ingress annotation (`auth-url`, `auth-type`, `auth-signin`, `auth-secret`, `oauth2`) and `kshield.io/gateway-auth` count, as before.
+- Istio: an `AuthorizationPolicy` that allows only requests with a principal (`principals` or `requestPrincipals`), denies requests without one, or delegates to an external provider. It must select the workload, its Service or the ingress Gateway. A policy that relies on JWT principals counts only with a `RequestAuthentication` that selects the same target.
+- Kong: a `KongPlugin` or `KongClusterPlugin` with an auth plugin (`key-auth`, `jwt`, `oidc` and the other Kong auth plugins, not disabled and without an `anonymous` consumer), named in the `konghq.com/plugins` annotation of the Ingress, Service or HTTPRoute, or in an `ExtensionRef` filter of an HTTPRoute.
+- Envoy Gateway: a `SecurityPolicy` with `jwt`, `oidc`, `basicAuth`, `apiKeyAuth` or `extAuth` that targets the HTTPRoute or its Gateway.
+- A protected exposure is reported as INFO with the name of the policy or plugin, never skipped without a trace (an Ingress with an auth annotation is the one exception, as before). kshield reads the objects. It does not check that the mesh or gateway enforces them.
+- KS-AI-013 checks every HTTPRoute that has a Gateway parent and reaches an AI engine Service. It reports WARN, not FAIL, when it cannot read what decides the case: a Kong plugin that is not in the input, or a parent Gateway outside the scanned namespaces.
 
 The hardened Ollama and vLLM examples and what the engines need to run as non-root are in [docs/hardened-engines.md](docs/hardened-engines.md).
 
@@ -126,6 +135,7 @@ kshield scan cluster [--kubeconfig <file>] [--context <name>] [-n <ns> ...] [--n
 
 - Read-only: only `get`, `list` and discovery requests. Secret values are never printed or written.
 - RBAC: `deploy/rbac/kshield-scan.yaml` (read-only ClusterRole) and, for `--node-probe`, `deploy/rbac/kshield-node-probe.yaml`.
+- Istio, Kong, Gateway API and Envoy Gateway objects are read only when their CRDs exist. If the CRDs exist and the role cannot read them, KS-AI-004, KS-AI-007 and KS-AI-013 get UNKNOWN. Update the role from `deploy/rbac/kshield-scan.yaml` when you upgrade.
 - `--node-probe` starts one short-lived pod per Linux node (default namespace `kube-system`) to read the LSM list and kernel config. The pods are deleted at the end, also after Ctrl-C.
 - A resource that kshield cannot read is never reported as missing. The checks that need it get UNKNOWN and the scan exits 3.
 
@@ -247,10 +257,10 @@ kshield replaces ai-guard-k8s. The checks of ai-guard-k8s are ported, with these
 | AIG-007 requests and limits | KS-WL-013 (memory limit only) |
 | AIG-008 unsafe model loading | KS-AI-002, KS-AI-003, KS-AI-012 |
 | AIG-009 no ingress isolation | KS-NET-004 |
-| AIG-010 exposed without auth | KS-AI-004 (Ollama: KS-AI-007) |
+| AIG-010 exposed without auth | KS-AI-004 (Ollama: KS-AI-007), with Istio and Kong evidence |
 | AIG-011 hostPort | KS-WL-016 |
 | AIG-012 dangerous capabilities | KS-WL-003 |
-| AIG-013 HTTPRoute exposed without auth | not ported yet |
+| AIG-013 HTTPRoute exposed without auth | KS-AI-013 |
 
 The flags and names change like this:
 
@@ -275,7 +285,7 @@ What is different:
 - The SARIF `ruleId` values change from `AIG-` to `KS-`, so code scanning alerts of ai-guard-k8s close and new ones open.
 - kshield finds engines by image or command, not by workload name. Use the `kshield.io/ai` label for custom images.
 - kshield reads the Secret behind an `envFrom` key. A Secret that is not in the input gives a WARN, not a guess from its name.
-- Istio, Kong and Gateway API auth evidence (and AIG-013) are not ported yet. Use `kshield.io/gateway-auth` on the workload until then.
+- Istio, Kong, Gateway API and Envoy Gateway auth evidence is ported, with objects read as `unstructured` data. A protected exposure is INFO that names the policy, not a skipped finding.
 - The CPU and memory requests of AIG-007 are not checked.
 - `remediate` writes a namespaced Kyverno policy with the Pod Security Standards `restricted` profile, not the label-selected cluster policies of ai-guard-k8s.
 
