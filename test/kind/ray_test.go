@@ -499,7 +499,7 @@ func dumpHead(t *testing.T, cs kubernetes.Interface, ns, pod string) string {
 			mine = mine[len(mine)-10:]
 		}
 		for _, e := range mine {
-			fmt.Fprintf(&b, "  event %s %s: %s\n", e.LastTimestamp.Time.Format(time.RFC3339), e.Reason, e.Message)
+			fmt.Fprintf(&b, "  event %s %s: %s\n", e.LastTimestamp.Format(time.RFC3339), e.Reason, e.Message)
 		}
 	}
 	return b.String()
