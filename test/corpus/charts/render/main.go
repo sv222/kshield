@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"sigs.k8s.io/yaml"
@@ -25,6 +26,9 @@ type chart struct {
 	Repo       string    `json:"repo"`
 	Chart      string    `json:"chart"`
 	Version    string    `json:"version"`
+	Git        string    `json:"git"`
+	Ref        string    `json:"ref"`
+	Path       string    `json:"path"`
 	AppVersion string    `json:"appVersion"`
 	Namespace  string    `json:"namespace"`
 	Variants   []variant `json:"variants"`
@@ -74,14 +78,14 @@ func run(dir, helm string) error {
 		"HELM_DATA_HOME="+filepath.Join(home, "data"),
 	)
 	for _, c := range cfg.Charts {
-		if _, err := helmRun(helm, env, "repo", "add", c.Name, c.Repo); err != nil {
+		ref, extra, err := chartSource(c, home, helm, env)
+		if err != nil {
 			return fmt.Errorf("chart %s: %w", c.Name, err)
 		}
 		for _, v := range c.Variants {
-			out, err := helmRun(helm, env, "template", c.Name, c.Name+"/"+c.Chart,
-				"--version", c.Version,
-				"--namespace", c.Namespace,
-				"-f", filepath.Join(dir, filepath.FromSlash(v.Values)))
+			args := append([]string{"template", c.Name, ref}, extra...)
+			args = append(args, "--namespace", c.Namespace, "-f", filepath.Join(dir, filepath.FromSlash(v.Values)))
+			out, err := helmRun(helm, env, args...)
 			if err != nil {
 				return fmt.Errorf("chart %s variant %s: %w", c.Name, v.Name, err)
 			}
@@ -124,8 +128,11 @@ func load(path string) (config, error) {
 		return cfg, fmt.Errorf("%s: no charts", path)
 	}
 	for _, c := range cfg.Charts {
-		if c.Name == "" || c.Repo == "" || c.Chart == "" || c.Version == "" || c.Namespace == "" || len(c.Variants) == 0 {
-			return cfg, fmt.Errorf("%s: chart %q: name, repo, chart, version, namespace and variants are required", path, c.Name)
+		if c.Name == "" || c.Namespace == "" || len(c.Variants) == 0 {
+			return cfg, fmt.Errorf("%s: chart %q: name, namespace and variants are required", path, c.Name)
+		}
+		if err := checkChartSource(c); err != nil {
+			return cfg, fmt.Errorf("%s: chart %q: %w", path, c.Name, err)
 		}
 		for _, v := range c.Variants {
 			if v.Name == "" || v.Values == "" {
@@ -188,4 +195,52 @@ func helmRun(helm string, env []string, args ...string) ([]byte, error) {
 		return nil, fmt.Errorf("helm %v: %w", args, err)
 	}
 	return stdout.Bytes(), nil
+}
+
+var fullSHA = regexp.MustCompile(`^[0-9a-f]{40}$`)
+
+func checkChartSource(c chart) error {
+	isRepo := c.Repo != "" || c.Chart != "" || c.Version != ""
+	isGit := c.Git != "" || c.Ref != "" || c.Path != ""
+	switch {
+	case isRepo == isGit:
+		return errors.New("give either repo, chart and version, or git, ref and path")
+	case isRepo && (c.Repo == "" || c.Chart == "" || c.Version == ""):
+		return errors.New("repo, chart and version are required")
+	case isGit && (!strings.HasPrefix(c.Git, "https://") || !fullSHA.MatchString(c.Ref) || c.Path == "" || filepath.IsAbs(c.Path) || strings.Contains(c.Path, "..")):
+		return errors.New("git needs an https URL, a full commit sha in ref and a relative path")
+	}
+	return nil
+}
+
+func chartSource(c chart, home, helm string, env []string) (string, []string, error) {
+	if c.Git == "" {
+		if _, err := helmRun(helm, env, "repo", "add", c.Name, c.Repo); err != nil {
+			return "", nil, err
+		}
+		return c.Name + "/" + c.Chart, []string{"--version", c.Version}, nil
+	}
+	dest := filepath.Join(home, "git", c.Name)
+	if err := checkout(c.Git, c.Ref, dest); err != nil {
+		return "", nil, err
+	}
+	return filepath.Join(dest, filepath.FromSlash(c.Path)), nil, nil
+}
+
+func checkout(url, ref, dest string) error {
+	if err := os.MkdirAll(dest, 0o750); err != nil {
+		return err
+	}
+	for _, args := range [][]string{
+		{"init", "--quiet"},
+		{"remote", "add", "origin", url},
+		{"fetch", "--quiet", "--depth", "1", "origin", ref},
+		{"checkout", "--quiet", "FETCH_HEAD"},
+	} {
+		cmd := exec.Command("git", append([]string{"-C", dest}, args...)...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			return fmt.Errorf("git %v: %w: %s", args, err, bytes.TrimSpace(out))
+		}
+	}
+	return nil
 }

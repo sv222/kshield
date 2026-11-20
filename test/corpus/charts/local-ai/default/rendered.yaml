@@ -1,0 +1,121 @@
+---
+# Source: local-ai/templates/pvcs.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-ai-models
+  labels:
+    app.kubernetes.io/instance: local-ai
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: local-ai
+    app.kubernetes.io/version: "2.23"
+    helm.sh/chart: local-ai-3.4.2
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "10Gi"
+---
+# Source: local-ai/templates/pvcs.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-ai-output
+  labels:
+    app.kubernetes.io/instance: local-ai
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: local-ai
+    app.kubernetes.io/version: "2.23"
+    helm.sh/chart: local-ai-3.4.2
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "5Gi"
+---
+# Source: local-ai/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-ai
+  namespace: "ai-inference"
+  labels:
+    helm.sh/chart: local-ai-3.4.2
+    app.kubernetes.io/name: local-ai
+    app.kubernetes.io/instance: "local-ai"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "2.23"
+spec:
+  selector:
+    app.kubernetes.io/name: local-ai
+  type: "ClusterIP"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      name: http
+---
+# Source: local-ai/templates/deployment.yaml
+# yamllint disable rule:line-length
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-ai
+  namespace: "ai-inference"
+  labels:
+    helm.sh/chart: local-ai-3.4.2
+    app.kubernetes.io/name: local-ai
+    app.kubernetes.io/instance: "local-ai"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: "2.23"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: local-ai
+      app.kubernetes.io/instance: local-ai
+  replicas: 1
+  template:
+    metadata:
+      name: local-ai
+      labels:
+        app.kubernetes.io/name: local-ai
+        app.kubernetes.io/instance: local-ai
+      annotations:
+    spec:
+      initContainers:
+        # Additional initContainers from values.yaml
+      containers:
+        # Sidecar containers from values.yaml
+        - name: local-ai
+          image: "quay.io/go-skynet/local-ai:latest"
+          imagePullPolicy: IfNotPresent
+          resources:
+            {}
+          env:
+            - name: CONTEXT_SIZE
+              value: "512"
+            - name: THREADS
+              value: "4"
+            - name: MODELS_PATH
+              value: /models
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: output
+              mountPath: /tmp/generated
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: local-ai-models
+        - name: output
+          persistentVolumeClaim:
+            claimName: local-ai-output
+        - name: prompt-templates
+          configMap:
+            name: local-ai-prompt-templates
+        - name: models-configs
+          configMap:
+            name: local-ai-models-configs

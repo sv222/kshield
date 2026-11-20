@@ -1,0 +1,122 @@
+---
+# Source: text-generation-inference/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tgi-text-generation-inference
+  labels:
+    helm.sh/chart: text-generation-inference-0.3.0
+    app.kubernetes.io/name: text-generation-inference
+    app.kubernetes.io/instance: tgi
+    app.kubernetes.io/version: "3.3.7"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: text-generation-inference/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgi-text-generation-inference
+  labels:
+    helm.sh/chart: text-generation-inference-0.3.0
+    app.kubernetes.io/name: text-generation-inference
+    app.kubernetes.io/instance: tgi
+    app.kubernetes.io/version: "3.3.7"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: text-generation-inference
+    app.kubernetes.io/instance: tgi
+---
+# Source: text-generation-inference/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgi-text-generation-inference
+  labels:
+    helm.sh/chart: text-generation-inference-0.3.0
+    app.kubernetes.io/name: text-generation-inference
+    app.kubernetes.io/instance: tgi
+    app.kubernetes.io/version: "3.3.7"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    {}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: text-generation-inference
+      app.kubernetes.io/instance: tgi
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: text-generation-inference-0.3.0
+        app.kubernetes.io/name: text-generation-inference
+        app.kubernetes.io/instance: tgi
+        app.kubernetes.io/version: "3.3.7"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: tgi-text-generation-inference
+      securityContext:
+        {}
+      containers:
+        - name: text-generation-inference
+          securityContext:
+            {}
+          image: "ghcr.io/huggingface/text-generation-inference:3.3.7"
+          imagePullPolicy: IfNotPresent
+          command: [text-generation-launcher]
+          env:
+            - name: MODEL_ID
+              value: "bigscience/bloom-560m"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 4
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+            {}
+---
+# Source: text-generation-inference/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "tgi-text-generation-inference-test-connection"
+  labels:
+    helm.sh/chart: text-generation-inference-0.3.0
+    app.kubernetes.io/name: text-generation-inference
+    app.kubernetes.io/instance: tgi
+    app.kubernetes.io/version: "3.3.7"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['tgi-text-generation-inference:80']
+  restartPolicy: Never

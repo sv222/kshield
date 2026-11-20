@@ -1,0 +1,122 @@
+---
+# Source: text-embeddings-inference/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tei-text-embeddings-inference
+  labels:
+    helm.sh/chart: text-embeddings-inference-0.3.0
+    app.kubernetes.io/name: text-embeddings-inference
+    app.kubernetes.io/instance: tei
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+---
+# Source: text-embeddings-inference/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tei-text-embeddings-inference
+  labels:
+    helm.sh/chart: text-embeddings-inference-0.3.0
+    app.kubernetes.io/name: text-embeddings-inference
+    app.kubernetes.io/instance: tei
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: text-embeddings-inference
+    app.kubernetes.io/instance: tei
+---
+# Source: text-embeddings-inference/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei-text-embeddings-inference
+  labels:
+    helm.sh/chart: text-embeddings-inference-0.3.0
+    app.kubernetes.io/name: text-embeddings-inference
+    app.kubernetes.io/instance: tei
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    {}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: text-embeddings-inference
+      app.kubernetes.io/instance: tei
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: text-embeddings-inference-0.3.0
+        app.kubernetes.io/name: text-embeddings-inference
+        app.kubernetes.io/instance: tei
+        app.kubernetes.io/version: "1.9.3"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: tei-text-embeddings-inference
+      securityContext:
+        {}
+      containers:
+        - name: text-embeddings-inference
+          securityContext:
+            {}
+          image: "ghcr.io/huggingface/text-embeddings-inference:1.9.3"
+          imagePullPolicy: IfNotPresent
+          command: [text-embeddings-router]
+          env:
+            - name: MODEL_ID
+              value: "BAAI/bge-large-en-v1.5"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 4
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+            {}
+---
+# Source: text-embeddings-inference/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "tei-text-embeddings-inference-test-connection"
+  labels:
+    helm.sh/chart: text-embeddings-inference-0.3.0
+    app.kubernetes.io/name: text-embeddings-inference
+    app.kubernetes.io/instance: tei
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['tei-text-embeddings-inference:80']
+  restartPolicy: Never
