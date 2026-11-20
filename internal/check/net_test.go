@@ -50,6 +50,11 @@ const (
 	appVLLM         = "    matchLabels:\n      app: vllm\n"
 	cnpSelVLLM      = "  endpointSelector:\n    matchLabels:\n      k8s:app: vllm\n"
 	cnpSpecsSelVLLM = "  - endpointSelector:\n      matchLabels:\n        k8s:app: vllm\n"
+	// The podSelector of the enforce shell-exec guard: it exempts every pod
+	// that carries the KubeRay ray.io/cluster label, which KubeRay puts on
+	// the head, worker and driver pods of a RayCluster and on the pods of the
+	// generated child cluster of a RayService or RayJob.
+	rayExemptSel = "  podSelector:\n    matchExpressions:\n      - key: ray.io/cluster\n        operator: DoesNotExist\n"
 )
 
 func wantNS(s Strength) []ai2Want {
@@ -125,6 +130,19 @@ func TestRuntimeShellExecGuard(t *testing.T) {
 		{"third party lsm", guardWorkload + tracing("TracingPolicy", "", "", "", "  lsmhooks:\n    - hook: bprm_check_security\n"), wantNS(Suspect)},
 		{"third party tracepoint", guardWorkload + tracing("TracingPolicy", "", "", "", "  tracepoints:\n    - subsystem: syscalls\n      event: sys_enter_execve\n"), wantNS(Suspect)},
 		{"wrong group", guardWorkload + "---\napiVersion: example.io/v1\nkind: TracingPolicy\nmetadata:\n  name: tp\n  labels:\n    kshield.io/guard: shell-exec\nspec:\n" + kprobe("sys_execve", "Sigkill"), wantNS(Violation)},
+		// The exemption podSelector does not match the pods behind a KubeRay
+		// workload: the model carries the ray.io/cluster key on the head and
+		// worker sites of a RayCluster, RayService and RayJob alike, so all
+		// three kinds rate as intentionally unguarded (Ray starts shells from
+		// its Python processes and the sigkill guard kills them).
+		{"ray cluster exempt", rayCluster(rayHead("", ""), rayWorker("cpu", "")) + tracing("TracingPolicyNamespaced", "ai", "shell-exec", rayExemptSel, kprobe("sys_execve", "Sigkill")),
+			[]ai2Want{{rcRef, "head", "", nsPath, Violation}, {rcRef, "cpu", "", nsPath, Violation}}},
+		{"rayservice exempt", rayDoc("RayService", "rayClusterConfig", rayHead("", ""), rayWorker("cpu", "")) + tracing("TracingPolicyNamespaced", "ai", "shell-exec", rayExemptSel, kprobe("sys_execve", "Sigkill")),
+			[]ai2Want{{"RayService/ai/rc", "head", "", nsPath, Violation}, {"RayService/ai/rc", "cpu", "", nsPath, Violation}}},
+		{"rayjob exempt", rayDoc("RayJob", "rayClusterSpec", rayHead("", ""), rayWorker("cpu", "")) + tracing("TracingPolicyNamespaced", "ai", "shell-exec", rayExemptSel, kprobe("sys_execve", "Sigkill")),
+			[]ai2Want{{"RayJob/ai/rc", "head", "", nsPath, Violation}, {"RayJob/ai/rc", "cpu", "", nsPath, Violation}}},
+		{"rayservice exempt post only", rayDoc("RayService", "rayClusterConfig", rayHead("", ""), rayWorker("cpu", "")) + tracing("TracingPolicyNamespaced", "ai", "shell-exec", rayExemptSel, kprobe("sys_execve", "Post")),
+			[]ai2Want{{"RayService/ai/rc", "head", "", nsPath, Violation}, {"RayService/ai/rc", "cpu", "", nsPath, Violation}}},
 	})
 }
 

@@ -49,7 +49,6 @@ type site struct {
 	extra []string
 	group string
 	synth map[string]string
-	drop  []string
 }
 
 func Extract(objs []load.Object) ([]Workload, error) {
@@ -138,16 +137,18 @@ func kserveSites(name string) []site {
 }
 
 func raySites(o *load.Object, base []string, cluster string) ([]site, error) {
+	// KubeRay labels every pod of the cluster it manages with ray.io/cluster:
+	// the cluster name for a RayCluster, and the name of the generated child
+	// cluster for a RayService or RayJob. The generated name is unknown from
+	// the CR, so the model keeps the key with an empty value for it and never
+	// a fabricated name; the synthesized entry also overrides a label spoofed
+	// in the pod template, like the operator does on the pods.
 	synth := func(nodeType, group string) map[string]string {
-		m := map[string]string{rayNodeTypeLabel: nodeType, rayGroupLabel: group}
-		if cluster != "" {
-			m[rayClusterLabel] = cluster
+		return map[string]string{
+			rayNodeTypeLabel: nodeType,
+			rayGroupLabel:    group,
+			rayClusterLabel:  cluster,
 		}
-		return m
-	}
-	var drop []string
-	if cluster == "" {
-		drop = []string{rayClusterLabel}
 	}
 	headBase := slices.Concat(base, []string{"headGroupSpec"})
 	out := []site{{
@@ -156,7 +157,6 @@ func raySites(o *load.Object, base []string, cluster string) ([]site, error) {
 		extra: headBase,
 		group: groupHead,
 		synth: synth(rayHeadNodeType, rayHeadGroupValue),
-		drop:  drop,
 	}}
 	workersPath := slices.Concat(base, []string{"workerGroupSpecs"})
 	v, found, err := lookup(o.U.Object, workersPath)
@@ -188,7 +188,6 @@ func raySites(o *load.Object, base []string, cluster string) ([]site, error) {
 			extra: entryPath,
 			group: name,
 			synth: synth(rayWorkerNodeType, name),
-			drop:  drop,
 		})
 	}
 	return out, nil
@@ -217,9 +216,6 @@ func build(o *load.Object, s site) (Workload, bool, error) {
 		return Workload{}, false, err
 	}
 	maps.Copy(labels, s.synth)
-	for _, k := range s.drop {
-		delete(labels, k)
-	}
 	return Workload{
 		Owner:       o.Ref,
 		Object:      o,

@@ -305,8 +305,14 @@ func TestRayGeneratedClusterName(t *testing.T) {
 				t.Fatal("no workloads")
 			}
 			for _, w := range ws {
-				if v, ok := w.Labels["ray.io/cluster"]; ok {
-					t.Errorf("%s: ray.io/cluster = %q, want unset", w.SpecPath, v)
+				// KubeRay labels every pod of the cluster it manages with
+				// ray.io/cluster. For a RayService or RayJob the value is the
+				// name of the generated child cluster, which the CR does not
+				// carry, so the model keeps the key with an empty value and
+				// never a fabricated name (a spoofed template label is
+				// overridden, like on a RayCluster).
+				if v, ok := w.Labels["ray.io/cluster"]; !ok || v != "" {
+					t.Errorf("%s: ray.io/cluster = %q, want the key with an empty value", w.SpecPath, v)
 				}
 				wantType, wantGroup := "worker", w.Group
 				if w.Group == "head" {
