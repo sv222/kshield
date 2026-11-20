@@ -237,10 +237,7 @@ func helmBin(t *testing.T) string {
 
 func helmUninstall(t *testing.T, helm, release, namespace string) {
 	t.Helper()
-	out, err := exec.Command(helm, "uninstall", release, "--namespace", namespace, "--wait", "--timeout", "5m", "--ignore-not-found").CombinedOutput()
-	if err != nil {
-		t.Errorf("helm uninstall %s: %v\n%s", release, err, out)
-	}
+	helmRun(t, helm, "uninstall", release, "--namespace", namespace, "--wait", "--timeout", "5m", "--ignore-not-found")
 }
 
 func helmRun(t *testing.T, helm string, args ...string) {
