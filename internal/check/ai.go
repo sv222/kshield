@@ -160,25 +160,44 @@ func aiExposed(in *Input) Result {
 		if !ok {
 			continue
 		}
+		declared := gatewayAuth(w)
+		if declared {
+			strength = Declared
+		}
 		res.Findings = appendExposures(res.Findings, seen, Exposures(in, w, nil), true, strength, func(e Exposure) string {
-			return exposureMessage(e, w, reason)
+			msg := exposureMessage(e, w, reason)
+			if declared {
+				msg += fmt.Sprintf("; gateway authentication is declared by %s: %q, the scanner cannot verify it", GatewayAuthKey, gatewayAuthValue)
+			}
+			return msg
 		})
 	}
 	return res
 }
 
 func unauthenticatedServer(in *Input, w model.Workload) (string, Strength, bool) {
-	vllm := false
+	server := false
 	reason, unsure := "", false
 	for _, c := range w.Containers {
 		if c.Init {
+			continue
+		}
+		if isGenericEngine(c.Stack) && c.Stack != model.Ollama {
+			server = true
+			r, s, final := engineAuthReason(in, w, c)
+			switch {
+			case final:
+				return r, Violation, true
+			case s && !unsure:
+				reason, unsure = r, true
+			}
 			continue
 		}
 		a := ParseVLLM(c)
 		if !a.Found {
 			continue
 		}
-		vllm = true
+		server = true
 		state, missing := vllmKeyState(in, w, c, a)
 		switch {
 		case state == keyMissing && !a.Opaque:
@@ -192,7 +211,7 @@ func unauthenticatedServer(in *Input, w model.Workload) (string, Strength, bool)
 	switch {
 	case unsure:
 		return reason, Suspect, true
-	case !vllm && w.HasStack(model.KServe):
+	case !server && w.HasStack(model.KServe):
 		return "the KServe predictor has no authentication in the manifests", Violation, true
 	}
 	return "", Violation, false
@@ -205,5 +224,5 @@ func exposureMessage(e Exposure, w model.Workload, reason string) string {
 	case ExposureServiceLoadBalancer:
 		return fmt.Sprintf("Service type LoadBalancer exposes %s outside the cluster: %s", w.Owner, reason)
 	}
-	return fmt.Sprintf("Ingress routes outside traffic to %s without an auth-url or auth-type annotation: %s", w.Owner, reason)
+	return fmt.Sprintf("Ingress routes outside traffic to %s without an auth annotation (%s): %s", w.Owner, strings.Join(ingressAuthHints, ", ")+" or "+GatewayAuthKey, reason)
 }

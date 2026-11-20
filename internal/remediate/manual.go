@@ -78,9 +78,10 @@ kustomize build "$work/bundle"
 		"Set `OLLAMA_ORIGINS` to the origins that need access, never `*`: with `*` any web page in a visitor's browser can call the engine."
 	stepsAI012 = "Remove `--trust-remote-code` unless you reviewed the model code. Use `.safetensors` model files, not pickle based files (`.bin`, `.pt`, `.pth`, `.pkl`, `.pickle`, `.ckpt`) or Keras files (`.h5`, `.keras`). " +
 		"Load models from a registry or storage you control, pinned by digest or signed, not from an `s3://` or `gs://` path that anyone with write access can change."
-	stepsAI004 = "Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001), " +
-		"or put an authenticating proxy or API gateway in front of it, " +
-		"or change the Service to `type: ClusterIP` and remove the Ingress path."
+	stepsAI004 = "Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001) or the key of the engine (KS-AI-010), " +
+		"or put an authenticating proxy or API gateway in front of it (an Ingress with an `auth-url`, `auth-signin` or `oauth2` annotation counts), " +
+		"or change the Service to `type: ClusterIP` and remove the Ingress path. " +
+		"If an API gateway that kshield cannot see authenticates the traffic, mark the workload with `kshield.io/gateway-auth: \"true\"` (label or annotation): kshield then reports INFO and does not verify the gateway."
 	stepsAI006 = "Turn on Ray TLS: create a CA and certificates for the Ray pods (for example with cert-manager), mount them into the head and every worker group, " +
 		"and set `RAY_USE_TLS=1`, `RAY_TLS_SERVER_CERT`, `RAY_TLS_SERVER_KEY` and `RAY_TLS_CA_CERT` on every Ray container."
 	stepsAI007 = "Ollama has no authentication of its own. Keep its Service `type: ClusterIP`, " +

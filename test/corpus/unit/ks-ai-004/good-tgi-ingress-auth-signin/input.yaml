@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgi
+  namespace: ai-inference
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgi
+  template:
+    metadata:
+      labels:
+        app: tgi
+    spec:
+      containers:
+        - name: tgi
+          image: ghcr.io/huggingface/text-generation-inference:3.3.4
+          args: ["--model-id", "bigscience/bloom-560m"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgi
+  namespace: ai-inference
+spec:
+  type: ClusterIP
+  selector:
+    app: tgi
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tgi
+  namespace: ai-inference
+  annotations:
+    nginx.ingress.kubernetes.io/auth-signin: https://auth.example.com/oauth2/start
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: tgi
+                port:
+                  number: 80

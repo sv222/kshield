@@ -1,0 +1,4 @@
+namespace: "ai-inference"
+checks: ["KS-AI-004"]
+expect: []
+na: []

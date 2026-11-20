@@ -24,9 +24,6 @@ const (
 	serviceTypePath    = "/spec/type"
 	ingressRulesPath   = "/spec/rules"
 	ingressDefaultPath = "/spec/defaultBackend"
-
-	authURLAnnotation  = "nginx.ingress.kubernetes.io/auth-url"
-	authTypeAnnotation = "nginx.ingress.kubernetes.io/auth-type"
 )
 
 type Exposure struct {
@@ -104,7 +101,7 @@ func parseServicePort(item any) servicePort {
 func parseIngress(o load.Object) indexedIngress {
 	ing := indexedIngress{
 		obj:           o,
-		authenticated: annotationSet(o, authURLAnnotation) || annotationSet(o, authTypeAnnotation),
+		authenticated: ingressAuthenticated(o),
 	}
 	if b, ok := parseBackend(dig(o.U.Object, "spec", "defaultBackend")); ok {
 		ing.defaultBackend = &b
@@ -135,9 +132,26 @@ func parseBackend(v any) (ingressBackend, bool) {
 	return b, true
 }
 
-func annotationSet(o load.Object, key string) bool {
-	s, ok := scalarString(dig(o.U.Object, "metadata", "annotations", key))
-	return ok && s != ""
+var ingressAuthHints = []string{"auth-url", "auth-type", "auth-signin", "auth-secret", "oauth2"}
+
+func ingressAuthenticated(o load.Object) bool {
+	for k, v := range mapOf(dig(o.U.Object, "metadata", "annotations")) {
+		s, ok := scalarString(v)
+		if !ok || s == "" {
+			continue
+		}
+		if k == GatewayAuthKey {
+			if s == gatewayAuthValue {
+				return true
+			}
+			continue
+		}
+		lk := strings.ToLower(k)
+		if slices.ContainsFunc(ingressAuthHints, func(h string) bool { return strings.Contains(lk, h) }) {
+			return true
+		}
+	}
+	return false
 }
 
 func dig(v any, keys ...string) any {

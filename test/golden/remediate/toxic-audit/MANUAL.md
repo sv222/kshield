@@ -79,7 +79,7 @@ Give the pod GPUs through the NVIDIA device plugin (or the GPU Operator): reques
 
 ### KS-AI-004 (DORA-CH2-018): Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth
 
-Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001), or put an authenticating proxy or API gateway in front of it, or change the Service to `type: ClusterIP` and remove the Ingress path.
+Do not expose an inference API outside the cluster without authentication. Set `VLLM_API_KEY` (KS-AI-001) or the key of the engine (KS-AI-010), or put an authenticating proxy or API gateway in front of it (an Ingress with an `auth-url`, `auth-signin` or `oauth2` annotation counts), or change the Service to `type: ClusterIP` and remove the Ingress path. If an API gateway that kshield cannot see authenticates the traffic, mark the workload with `kshield.io/gateway-auth: "true"` (label or annotation): kshield then reports INFO and does not verify the gateway.
 
 - `Service/ai-inference/vllm` (`/spec/type`): Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY
 

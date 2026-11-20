@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tgi
+  namespace: ai-inference
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tgi
+  template:
+    metadata:
+      labels:
+        app: tgi
+    spec:
+      containers:
+        - name: tgi
+          image: ghcr.io/huggingface/text-generation-inference:3.3.4
+          args: ["--model-id", "bigscience/bloom-560m"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tgi
+  namespace: ai-inference
+spec:
+  type: LoadBalancer
+  selector:
+    app: tgi
+  ports:
+    - port: 80
+      targetPort: 8080

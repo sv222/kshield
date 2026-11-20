@@ -326,3 +326,20 @@ func aiModelSource(in *Input) Result {
 		return out
 	})
 }
+
+func engineAuthReason(in *Input, w model.Workload, c model.Container) (reason string, unsure, final bool) {
+	words, certain := c.EngineWords()
+	state, missing := engineKeyState(in, w, c, words)
+	name := engineName(c.Stack)
+	switch state {
+	case keySet:
+		return "", false, false
+	case keyUnknown:
+		return fmt.Sprintf("%s container %s may take its API key from envFrom %s, not in the input", name, c.Spec.Name, strings.Join(missing, ", ")), true, false
+	}
+	reason = fmt.Sprintf("%s container %s has no authentication evidence: %s", name, c.Spec.Name, authEvidenceText(c.Stack))
+	if certain && c.Stack != model.Custom {
+		return reason, false, true
+	}
+	return reason, true, false
+}
