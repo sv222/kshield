@@ -148,7 +148,7 @@ func TestKindRayEnforce(t *testing.T) {
 	kc := kubeconfig(t)
 	work := t.TempDir()
 	scanPath := filepath.Join(work, "scan.json")
-	wantExit(t, runScan(t, kc, "-n", ns, "--format", "json"), 1)
+	wantExit(t, runScan(t, kc, "-n", ns, "--format", "json", "--out", scanPath), 1)
 
 	bundle := filepath.Join(work, "bundle")
 	var stdout, stderr strings.Builder
