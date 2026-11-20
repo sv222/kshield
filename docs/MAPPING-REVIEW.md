@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `3dd14e4286731bff57afcba9c643a4692c5647eff7259a45858d011c42a33a0b`
-- Checks: 34
+- Profile sha256: `2785c888c36af0cff89ca8978d84519cc078fefa57c64c3f0203288869c6b6ec`
+- Checks: 35
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -690,6 +690,22 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 > Financial entities shall have in place mechanisms to promptly detect anomalous activities, in accordance with Article 17, including ICT network performance issues and ICT-related incidents, and to identify potential material single points of failure.
 >
 > All detection mechanisms referred to in the first subparagraph shall be regularly tested in accordance with Article 25.
+
+## DORA-CH2-034 (KS-WL-015)
+
+- Check: `KS-WL-015`
+- Display ID: `DORA-CH2-034`
+- Title: hostPath volume outside /dev, /dev/shm and GPU devices
+- Severity: fail
+
+### DORA Art. 9(3)(c)
+
+- Ref: `dora-art9-3-c`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;
 
 ## DORA-CH2-037 (KS-AI-011)
 

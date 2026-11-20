@@ -379,6 +379,17 @@
     ]
   },
   {
+    "id": "KS-WL-015",
+    "display": "DORA-CH2-034",
+    "title": "hostPath volume outside /dev, /dev/shm and GPU devices",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-3-c"
+    ]
+  },
+  {
     "id": "KS-AI-011",
     "display": "DORA-CH2-037",
     "title": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)",

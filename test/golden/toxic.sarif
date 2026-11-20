@@ -438,6 +438,19 @@
               }
             },
             {
+              "id": "KS-WL-015",
+              "name": "DORA-CH2-034",
+              "shortDescription": {
+                "text": "hostPath volume outside /dev, /dev/shm and GPU devices"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "fail"
+                ]
+              }
+            },
+            {
               "id": "KS-AI-011",
               "name": "DORA-CH2-037",
               "shortDescription": {

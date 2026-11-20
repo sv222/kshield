@@ -126,6 +126,7 @@ kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 5 objects, 5 AI 
 [N/A]  DORA-CH2-031 KS-PRE-002 CNI is not Cilium (L7/FQDN egress not possible)
 [N/A]  DORA-CH2-032 KS-PRE-003 Kyverno missing or unhealthy
 [N/A]  DORA-CH2-033 KS-PRE-004 Node kernel lacks BPF LSM (--node-probe)
+[PASS] DORA-CH2-034 KS-WL-015 hostPath volume outside /dev, /dev/shm and GPU devices
 [PASS] DORA-CH2-037 KS-AI-011 Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
 
-Summary: 17 FAIL, 4 WARN, 8 PASS, 0 INFO, 5 N/A
+Summary: 17 FAIL, 4 WARN, 9 PASS, 0 INFO, 5 N/A

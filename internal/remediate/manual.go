@@ -66,6 +66,9 @@ kustomize build "$work/bundle"
 	stepsWL014 = "Give the pod GPUs through the NVIDIA device plugin (or the GPU Operator): request them with `resources.limits: {nvidia.com/gpu: <n>}`. " +
 		"Then remove the hostPath `/dev/nvidia*` volumes, `privileged: true` and a literal `NVIDIA_VISIBLE_DEVICES`. " +
 		"Scan again: KS-WL-002 can then be patched."
+	stepsWL015 = "Do not mount node directories into an AI pod. Use a PersistentVolumeClaim for models and data, an `emptyDir` for scratch space, or a CSI volume. " +
+		"A hostPath gives the container read and write access to files of the node, and ties the pod to that node. " +
+		"Move the data first, then remove the volume and its mounts."
 	stepsAI001 = "Turn on vLLM authentication: create a Secret with a long random key and set `VLLM_API_KEY` from it with `valueFrom.secretKeyRef`, " +
 		"or pass `--api-key $(VLLM_API_KEY)`. Clients send the key as `Authorization: Bearer <key>`."
 	stepsAI011 = "Remove `--debug` and `--allow-http` from the engine command, and unset `OLLAMA_DEBUG`. Debug endpoints and verbose logs expose internals and prompts. " +
@@ -100,6 +103,7 @@ var manualSteps = map[string]string{
 	"KS-WL-012":  stepsWL012,
 	"KS-WL-013":  stepsWL013,
 	"KS-WL-014":  stepsWL014,
+	"KS-WL-015":  stepsWL015,
 	"KS-AI-001":  stepsAI001,
 	"KS-AI-004":  stepsAI004,
 	"KS-AI-006":  stepsAI006,

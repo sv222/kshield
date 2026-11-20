@@ -285,8 +285,8 @@ func TestGuardChecksRegistered(t *testing.T) {
 	}
 	all := All()
 	first := slices.IndexFunc(all, func(c Check) bool { return c.ID == want[0].id })
-	if len(all) != 34 {
-		t.Fatalf("catalog has %d checks, want 34", len(all))
+	if len(all) != 35 {
+		t.Fatalf("catalog has %d checks, want 35", len(all))
 	}
 	for i, w := range want {
 		c := all[first+i]
