@@ -10,6 +10,7 @@ expect:
   - {check: "KS-WL-012", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", container: "ray-head", verdict: "WARN"}
   - {check: "KS-AI-006", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", container: "ray-head", verdict: "FAIL"}
   - {check: "KS-NET-001", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", verdict: "WARN"}
   - {check: "KS-RT-001", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "head", verdict: "FAIL"}
@@ -23,6 +24,7 @@ expect:
   - {check: "KS-WL-012", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", container: "ray-worker", verdict: "WARN"}
   - {check: "KS-AI-006", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", container: "ray-worker", verdict: "FAIL"}
   - {check: "KS-NET-001", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", verdict: "WARN"}
   - {check: "KS-RT-001", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "RayCluster/ai-inference/ray-cluster-kuberay", group: "workergroup", verdict: "FAIL"}

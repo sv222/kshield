@@ -14,6 +14,7 @@ expect:
   - {check: "KS-WL-013", object: "StatefulSet/ai-inference/qdrant", container: "ensure-dir-ownership", verdict: "WARN"}
   - {check: "KS-WL-013", object: "StatefulSet/ai-inference/qdrant", container: "qdrant", verdict: "WARN"}
   - {check: "KS-NET-001", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "StatefulSet/ai-inference/qdrant", verdict: "WARN"}
   - {check: "KS-RT-001", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "StatefulSet/ai-inference/qdrant", verdict: "FAIL"}

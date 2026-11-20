@@ -3,6 +3,7 @@ checks: "all"
 expect:
   - {check: "KS-WL-010", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "FAIL"}
   - {check: "KS-NET-001", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "WARN"}
   - {check: "KS-RT-001", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "InferenceService/ai-inference/huggingface-llama2", group: "predictor", verdict: "FAIL"}

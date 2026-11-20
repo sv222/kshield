@@ -124,7 +124,7 @@ func Mutations() []Mutation {
 			}
 			return removeNamed(c, "env", "QDRANT__SERVICE__API_KEY")
 		}, Expect: []corpus.Expect{{Check: "KS-AI-008", Object: qdrantObj, Container: "qdrant", Verdict: fail}}},
-		{Name: "netpol-removed", Conflicts: []string{"netpol-world"}, Apply: removeKind("NetworkPolicy"), Expect: perWorkload("KS-NET-001", fail)},
+		{Name: "netpol-removed", Conflicts: []string{"netpol-world"}, Apply: removeKind("NetworkPolicy"), Expect: slices.Concat(perWorkload("KS-NET-001", fail), perWorkload("KS-NET-004", warn))},
 		{Name: "netpol-world", Conflicts: []string{"netpol-removed"}, Apply: func(objs []map[string]any) error {
 			spec, err := objectChild(objs, "NetworkPolicy", "default-deny-egress", "spec")
 			if err != nil {

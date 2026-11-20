@@ -154,3 +154,7 @@ checks:
     display: "DORA-CH2-038"
     severity: "fail"
     refs: ["dora-art9-3-b", "dora-art9-3-c"]
+  "KS-NET-004":
+    display: "DORA-CH2-039"
+    severity: "warn"
+    refs: ["dora-art9-4-b"]

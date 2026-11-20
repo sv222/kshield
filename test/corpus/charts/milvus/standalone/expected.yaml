@@ -11,6 +11,7 @@ expect:
   - {check: "KS-WL-013", object: "Deployment/ai-inference/milvus-standalone", container: "standalone", verdict: "WARN"}
   - {check: "KS-AI-009", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}
   - {check: "KS-NET-001", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "Deployment/ai-inference/milvus-standalone", verdict: "WARN"}
   - {check: "KS-RT-001", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "Deployment/ai-inference/milvus-standalone", verdict: "FAIL"}

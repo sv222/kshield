@@ -99,7 +99,7 @@ func TestScanClusterIncompleteBeatsThreshold(t *testing.T) {
 			t.Fatalf("--fail-on %s: code=%d stderr=%q", failOn, code, errs)
 		}
 		r := clusterJSON(t, out)
-		if !r.Summary.Incomplete || r.Summary.Unknown != 2 || len(r.Errors) != 1 || !strings.Contains(r.Errors[0], "list networking.k8s.io/v1 networkpolicies in all namespaces") {
+		if !r.Summary.Incomplete || r.Summary.Unknown != 3 || len(r.Errors) != 1 || !strings.Contains(r.Errors[0], "list networking.k8s.io/v1 networkpolicies in all namespaces") {
 			t.Fatalf("summary %+v errors %q", r.Summary, r.Errors)
 		}
 	}

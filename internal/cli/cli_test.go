@@ -82,6 +82,14 @@ spec:
   podSelector: {}
   policyTypes: ["Egress"]
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-ingress
+spec:
+  podSelector: {}
+  policyTypes: ["Ingress"]
+---
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
@@ -281,7 +289,7 @@ func TestScanManifestText(t *testing.T) {
 	if code != ExitOK || errs != "" {
 		t.Fatalf("code=%d stderr=%q", code, errs)
 	}
-	header := "kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 6 objects, 1 AI workloads\n\n"
+	header := "kshield 0.0.0-deterministic | profile dora v1 | manifest scan | 7 objects, 1 AI workloads\n\n"
 	if !strings.HasPrefix(out, header) {
 		t.Fatalf("stdout=%q", out)
 	}
@@ -306,7 +314,7 @@ func TestScanManifestJSON(t *testing.T) {
 	if r.SchemaVersion != "kshield.report/v1" || r.Tool.Version != "0.0.0-deterministic" || r.Profile.ID != "dora" {
 		t.Errorf("report header: %+v %+v %+v", r.SchemaVersion, r.Tool, r.Profile)
 	}
-	if r.Scan.Mode != "manifest" || r.Scan.Namespace != "ai" || r.Scan.Objects != 6 || r.Scan.AIWorkloads != 1 || r.Scan.StartedAt != "1970-01-01T00:00:00Z" {
+	if r.Scan.Mode != "manifest" || r.Scan.Namespace != "ai" || r.Scan.Objects != 7 || r.Scan.AIWorkloads != 1 || r.Scan.StartedAt != "1970-01-01T00:00:00Z" {
 		t.Errorf("scan: %+v", r.Scan)
 	}
 	if len(r.Scan.Inputs) != 1 || r.Scan.Inputs[0] != filepath.ToSlash(path) {
@@ -353,7 +361,7 @@ func TestScanManifestRepeatedInputs(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &r); err != nil {
 		t.Fatal(err)
 	}
-	if r.Scan.Objects != 8 || r.Scan.AIWorkloads != 1 {
+	if r.Scan.Objects != 9 || r.Scan.AIWorkloads != 1 {
 		t.Errorf("objects=%d aiWorkloads=%d", r.Scan.Objects, r.Scan.AIWorkloads)
 	}
 	want := []string{filepath.ToSlash(a), filepath.ToSlash(b), "-"}

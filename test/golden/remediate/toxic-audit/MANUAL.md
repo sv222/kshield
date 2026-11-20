@@ -1,6 +1,6 @@
 # kshield remediation
 
-Mode: `audit`. Profile: `dora` (sha256 `533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0`). scan.json sha256: `4b7cee57779d3103dc6513bb128109b5a3012d823d2c6c3a66950eb0ea4207dd`.
+Mode: `audit`. Profile: `dora` (sha256 `2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e`). scan.json sha256: `4879837bf40004354e4910ebcd0d366b501cabfd677901b6c785a94abc3bd6d8`.
 
 ## Before you apply
 
@@ -97,3 +97,13 @@ Set `QDRANT__SERVICE__API_KEY` from a Secret with `valueFrom.secretKeyRef`. Turn
 
 - `Deployment/ai-inference/qdrant` container `qdrant` (`/spec/template/spec/containers/0/env`): Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key
 - `Deployment/ai-inference/qdrant` container `qdrant` (`/spec/template/spec/containers/0/env`): Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true
+
+### KS-NET-004 (DORA-CH2-039): AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)
+
+Restrict who can reach the AI pods. Add a NetworkPolicy with `policyTypes: [Ingress]` that selects the pods and lists only the clients that need access (a gateway, a namespace or labelled pods). An empty `ingress` list denies all ingress. A rule that allows every source (an empty `from`, `0.0.0.0/0`, or a `namespaceSelector: {}`) does not count. With Cilium, a CiliumNetworkPolicy with `ingress` rules also restricts ingress.
+
+- `Deployment/ai-inference/qdrant` (`/metadata/namespace`): no NetworkPolicy or Cilium policy restricts ingress to this workload
+- `Deployment/ai-inference/vllm` (`/metadata/namespace`): no NetworkPolicy or Cilium policy restricts ingress to this workload
+- `RayCluster/ai-inference/rc` group `cpu` (`/metadata/namespace`): no NetworkPolicy or Cilium policy restricts ingress to this workload
+- `RayCluster/ai-inference/rc` group `gpu` (`/metadata/namespace`): no NetworkPolicy or Cilium policy restricts ingress to this workload
+- `RayCluster/ai-inference/rc` group `head` (`/metadata/namespace`): no NetworkPolicy or Cilium policy restricts ingress to this workload

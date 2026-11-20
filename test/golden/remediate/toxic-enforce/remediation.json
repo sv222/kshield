@@ -6,10 +6,10 @@
   },
   "profile": {
     "id": "dora",
-    "sha256": "533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0"
+    "sha256": "2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e"
   },
   "mode": "enforce",
-  "scanSha256": "4b7cee57779d3103dc6513bb128109b5a3012d823d2c6c3a66950eb0ea4207dd",
+  "scanSha256": "4879837bf40004354e4910ebcd0d366b501cabfd677901b6c785a94abc3bd6d8",
   "items": [
     {
       "check": "KS-WL-001",
@@ -1173,6 +1173,84 @@
       "path": "/metadata/namespace",
       "action": "policy",
       "file": "infrastructure-policies.yaml",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "qdrant"
+      },
+      "path": "/metadata/namespace",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "namespace": "ai-inference",
+        "name": "vllm"
+      },
+      "path": "/metadata/namespace",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "cpu",
+      "path": "/metadata/namespace",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "gpu",
+      "path": "/metadata/namespace",
+      "action": "manual",
+      "file": "",
+      "reason": ""
+    },
+    {
+      "check": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "verdict": "WARN",
+      "object": {
+        "apiVersion": "ray.io/v1",
+        "kind": "RayCluster",
+        "namespace": "ai-inference",
+        "name": "rc"
+      },
+      "group": "head",
+      "path": "/metadata/namespace",
+      "action": "manual",
+      "file": "",
       "reason": ""
     }
   ]

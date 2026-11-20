@@ -110,9 +110,9 @@ func TestFailedNetworkPoliciesMakesNetChecksUnknown(t *testing.T) {
 		Errors: []string{line},
 		Failed: []cluster.FailedRead{{Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies"}},
 	})
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-NET-004")
 	assertOthersUnchanged(t, base, r)
-	for _, id := range []string{"KS-NET-001", "KS-NET-002"} {
+	for _, id := range []string{"KS-NET-001", "KS-NET-002", "KS-NET-004"} {
 		c := checkByID(t, r, id)
 		if len(c.Findings) != 1 {
 			t.Fatalf("%s findings %+v", id, c.Findings)
@@ -126,7 +126,7 @@ func TestFailedNetworkPoliciesMakesNetChecksUnknown(t *testing.T) {
 			t.Errorf("%s message %q, want %q", id, f.Message, want)
 		}
 	}
-	if !slices.Equal(r.Errors, []string{line}) || !r.Summary.Incomplete || r.Summary.Unknown != 2 {
+	if !slices.Equal(r.Errors, []string{line}) || !r.Summary.Incomplete || r.Summary.Unknown != 3 {
 		t.Errorf("errors %v incomplete %v summary %+v", r.Errors, r.Summary.Incomplete, r.Summary)
 	}
 }
@@ -170,7 +170,7 @@ func TestFailedReadDropsFindings(t *testing.T) {
 	if c.Verdict != report.VerdictUnknown || len(c.Findings) != 1 || c.Findings[0].Verdict != report.VerdictUnknown {
 		t.Fatalf("KS-NET-001 %s %+v", c.Verdict, c.Findings)
 	}
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-NET-004")
 }
 
 func TestFailedReadOneFindingPerRead(t *testing.T) {
@@ -208,7 +208,7 @@ func TestFailedGroupDiscoveryCountsForEveryResource(t *testing.T) {
 		Errors: []string{"cluster: discover cilium.io/v2: ServiceUnavailable: down"},
 		Failed: []cluster.FailedRead{{Group: "cilium.io", Version: "v2"}},
 	})
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-RT-001", "KS-RT-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-RT-001", "KS-RT-002", "KS-NET-004")
 	assertOthersUnchanged(t, base, r)
 	if m := checkByID(t, r, "KS-RT-001").Findings[0].Message; m != "not judged: cannot list cilium.io/v2 * in all namespaces: ServiceUnavailable: down" {
 		t.Errorf("message %q", m)
@@ -230,7 +230,7 @@ func TestFailedReadNamespaceScope(t *testing.T) {
 		Failed:     []cluster.FailedRead{{Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies", Namespace: "ai"}},
 		Namespaces: []string{"ai"},
 	})
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-NET-004")
 	if o := checkByID(t, r, "KS-NET-001").Findings[0].Object.String(); o != "Namespace/ai" {
 		t.Errorf("object %s", o)
 	}
@@ -269,7 +269,7 @@ func TestFailedReadWithoutErrorLine(t *testing.T) {
 	r := failRun(t, ClusterOptions{
 		Failed: []cluster.FailedRead{{Group: "networking.k8s.io", Version: "v1", Resource: "networkpolicies"}, {Version: "v1", Resource: "secrets"}},
 	})
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-NET-004")
 	want := "cluster: list networking.k8s.io/v1 networkpolicies in all namespaces: read failed"
 	if !slices.Equal(r.Errors, []string{want}) || !r.Summary.Incomplete {
 		t.Fatalf("errors %v incomplete %v", r.Errors, r.Summary.Incomplete)

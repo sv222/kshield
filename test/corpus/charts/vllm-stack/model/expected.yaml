@@ -12,6 +12,7 @@ expect:
   - {check: "KS-AI-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "FAIL"}
   - {check: "KS-AI-003", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", container: "vllm", verdict: "WARN"}
   - {check: "KS-NET-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
+  - {check: "KS-NET-004", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "WARN"}
   - {check: "KS-RT-001", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
   - {check: "KS-RT-002", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}
   - {check: "KS-RT-003", object: "Deployment/ai-inference/vllm-stack-opt125m-deployment-vllm", verdict: "FAIL"}

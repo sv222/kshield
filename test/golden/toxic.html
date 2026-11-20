@@ -69,7 +69,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <table class="kv">
 <tr><th>Tool</th><td>kshield 0.0.0-deterministic</td></tr>
 <tr><th>Profile</th><td>dora v1</td></tr>
-<tr><th>Profile sha256</th><td><code>533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0</code></td></tr>
+<tr><th>Profile sha256</th><td><code>2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e</code></td></tr>
 <tr><th>Mode</th><td>manifest</td></tr>
 <tr><th>Inputs</th><td><code>test/corpus/baseline/toxic/input.yaml</code></td></tr>
 <tr><th>Input files</th><td>
@@ -86,7 +86,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <h2>Summary</h2>
 <ul class="counts">
 <li class="v-fail"><b>17</b>FAIL</li>
-<li class="v-warn"><b>4</b>WARN</li>
+<li class="v-warn"><b>5</b>WARN</li>
 <li class="v-pass"><b>12</b>PASS</li>
 <li class="v-info"><b>0</b>INFO</li>
 <li class="v-na"><b>5</b>N/A</li>
@@ -135,6 +135,7 @@ blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--li
 <tr><td>DORA-CH2-036</td><td><code>KS-AI-010</code></td><td>Inference engine other than vLLM without API key or gateway auth evidence</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-010)</td></tr>
 <tr><td>DORA-CH2-037</td><td><code>KS-AI-011</code></td><td>Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-011)</td></tr>
 <tr><td>DORA-CH2-038</td><td><code>KS-AI-012</code></td><td>Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-012)</td></tr>
+<tr><td><a href="#ks-net-004">DORA-CH2-039</a></td><td><code>KS-NET-004</code></td><td>AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>manual (kshield checks explain KS-NET-004)</td></tr>
 </tbody>
 </table>
 </section>
@@ -1054,6 +1055,59 @@ All detection mechanisms referred to in the first subparagraph shall be regularl
 <dt>group</dt><dd>head</dd>
 <dt>path</dt><dd><code>/metadata/namespace</code></dd>
 <dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-net-004">
+<h3><span class="verdict v-warn">WARN</span> DORA-CH2-039 <code>KS-NET-004</code> AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)</h3>
+<p class="meta">severity warn | fix: manual (kshield checks explain KS-NET-004)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>DORA Art. 9(4)(b)</b> - DORA, CELEX 32022R2554, <a href="https://eur-lex.europa.eu/eli/reg/2022/2554/oj">https://eur-lex.europa.eu/eli/reg/2022/2554/oj</a></p>
+<blockquote>following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
 <dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
 </dl>
 </div>

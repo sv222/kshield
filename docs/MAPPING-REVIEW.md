@@ -2,8 +2,8 @@
 
 - Profile: `dora`
 - Version: 1
-- Profile sha256: `533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0`
-- Checks: 38
+- Profile sha256: `2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e`
+- Checks: 39
 
 This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. A mapping means that the check supports evidence for the cited requirement. It is not an audit and does not state compliance with any regulation.
 
@@ -797,6 +797,22 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 - URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
 
 > prevent the lack of availability, the impairment of the authenticity and integrity, the breaches of confidentiality and the loss of data;
+
+## DORA-CH2-039 (KS-NET-004)
+
+- Check: `KS-NET-004`
+- Display ID: `DORA-CH2-039`
+- Title: AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)
+- Severity: warn
+
+### DORA Art. 9(4)(b)
+
+- Ref: `dora-art9-4-b`
+- Source: Regulation (EU) 2022/2554 (DORA)
+- CELEX: 32022R2554
+- URL: <https://eur-lex.europa.eu/eli/reg/2022/2554/oj>
+
+> following a risk-based approach, establish a sound network and infrastructure management structure using appropriate techniques, methods and protocols that may include implementing automated mechanisms to isolate affected information assets in the event of cyber-attacks;
 
 <!-- kshield:signoff - everything below is kept by the generator -->
 

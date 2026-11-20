@@ -435,5 +435,16 @@
       "dora-art9-3-b",
       "dora-art9-3-c"
     ]
+  },
+  {
+    "id": "KS-NET-004",
+    "display": "DORA-CH2-039",
+    "title": "AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)",
+    "severity": "warn",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "dora-art9-4-b"
+    ]
   }
 ]

@@ -112,6 +112,7 @@ var clusterDeps = map[string][]dep{
 	"KS-NET-001": deps(policyDeps),
 	"KS-NET-002": deps(policyDeps),
 	"KS-NET-003": deps([]dep{prereqDep(resDaemonSets), {group: "", resource: resConfigMaps, outOfScope: true}}),
+	"KS-NET-004": deps(policyDeps),
 	"KS-RT-001":  deps(tracingDeps),
 	"KS-RT-002":  deps(tracingDeps),
 	"KS-RT-003":  deps(kyvernoDeps),

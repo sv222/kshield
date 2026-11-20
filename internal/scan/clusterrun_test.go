@@ -79,7 +79,7 @@ func TestClusterForbiddenKindIsUnknown(t *testing.T) {
 	c := clustertest.New(clustertest.RootVLLM("ai"))
 	c.Dynamic.PrependReactor("list", "networkpolicies", forbidden("networkpolicies"))
 	r := scanCluster(t, c, ClusterOptions{})
-	assertUnknown(t, r, "KS-NET-001", "KS-NET-002")
+	assertUnknown(t, r, "KS-NET-001", "KS-NET-002", "KS-NET-004")
 	want := "cluster: list networking.k8s.io/v1 networkpolicies in all namespaces: Forbidden: networkpolicies is forbidden: RBAC: denied"
 	if !slices.Equal(r.Errors, []string{want}) || !r.Summary.Incomplete {
 		t.Fatalf("errors %v", r.Errors)

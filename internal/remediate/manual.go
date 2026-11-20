@@ -92,6 +92,9 @@ kustomize build "$work/bundle"
 		"Then change the password of the default `root` user."
 	stepsNET003 = "Turn on Cilium transparent encryption with the Helm values `encryption.enabled=true` and `encryption.type=wireguard` (or `ipsec`). " +
 		"Check it with `cilium encrypt status`."
+	stepsNET004 = "Restrict who can reach the AI pods. Add a NetworkPolicy with `policyTypes: [Ingress]` that selects the pods and lists only the clients that need access (a gateway, a namespace or labelled pods). " +
+		"An empty `ingress` list denies all ingress. A rule that allows every source (an empty `from`, `0.0.0.0/0`, or a `namespaceSelector: {}`) does not count. " +
+		"With Cilium, a CiliumNetworkPolicy with `ingress` rules also restricts ingress."
 	stepsPRE001 = "Install Tetragon at the version pinned in kshield `versions.env` and check that its DaemonSet pods are Ready on every node. " +
 		"Without Tetragon the TracingPoliciesNamespaced in this bundle do nothing."
 	stepsPRE002 = "Use Cilium as the CNI. On another CNI the CiliumNetworkPolicies in this bundle do nothing, " +
@@ -120,6 +123,7 @@ var manualSteps = map[string]string{
 	"KS-AI-011":  stepsAI011,
 	"KS-AI-012":  stepsAI012,
 	"KS-NET-003": stepsNET003,
+	"KS-NET-004": stepsNET004,
 	"KS-PRE-001": stepsPRE001,
 	"KS-PRE-002": stepsPRE002,
 	"KS-PRE-003": stepsPRE003,

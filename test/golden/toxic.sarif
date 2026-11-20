@@ -501,6 +501,19 @@
                   "fail"
                 ]
               }
+            },
+            {
+              "id": "KS-NET-004",
+              "name": "DORA-CH2-039",
+              "shortDescription": {
+                "text": "AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)"
+              },
+              "properties": {
+                "tags": [
+                  "manual",
+                  "warn"
+                ]
+              }
             }
           ]
         }
@@ -2525,6 +2538,146 @@
           ],
           "partialFingerprints": {
             "kshield/v1": "e6cbdf14203c4c9f2cb2a5b4b391da530f05cb68e21ba8fd0934f3fa2d2492ad"
+          }
+        },
+        {
+          "ruleId": "KS-NET-004",
+          "ruleIndex": 38,
+          "level": "warning",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy restricts ingress to this workload (Deployment/ai-inference/qdrant)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/qdrant"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "07887e87da92e260224adc0849c24b6a1a32facff9b4ec69a8151cdb629cc279"
+          }
+        },
+        {
+          "ruleId": "KS-NET-004",
+          "ruleIndex": 38,
+          "level": "warning",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy restricts ingress to this workload (Deployment/ai-inference/vllm)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Deployment/ai-inference/vllm"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "cb841cdedac1c0a114640064a5d7c76d96a936f9f1ae7144daef8001f8c46fb3"
+          }
+        },
+        {
+          "ruleId": "KS-NET-004",
+          "ruleIndex": 38,
+          "level": "warning",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy restricts ingress to this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "8078361c132a70261d08d37442e21031ae57155b859229ac3fb93aec56c2920a"
+          }
+        },
+        {
+          "ruleId": "KS-NET-004",
+          "ruleIndex": 38,
+          "level": "warning",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy restricts ingress to this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "72ee66c921fab4cafdd563cb2ceb41bc600ccc613aa9f355de436632cf232bac"
+          }
+        },
+        {
+          "ruleId": "KS-NET-004",
+          "ruleIndex": 38,
+          "level": "warning",
+          "message": {
+            "text": "no NetworkPolicy or Cilium policy restricts ingress to this workload (RayCluster/ai-inference/rc)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test/corpus/baseline/toxic/input.yaml"
+                },
+                "region": {
+                  "startLine": 107
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "RayCluster/ai-inference/rc"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kshield/v1": "dd2ab3405bef7a84c1ce5a92e334a3336f746ac069f075bbb5f65ed29c77b9ef"
           }
         }
       ]

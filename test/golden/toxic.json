@@ -8,7 +8,7 @@
     "id": "dora",
     "version": 1,
     "title": "DORA Chapter II - Regulation (EU) 2022/2554 and RTS (EU) 2024/1774",
-    "sha256": "533c75828e7b14fadca0fdc27e106f903e8dc3a55066bdd3b4a5299d2a53ecd0"
+    "sha256": "2e5b86fd44888e6de2438b608af55a5977a8a28b88a7519ee726a2ea51d7791e"
   },
   "scan": {
     "mode": "manifest",
@@ -29,7 +29,7 @@
   "summary": {
     "pass": 12,
     "fail": 17,
-    "warn": 4,
+    "warn": 5,
     "info": 0,
     "na": 5,
     "incomplete": false
@@ -1979,6 +1979,102 @@
         }
       ],
       "findings": []
+    },
+    {
+      "id": "KS-NET-004",
+      "display": "DORA-CH2-039",
+      "title": "AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)",
+      "verdict": "WARN",
+      "severity": "warn",
+      "fix": "manual",
+      "refs": [
+        {
+          "id": "dora-art9-4-b",
+          "label": "DORA Art. 9(4)(b)",
+          "source": "dora",
+          "url": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj"
+        }
+      ],
+      "findings": [
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "qdrant"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 57
+          },
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy restricts ingress to this workload",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "apps/v1",
+            "kind": "Deployment",
+            "namespace": "ai-inference",
+            "name": "vllm"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 1
+          },
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy restricts ingress to this workload",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "cpu",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy restricts ingress to this workload",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "gpu",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy restricts ingress to this workload",
+          "verdict": "WARN"
+        },
+        {
+          "object": {
+            "apiVersion": "ray.io/v1",
+            "kind": "RayCluster",
+            "namespace": "ai-inference",
+            "name": "rc"
+          },
+          "source": {
+            "file": "test/corpus/baseline/toxic/input.yaml",
+            "line": 107
+          },
+          "group": "head",
+          "path": "/metadata/namespace",
+          "message": "no NetworkPolicy or Cilium policy restricts ingress to this workload",
+          "verdict": "WARN"
+        }
+      ]
     }
   ],
   "errors": []

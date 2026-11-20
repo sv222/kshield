@@ -262,3 +262,139 @@ func ciliumBroad(rule any) string {
 	}
 	return ""
 }
+
+const (
+	policyTypeIngress    = "Ingress"
+	ciliumIngressKey     = "ingress"
+	ciliumFromEntities   = "fromEntities"
+	ciliumFromCIDR       = "fromCIDR"
+	ciliumFromCIDRSet    = "fromCIDRSet"
+	netpolNoIngressMsg   = "no NetworkPolicy or Cilium policy restricts ingress to this workload"
+	netpolIngressAuditFm = "only a Cilium policy with enableDefaultDeny.ingress: false covers this workload (audit form, ingress is not denied by default)"
+)
+
+func netpolIngress(o load.Object) bool {
+	types := listOf(dig(o.U.Object, "spec", "policyTypes"))
+	if len(types) == 0 {
+		return true
+	}
+	return slices.ContainsFunc(types, func(t any) bool { return stringOf(t) == policyTypeIngress })
+}
+
+func selectsEverything(sel any) bool {
+	m := mapOf(sel)
+	return len(mapOf(m["matchLabels"])) == 0 && len(listOf(m["matchExpressions"])) == 0
+}
+
+func netpolOpenPeer(peer any) bool {
+	if block := mapOf(dig(peer, "ipBlock")); block != nil {
+		return len(listOf(block["except"])) == 0 && slices.Contains(openCIDRs, stringOf(block["cidr"]))
+	}
+	ns, pod := dig(peer, "namespaceSelector"), dig(peer, "podSelector")
+	if ns == nil && pod == nil {
+		return true
+	}
+	return ns != nil && selectsEverything(ns) && (pod == nil || selectsEverything(pod))
+}
+
+func netpolOpenIngressRule(rule any) bool {
+	from := listOf(dig(rule, "from"))
+	return len(from) == 0 || slices.ContainsFunc(from, netpolOpenPeer)
+}
+
+func ciliumOpenIngressRule(rule any) bool {
+	for _, e := range listOf(dig(rule, ciliumFromEntities)) {
+		s := stringOf(e)
+		if slices.ContainsFunc(ciliumBroadEntities, func(b string) bool { return strings.EqualFold(s, b) }) {
+			return true
+		}
+	}
+	for _, c := range listOf(dig(rule, ciliumFromCIDR)) {
+		if slices.Contains(openCIDRs, stringOf(c)) {
+			return true
+		}
+	}
+	for _, c := range listOf(dig(rule, ciliumFromCIDRSet)) {
+		if slices.Contains(openCIDRs, stringOf(dig(c, "cidr"))) {
+			return true
+		}
+	}
+	return false
+}
+
+func ciliumIngressDefaultDeny(rule map[string]any) (deny, audit bool) {
+	if len(listOf(rule[ciliumIngressKey])) == 0 {
+		return false, false
+	}
+	if on, ok := dig(rule, ciliumEnableDefaultDeny, ciliumIngressKey).(bool); ok && !on {
+		return false, true
+	}
+	return true, false
+}
+
+type ingressVerdict struct {
+	isolated bool
+	audit    bool
+	msg      string
+}
+
+func ingressIsolation(in *Input, w model.Workload) ingressVerdict {
+	x := in.idx()
+	var selecting, noIngress, open []string
+	restricted, audit := false, false
+	for _, o := range x.netpols[w.Owner.Namespace] {
+		if !netpolSelects(o, w) {
+			continue
+		}
+		selecting = append(selecting, o.Ref.Name)
+		if !netpolIngress(o) {
+			noIngress = append(noIngress, o.Ref.Name)
+			continue
+		}
+		restricted = true
+		if slices.ContainsFunc(listOf(dig(o.U.Object, "spec", "ingress")), netpolOpenIngressRule) {
+			open = append(open, "NetworkPolicy "+o.Ref.Name)
+		}
+	}
+	for _, o := range x.ciliumFor(w.Owner.Namespace) {
+		for _, r := range ciliumRules(o) {
+			if !ciliumRuleSelects(o, r, w) {
+				continue
+			}
+			selecting = append(selecting, o.Ref.Name)
+			deny, auditForm := ciliumIngressDefaultDeny(r.body)
+			audit = audit || auditForm
+			if !deny {
+				continue
+			}
+			restricted = true
+			if slices.ContainsFunc(listOf(r.body[ciliumIngressKey]), ciliumOpenIngressRule) {
+				open = append(open, "Cilium policy "+o.Ref.Name)
+			}
+		}
+	}
+	switch {
+	case len(open) > 0:
+		return ingressVerdict{msg: strings.Join(slices.Compact(open), ", ") + " has an ingress rule that allows traffic from every source"}
+	case restricted:
+		return ingressVerdict{isolated: true}
+	case audit:
+		return ingressVerdict{audit: true, msg: netpolIngressAuditFm}
+	case len(noIngress) > 0:
+		return ingressVerdict{msg: "NetworkPolicy " + strings.Join(noIngress, ", ") + " selects this workload but has no Ingress policyType, so ingress traffic is not restricted"}
+	}
+	return ingressVerdict{msg: netpolNoIngressMsg}
+}
+
+func netIngressIsolation(in *Input) Result {
+	return forNamespacedWorkloads(in, func(w model.Workload) []Finding {
+		v := ingressIsolation(in, w)
+		switch {
+		case v.isolated:
+			return nil
+		case v.audit:
+			return []Finding{suspect(violation(w, "", namespacePath, v.msg))}
+		}
+		return []Finding{violation(w, "", namespacePath, v.msg)}
+	})
+}
