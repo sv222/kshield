@@ -1332,3 +1332,32 @@ func TestAuditAllPoliciesKept(t *testing.T) {
 		t.Fatal("no KS-NET-001 or KS-RT-* item; the audit guards gave no WARN")
 	}
 }
+
+func TestNis2Bundle(t *testing.T) {
+	p := writeInput(t, helmVLLMYAML)
+	r, err := scan.Manifest(scan.Options{Inputs: []string{p}, Namespace: "ai-inference", ProfileID: "nis2", Deterministic: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var buf bytes.Buffer
+	if err := report.WriteJSON(&buf, r); err != nil {
+		t.Fatal(err)
+	}
+	b, err := Run(Options{ScanJSON: buf.Bytes()})
+	if err != nil {
+		t.Fatal(err)
+	}
+	manual := string(b.Files[FileManual])
+	if !strings.Contains(manual, "Profile: `nis2` (sha256 `") {
+		t.Errorf("MANUAL.md misses the nis2 profile line:\n%s", manual[:400])
+	}
+	if !strings.Contains(manual, "NIS2-K8S-") {
+		t.Errorf("MANUAL.md carries no nis2 display IDs:\n%s", manual[:400])
+	}
+	if strings.Contains(manual, "DORA-CH2-") {
+		t.Errorf("MANUAL.md of a nis2 bundle carries dora display IDs:\n%s", manual[:400])
+	}
+	if _, ok := b.Files[FileWorkloadPatch]; !ok {
+		t.Fatalf("no workload patch in %v", fileNames(b))
+	}
+}
