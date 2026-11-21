@@ -1,9 +1,48 @@
 package cli
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/sv222/kshield/internal/profile"
 )
+
+func TestEvidenceNis2Pack(t *testing.T) {
+	prefix := keygen(t)
+	p, err := profile.Load("nis2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := filepath.Join(t.TempDir(), "pack")
+	path := writeManifest(t, "in.yaml", rootVLLMDeployment)
+	code, _, errs := run(t, "", "scan", "manifest", "-f", path, "--deterministic", "--profile", "nis2", "--evidence", dir, "--sign-key", prefix+".key")
+	if code != ExitFindings || errs != "" {
+		t.Fatalf("scan: code=%d stderr=%q", code, errs)
+	}
+	b, err := os.ReadFile(filepath.Join(dir, "report.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var rep struct {
+		Profile struct {
+			ID     string `json:"id"`
+			SHA256 string `json:"sha256"`
+		} `json:"profile"`
+	}
+	if err := json.Unmarshal(b, &rep); err != nil {
+		t.Fatal(err)
+	}
+	if rep.Profile.ID != "nis2" || rep.Profile.SHA256 != p.SHA256 {
+		t.Fatalf("profile in pack: id %q sha %q, want nis2 %s", rep.Profile.ID, rep.Profile.SHA256, p.SHA256)
+	}
+	code, out := verifyOut(t, dir, "--pub-key", prefix+".pub")
+	if code != ExitOK || out != "signature: valid\nevidence: OK\n" {
+		t.Fatalf("verify: code=%d stdout=%q", code, out)
+	}
+}
 
 func TestChecksListNis2Golden(t *testing.T) {
 	golden(t, "checks-list-nis2.txt", runOK(t, "checks", "list", "--profile", "nis2"))
