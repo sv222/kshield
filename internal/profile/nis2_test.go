@@ -100,7 +100,7 @@ func TestNis2SeveritiesMatchDora(t *testing.T) {
 
 func TestNis2Note(t *testing.T) {
 	p := nis2Profile(t)
-	if want := "NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive)."; p.Note != want {
+	if want := "NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive)."; p.Note != want { //nolint:misspell
 		t.Fatalf("note = %q, want %q", p.Note, want)
 	}
 	dora, err := profile.Load("dora")

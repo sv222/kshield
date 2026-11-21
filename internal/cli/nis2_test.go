@@ -52,7 +52,7 @@ func TestChecksListNis2Golden(t *testing.T) {
 func TestChecksExplainNis2Golden(t *testing.T) {
 	out := runOK(t, "checks", "explain", "NIS2-K8S-001", "--profile", "nis2")
 	golden(t, "checks-explain-nis2-k8s-001.txt", out)
-	if !strings.Contains(out, "Note:") || !strings.Contains(out, "lex specialis") {
+	if !strings.Contains(out, "Note:") || !strings.Contains(out, "lex specialis") { //nolint:misspell
 		t.Errorf("explain misses the applicability note:\n%s", out)
 	}
 	if got := runOK(t, "checks", "explain", "KS-WL-001", "--profile", "nis2"); got != out {
