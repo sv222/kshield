@@ -1,0 +1,157 @@
+id: "nis2"
+version: 1
+title: "NIS2 Article 21 - Directive (EU) 2022/2555 and Implementing Regulation (EU) 2024/2690"
+note: "NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive)."
+checks:
+  "KS-WL-001":
+    display: "NIS2-K8S-001"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-WL-002":
+    display: "NIS2-K8S-002"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-WL-003":
+    display: "NIS2-K8S-003"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-WL-004":
+    display: "NIS2-K8S-004"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-8-1"]
+  "KS-WL-005":
+    display: "NIS2-K8S-005"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g"]
+  "KS-WL-007":
+    display: "NIS2-K8S-006"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g"]
+  "KS-WL-008":
+    display: "NIS2-K8S-007"
+    severity: "warn"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-WL-009":
+    display: "NIS2-K8S-008"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-WL-010":
+    display: "NIS2-K8S-009"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "cir-annex-11-2-2-a"]
+  "KS-WL-011":
+    display: "NIS2-K8S-010"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "cir-annex-11-2-2-a"]
+  "KS-WL-012":
+    display: "NIS2-K8S-011"
+    severity: "warn"
+    refs: ["nis2-art21-2-e", "cir-annex-6-6-1-c"]
+  "KS-WL-014":
+    display: "NIS2-K8S-012"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g"]
+  "KS-AI-001":
+    display: "NIS2-K8S-013"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "cir-annex-11-1-2-c"]
+  "KS-AI-002":
+    display: "NIS2-K8S-014"
+    severity: "fail"
+    refs: ["nis2-art21-2-e", "cir-annex-6-9-1"]
+  "KS-AI-003":
+    display: "NIS2-K8S-015"
+    severity: "fail"
+    refs: ["nis2-art21-2-e", "cir-annex-6-9-1"]
+  "KS-AI-004":
+    display: "NIS2-K8S-016"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c", "cir-annex-11-1-2-c"]
+  "KS-AI-005":
+    display: "NIS2-K8S-017"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c", "cir-annex-11-1-2-c"]
+  "KS-AI-006":
+    display: "NIS2-K8S-018"
+    severity: "fail"
+    refs: ["nis2-art21-2-h", "cir-annex-9-2-a"]
+  "KS-AI-007":
+    display: "NIS2-K8S-019"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c", "cir-annex-11-1-2-c"]
+  "KS-AI-008":
+    display: "NIS2-K8S-020"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-h", "cir-annex-11-1-2-c", "cir-annex-9-2-a"]
+  "KS-AI-009":
+    display: "NIS2-K8S-021"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "cir-annex-11-1-2-c"]
+  "KS-NET-001":
+    display: "NIS2-K8S-022"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c", "cir-annex-6-8-2-e"]
+  "KS-NET-002":
+    display: "NIS2-K8S-023"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-8-2-e"]
+  "KS-NET-003":
+    display: "NIS2-K8S-024"
+    severity: "fail"
+    refs: ["nis2-art21-2-h", "cir-annex-9-2-a"]
+  "KS-RT-001":
+    display: "NIS2-K8S-025"
+    severity: "fail"
+    refs: ["nis2-art21-2-b", "cir-annex-3-2-1"]
+  "KS-RT-002":
+    display: "NIS2-K8S-026"
+    severity: "fail"
+    refs: ["nis2-art21-2-b", "cir-annex-3-2-1"]
+  "KS-RT-003":
+    display: "NIS2-K8S-027"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-PRE-001":
+    display: "NIS2-K8S-028"
+    severity: "fail"
+    refs: ["nis2-art21-2-b", "cir-annex-3-2-1"]
+  "KS-PRE-002":
+    display: "NIS2-K8S-029"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-8-1"]
+  "KS-PRE-003":
+    display: "NIS2-K8S-030"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-b"]
+  "KS-PRE-004":
+    display: "NIS2-K8S-031"
+    severity: "warn"
+    refs: ["nis2-art21-2-b", "cir-annex-3-2-1"]
+  "KS-WL-015":
+    display: "NIS2-K8S-032"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g"]
+  "KS-WL-016":
+    display: "NIS2-K8S-033"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c"]
+  "KS-AI-010":
+    display: "NIS2-K8S-034"
+    severity: "warn"
+    refs: ["nis2-art21-2-i", "cir-annex-11-1-2-c"]
+  "KS-AI-011":
+    display: "NIS2-K8S-035"
+    severity: "warn"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-3-2-a"]
+  "KS-AI-012":
+    display: "NIS2-K8S-036"
+    severity: "fail"
+    refs: ["nis2-art21-2-d", "nis2-art21-2-e"]
+  "KS-NET-004":
+    display: "NIS2-K8S-037"
+    severity: "warn"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-8-2-e"]
+  "KS-AI-013":
+    display: "NIS2-K8S-038"
+    severity: "fail"
+    refs: ["nis2-art21-2-i", "nis2-art21-2-g", "cir-annex-6-7-2-c", "cir-annex-11-1-2-c"]

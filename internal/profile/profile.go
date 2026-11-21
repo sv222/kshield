@@ -38,6 +38,7 @@ type Profile struct {
 	ID      string           `json:"id"`
 	Version int              `json:"version"`
 	Title   string           `json:"title"`
+	Note    string           `json:"note,omitempty"`
 	Checks  map[string]Entry `json:"checks"`
 	SHA256  string           `json:"-"`
 }
