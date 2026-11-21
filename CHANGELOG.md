@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-21
+
 ### Added
 
 - The `nis2` profile: the same scan, reports and evidence bundles with NIS2 display IDs (`NIS2-K8S-001` and up) and references to Article 21 of Directive (EU) 2022/2555 and the Annex of Commission Implementing Regulation (EU) 2024/2690. `--profile nis2` works on `scan manifest`, `scan cluster`, `checks list` and `checks explain`. 38 of the 40 checks are mapped; KS-WL-006 and KS-WL-013 stay out because no point of NIS2 Art. 21 or of the Annex fits them. The full mapping is in `docs/MAPPING-REVIEW-nis2.md`. NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive).
