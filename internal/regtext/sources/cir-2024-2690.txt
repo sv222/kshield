@@ -1,0 +1,72 @@
+source: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R2690
+celex: 32024R2690
+fetched: 2026-11-21
+reuse: Commission Decision 2011/833/EU
+
+Commission Implementing Regulation (EU) 2024/2690 of 17 July 2024 laying down regulatory technical standards specifying the requirements for the ICT risk management framework under Directive (EU) 2022/2554
+
+Annex
+
+3.2.   Monitoring and logging
+3.2.1.
+The relevant entities shall lay down procedures and use tools to monitor and log activities on their network and information systems to detect events that could be considered as incidents and respond accordingly to mitigate the impact.
+6.3.   Configuration management
+6.3.1.
+The relevant entities shall take the appropriate measures to establish, document, implement, and monitor configurations, including security configurations of hardware, software, services and networks.
+6.3.2.
+For the purpose of point 6.3.1, the relevant entities shall:
+(a)
+lay down and ensure security in configurations for their hardware, software, services and networks;
+(b)
+lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.
+6.6.1.
+The relevant entities shall specify and apply procedures, coherent with the change management procedures referred to in point 6.4.1 as well as with vulnerability management, risk management and other relevant management procedures, for ensuring that:
+(a)
+security patches are applied within a reasonable time after they become available;
+(b)
+security patches are tested before being applied in production systems;
+(c)
+security patches come from trusted sources and are checked for integrity;
+6.7.   Network security
+6.7.1.
+The relevant entities shall take the appropriate measures to protect their network and information systems from cyber threats.
+6.7.2.
+For the purpose of point 6.7.1, the relevant entities shall:
+(a)
+document the architecture of the network in a comprehensible and up to date manner;
+(b)
+determine and apply controls to protect the relevant entities’ internal network domains from unauthorised access;
+(c)
+configure controls to prevent accesses and network communication not required for the operation of the relevant entities;
+6.8.   Network segmentation
+6.8.1.
+The relevant entities shall segment systems into networks or zones in accordance with the results of the risk assessment referred to in point 2.1. They shall segment their systems and networks from third parties’ systems and networks.
+6.8.2.
+For that purpose, the relevant entities shall:
+deploy a demilitarised zone within their communication networks to ensure secure communication originating from or destined to their networks;
+(e)
+restrict access and communications between and within zones to those necessary for the operation of the relevant entities or for safety;
+6.9.1.
+The relevant entities shall protect their network and information systems against malicious and unauthorised software.
+9.   Cryptography (Article 21(2), point (h), of Directive (EU) 2022/2555)
+9.1.
+For the purpose of Article 21(2), point (h) of Directive (EU) 2022/2555, the relevant entities shall establish, implement and apply a policy and procedures related to cryptography, with a view to ensuring adequate and effective use of cryptography to protect the confidentiality, authenticity and integrity of data in line with the relevant entities’ asset classification and the results of the risk assessment carried out pursuant to point 2.1.
+9.2.
+The policy and procedures referred to in point 9.1 shall establish:
+(a)
+in accordance with the relevant entities’ classification of assets, the type, strength and quality of the cryptographic measures required to protect the relevant entities’ assets, including data at rest and data in transit;
+11.   Access control (Article 21(2), points (i) and (j), of Directive (EU) 2022/2555)
+11.1.   Access control policy
+11.1.1.
+For the purpose of Article 21(2), point (i) of Directive (EU) 2022/2555, the relevant entities shall establish, document and implement logical and physical access control policies for the access to their network and information systems, based on business requirements as well as network and information system security requirements.
+11.1.2.
+The policies referred to in point 11.1.1. shall:
+(c)
+ensure that access is only granted to users that have been adequately authenticated.
+11.2.   Management of access rights
+11.2.1.
+The relevant entities shall provide, modify, remove and document access rights to network and information systems in accordance with the access control policy referred to in point 11.1.
+11.2.2.
+The relevant entities shall:
+(a)
+assign and revoke access rights based on the principles of need-to-know, least privilege and separation of duties;

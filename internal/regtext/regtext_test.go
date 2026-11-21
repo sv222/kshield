@@ -96,19 +96,35 @@ func TestEmbeddedSources(t *testing.T) {
 	if len(ss) == 0 {
 		t.Fatal("no embedded sources")
 	}
-	var dora *Source
-	for i := range ss {
-		if ss[i].ID == "dora" {
-			dora = &ss[i]
+	byID := map[string]Source{}
+	for _, s := range ss {
+		byID[s.ID] = s
+	}
+	want := []Source{
+		{ID: "dora", Short: "DORA", Title: "Regulation (EU) 2022/2554 (DORA)", CELEX: "32022R2554",
+			URL: "https://eur-lex.europa.eu/eli/reg/2022/2554/oj", FullTextFile: "dora.txt"},
+		{ID: "rts-2024-1774", Short: "RTS 2024/1774", Title: "Commission Delegated Regulation (EU) 2024/1774", CELEX: "32024R1774",
+			URL: "https://eur-lex.europa.eu/eli/reg_del/2024/1774/oj", FullTextFile: "rts-2024-1774.txt"},
+		{ID: "nis2", Short: "NIS2", Title: "Directive (EU) 2022/2555 (NIS2)", CELEX: "32022L2555",
+			URL: "https://eur-lex.europa.eu/eli/dir/2022/2555/oj", FullTextFile: "nis2.txt"},
+		{ID: "cir-2024-2690", Short: "CIR (EU) 2024/2690", Title: "Commission Implementing Regulation (EU) 2024/2690", CELEX: "32024R2690",
+			URL: "https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj", FullTextFile: "cir-2024-2690.txt"},
+	}
+	for _, w := range want {
+		s, ok := byID[w.ID]
+		if !ok {
+			t.Errorf("no source %q", w.ID)
+			continue
 		}
-	}
-	if dora == nil {
-		t.Fatal("no dora source")
-	}
-	if dora.Short != "DORA" || dora.Title != "Regulation (EU) 2022/2554 (DORA)" ||
-		dora.CELEX != "32022R2554" || dora.URL != "https://eur-lex.europa.eu/eli/reg/2022/2554/oj" ||
-		dora.FullTextFile != "dora.txt" {
-		t.Fatalf("got %+v", *dora)
+		if s.Short != w.Short || s.Title != w.Title || s.CELEX != w.CELEX || s.URL != w.URL || s.FullTextFile != w.FullTextFile {
+			t.Errorf("source %s: got %+v", w.ID, s)
+		}
+		if s.CELEX == "" || s.URL == "" || s.Fetched == "" {
+			t.Errorf("source %s: CELEX, URL and fetched must be set", w.ID)
+		}
+		if len(s.Excerpts) == 0 {
+			t.Errorf("source %s: no excerpts", w.ID)
+		}
 	}
 }
 
@@ -176,6 +192,39 @@ func TestLabel(t *testing.T) {
 	for _, tc := range cases {
 		if got := label(s, tc.e); got != tc.want {
 			t.Errorf("label = %q, want %q", got, tc.want)
+		}
+	}
+	cir := Source{ID: "cir-2024-2690", Short: "CIR (EU) 2024/2690"}
+	annex := []struct {
+		e    Excerpt
+		want string
+	}{
+		{Excerpt{Article: "Annex", Paragraph: "6.8.1"}, "CIR (EU) 2024/2690 Annex 6.8.1"},
+		{Excerpt{Article: "Annex", Paragraph: "9.2", Point: "a"}, "CIR (EU) 2024/2690 Annex 9.2(a)"},
+		{Excerpt{Article: "Annex", Paragraph: "3.2.1"}, "CIR (EU) 2024/2690 Annex 3.2.1"},
+	}
+	for _, tc := range annex {
+		if got := label(cir, tc.e); got != tc.want {
+			t.Errorf("annex label = %q, want %q", got, tc.want)
+		}
+	}
+}
+
+func TestEmbeddedLabels(t *testing.T) {
+	want := map[string]string{
+		"nis2-art21-1":       "NIS2 Art. 21(1)",
+		"nis2-art21-2-a":     "NIS2 Art. 21(2)(a)",
+		"nis2-art21-2-j":     "NIS2 Art. 21(2)(j)",
+		"cir-annex-3-2-1":    "CIR (EU) 2024/2690 Annex 3.2.1",
+		"cir-annex-6-3-2-b":  "CIR (EU) 2024/2690 Annex 6.3.2(b)",
+		"cir-annex-6-8-1":    "CIR (EU) 2024/2690 Annex 6.8.1",
+		"cir-annex-9-2-a":    "CIR (EU) 2024/2690 Annex 9.2(a)",
+		"cir-annex-11-1-2-c": "CIR (EU) 2024/2690 Annex 11.1.2(c)",
+		"dora-art9-4-c":      "DORA Art. 9(4)(c)",
+	}
+	for id, w := range want {
+		if got := Label(id); got != w {
+			t.Errorf("Label(%q) = %q, want %q", id, got, w)
 		}
 	}
 }
@@ -276,8 +325,15 @@ func TestPublicAPIOnEmbeddedData(t *testing.T) {
 			if !ok || got != e || src.ID != s.ID {
 				t.Errorf("Lookup(%q) = %+v %+v %v", e.ID, got, src, ok)
 			}
-			if l := Label(e.ID); !strings.HasPrefix(l, s.Short+" Art. "+e.Article) {
-				t.Errorf("Label(%q) = %q", e.ID, l)
+			want := s.Short + " Art. " + e.Article
+			if e.Article == "Annex" {
+				want = s.Short + " Annex " + e.Paragraph
+				if e.Point != "" {
+					want += "(" + e.Point + ")"
+				}
+			}
+			if l := Label(e.ID); !strings.HasPrefix(l, want) {
+				t.Errorf("Label(%q) = %q, want prefix %q", e.ID, l, want)
 			}
 		}
 	}

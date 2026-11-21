@@ -163,6 +163,16 @@ func cloneSource(s Source) Source {
 }
 
 func label(s Source, e Excerpt) string {
+	if e.Article == "Annex" {
+		var b strings.Builder
+		b.WriteString(s.Short)
+		b.WriteString(" Annex ")
+		b.WriteString(e.Paragraph)
+		if e.Point != "" {
+			b.WriteString("(" + e.Point + ")")
+		}
+		return b.String()
+	}
 	var b strings.Builder
 	b.WriteString(s.Short)
 	b.WriteString(" Art. ")
