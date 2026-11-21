@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kshield report - NIS2 Article 21 - Directive (EU) 2022/2555 and Implementing Regulation (EU) 2024/2690</title>
+<style>
+:root { --fg: #1b1f24; --muted: #57606a; --line: #d0d7de; --soft: #f6f8fa; --fail: #b42318; --warn: #9a6700; --pass: #1a7f37; --info: #0b5cad; --na: #6e7781; }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 1100px; padding: 24px 16px 48px; color: var(--fg); background: #ffffff; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+h1 { font-size: 1.6em; margin: 0 0 8px; }
+h2 { font-size: 1.25em; margin: 32px 0 12px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.1em; margin: 0 0 6px; }
+h4 { font-size: 0.95em; margin: 14px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+code { font: 0.9em/1.4 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; word-break: break-all; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+thead th { background: var(--soft); }
+a { color: var(--info); }
+.disclaimer { margin: 0 0 16px; padding: 10px 12px; border-left: 4px solid var(--info); background: var(--soft); }
+.kv th { width: 180px; color: var(--muted); font-weight: 600; }
+.digests td, .digests th { border: 0; padding: 0 12px 2px 0; }
+.banner { margin: 24px 0 0; padding: 12px 14px; font-weight: 700; border: 2px solid var(--fail); color: var(--fail); background: #fff1f0; }
+.note { color: var(--muted); }
+.counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.counts li { min-width: 96px; padding: 8px 12px; border: 1px solid var(--line); border-top-width: 4px; }
+.counts b { display: block; font-size: 1.5em; }
+.counts .v-fail { border-top-color: var(--fail); }
+.counts .v-warn { border-top-color: var(--warn); }
+.counts .v-pass { border-top-color: var(--pass); }
+.counts .v-info { border-top-color: var(--info); }
+.counts .v-na { border-top-color: var(--na); }
+.verdict { display: inline-block; min-width: 48px; padding: 1px 6px; border-radius: 4px; color: #ffffff; font-weight: 700; font-size: 0.85em; text-align: center; }
+.verdict.v-fail { background: var(--fail); }
+.verdict.v-warn { background: var(--warn); }
+.verdict.v-pass { background: var(--pass); }
+.verdict.v-info { background: var(--info); }
+.verdict.v-na, .verdict.v-other { background: var(--na); }
+.check { margin: 0 0 28px; padding: 14px 16px; border: 1px solid var(--line); border-left: 4px solid var(--na); }
+.check.v-fail { border-left-color: var(--fail); }
+.check.v-warn { border-left-color: var(--warn); }
+.check.v-info { border-left-color: var(--info); }
+.meta { margin: 0; color: var(--muted); }
+.ref { margin: 0 0 10px; }
+.ref p { margin: 0; }
+blockquote { margin: 4px 0 0; padding: 6px 12px; border-left: 3px solid var(--line); color: var(--muted); font-style: italic; }
+.finding { margin: 8px 0 0; padding: 8px 10px; background: var(--soft); border: 1px solid var(--line); }
+.finding dl { display: grid; grid-template-columns: 100px 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.finding dt { color: var(--muted); }
+.finding dd { margin: 0; }
+.errors li { color: var(--fail); }
+@media print {
+  body { max-width: none; padding: 0; font-size: 10pt; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; }
+  h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  tr, .finding, .ref, .counts li { break-inside: avoid; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>kshield report - NIS2 Article 21 - Directive (EU) 2022/2555 and Implementing Regulation (EU) 2024/2690</h1>
+<p class="disclaimer">This report supports evidence for the requirements it cites. It is not an audit and does not state compliance with any regulation.</p>
+</header>
+<section id="scan">
+<h2>Scan</h2>
+<table class="kv">
+<tr><th>Tool</th><td>kshield 0.0.0-deterministic</td></tr>
+<tr><th>Profile</th><td>nis2 v1</td></tr>
+<tr><th>Profile sha256</th><td><code>4939814c89490052918376b9c7002ad93b6f2ce8261d655159c0f0b38fb6a033</code></td></tr>
+<tr><th>Mode</th><td>manifest</td></tr>
+<tr><th>Inputs</th><td><code>test/corpus/baseline/toxic/input.yaml</code></td></tr>
+<tr><th>Input files</th><td>
+<table class="digests">
+<tr><td><code>test/corpus/baseline/toxic/input.yaml</code></td><td>sha256 <code>9d98c3b878d9151d2aabb98890ef826e434f714fa2c1b6da042a315838acc469</code></td></tr>
+</table></td></tr>
+<tr><th>Namespace</th><td>ai-inference</td></tr>
+<tr><th>Started at</th><td>1970-01-01T00:00:00Z</td></tr>
+<tr><th>Objects</th><td>5</td></tr>
+<tr><th>AI workloads</th><td>5</td></tr>
+</table>
+</section>
+<section id="summary">
+<h2>Summary</h2>
+<ul class="counts">
+<li class="v-fail"><b>17</b>FAIL</li>
+<li class="v-warn"><b>4</b>WARN</li>
+<li class="v-pass"><b>12</b>PASS</li>
+<li class="v-info"><b>0</b>INFO</li>
+<li class="v-na"><b>5</b>N/A</li>
+</ul>
+</section>
+<section id="checks">
+<h2>Checks</h2>
+<table>
+<thead><tr><th>Display ID</th><th>Check ID</th><th>Title</th><th>Severity</th><th>Verdict</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td><a href="#ks-wl-001">NIS2-K8S-001</a></td><td><code>KS-WL-001</code></td><td>Container may run as root (no runAsNonRoot: true, or UID 0)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-002">NIS2-K8S-002</a></td><td><code>KS-WL-002</code></td><td>privileged: true or allowPrivilegeEscalation not false</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-003">NIS2-K8S-003</a></td><td><code>KS-WL-003</code></td><td>Capabilities not dropped (drop: [ALL] missing)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-004</td><td><code>KS-WL-004</code></td><td>hostIPC, hostPID or hostNetwork true</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-005">NIS2-K8S-005</a></td><td><code>KS-WL-005</code></td><td>/dev/shm from hostPath (or hostPath /dev)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-006</td><td><code>KS-WL-007</code></td><td>shareProcessNamespace: true on AI workload</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-008">NIS2-K8S-007</a></td><td><code>KS-WL-008</code></td><td>Root filesystem writable</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-009">NIS2-K8S-008</a></td><td><code>KS-WL-009</code></td><td>No seccompProfile: RuntimeDefault</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-wl-010">NIS2-K8S-009</a></td><td><code>KS-WL-010</code></td><td>Service account token auto-mounted</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-010</td><td><code>KS-WL-011</code></td><td>Secret values in plain env (HF_TOKEN, API keys)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-WL-011)</td></tr>
+<tr><td><a href="#ks-wl-012">NIS2-K8S-011</a></td><td><code>KS-WL-012</code></td><td>Image not pinned by digest</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>manual (kshield checks explain KS-WL-012)</td></tr>
+<tr><td><a href="#ks-wl-014">NIS2-K8S-012</a></td><td><code>KS-WL-014</code></td><td>GPU access via hostPath /dev/nvidia* or privileged, not device plugin</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-WL-014)</td></tr>
+<tr><td><a href="#ks-ai-001">NIS2-K8S-013</a></td><td><code>KS-AI-001</code></td><td>vLLM API without auth (--api-key / VLLM_API_KEY unset)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-001)</td></tr>
+<tr><td><a href="#ks-ai-002">NIS2-K8S-014</a></td><td><code>KS-AI-002</code></td><td>vLLM --trust-remote-code set</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-003">NIS2-K8S-015</a></td><td><code>KS-AI-003</code></td><td>Model load may use pickle</td><td>fail</td><td><span class="verdict v-warn">WARN</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-004">NIS2-K8S-016</a></td><td><code>KS-AI-004</code></td><td>Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-004)</td></tr>
+<tr><td><a href="#ks-ai-005">NIS2-K8S-017</a></td><td><code>KS-AI-005</code></td><td>Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td><a href="#ks-ai-006">NIS2-K8S-018</a></td><td><code>KS-AI-006</code></td><td>Ray TLS off (RAY_USE_TLS not 1)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-006)</td></tr>
+<tr><td>NIS2-K8S-019</td><td><code>KS-AI-007</code></td><td>Ollama 11434 exposed without an auth proxy</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-007)</td></tr>
+<tr><td><a href="#ks-ai-008">NIS2-K8S-020</a></td><td><code>KS-AI-008</code></td><td>Qdrant without API key or TLS</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>manual (kshield checks explain KS-AI-008)</td></tr>
+<tr><td>NIS2-K8S-021</td><td><code>KS-AI-009</code></td><td>Milvus authorization disabled</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-009)</td></tr>
+<tr><td><a href="#ks-net-001">NIS2-K8S-022</a></td><td><code>KS-NET-001</code></td><td>AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-023</td><td><code>KS-NET-002</code></td><td>Egress allow-list too broad (world, 0.0.0.0/0)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-024</td><td><code>KS-NET-003</code></td><td>Pod-to-pod encryption off (Cilium WireGuard/IPsec)</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-NET-003)</td></tr>
+<tr><td><a href="#ks-rt-001">NIS2-K8S-025</a></td><td><code>KS-RT-001</code></td><td>No runtime shell-exec guard on AI namespace (Tetragon)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td><a href="#ks-rt-002">NIS2-K8S-026</a></td><td><code>KS-RT-002</code></td><td>No runtime egress-connect guard on AI namespace (Tetragon)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td><a href="#ks-rt-003">NIS2-K8S-027</a></td><td><code>KS-RT-003</code></td><td>No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)</td><td>fail</td><td><span class="verdict v-fail">FAIL</span></td><td>guardrail policy (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-028</td><td><code>KS-PRE-001</code></td><td>Tetragon missing or unhealthy</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-001)</td></tr>
+<tr><td>NIS2-K8S-029</td><td><code>KS-PRE-002</code></td><td>CNI is not Cilium (L7/FQDN egress not possible)</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-002)</td></tr>
+<tr><td>NIS2-K8S-030</td><td><code>KS-PRE-003</code></td><td>Kyverno missing or unhealthy</td><td>fail</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-003)</td></tr>
+<tr><td>NIS2-K8S-031</td><td><code>KS-PRE-004</code></td><td>Node kernel lacks BPF LSM (--node-probe)</td><td>warn</td><td><span class="verdict v-na">N/A</span></td><td>manual (kshield checks explain KS-PRE-004)</td></tr>
+<tr><td>NIS2-K8S-032</td><td><code>KS-WL-015</code></td><td>hostPath volume outside /dev, /dev/shm and GPU devices</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-WL-015)</td></tr>
+<tr><td>NIS2-K8S-033</td><td><code>KS-WL-016</code></td><td>hostPort on an AI container</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>workload patch (kshield remediate)</td></tr>
+<tr><td>NIS2-K8S-034</td><td><code>KS-AI-010</code></td><td>Inference engine other than vLLM without API key or gateway auth evidence</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-010)</td></tr>
+<tr><td>NIS2-K8S-035</td><td><code>KS-AI-011</code></td><td>Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)</td><td>warn</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-011)</td></tr>
+<tr><td>NIS2-K8S-036</td><td><code>KS-AI-012</code></td><td>Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-012)</td></tr>
+<tr><td><a href="#ks-net-004">NIS2-K8S-037</a></td><td><code>KS-NET-004</code></td><td>AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)</td><td>warn</td><td><span class="verdict v-warn">WARN</span></td><td>manual (kshield checks explain KS-NET-004)</td></tr>
+<tr><td>NIS2-K8S-038</td><td><code>KS-AI-013</code></td><td>HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)</td><td>fail</td><td><span class="verdict v-pass">PASS</span></td><td>manual (kshield checks explain KS-AI-013)</td></tr>
+</tbody>
+</table>
+</section>
+<section id="findings">
+<h2>Findings</h2>
+<article class="check v-fail" id="ks-wl-001">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-001 <code>KS-WL-001</code> Container may run as root (no runAsNonRoot: true, or UID 0)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/runAsNonRoot</code></dd>
+<dt>message</dt><dd>container may run as root: runAsNonRoot is not true and runAsUser is not set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-002">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-002 <code>KS-WL-002</code> privileged: true or allowPrivilegeEscalation not false</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/allowPrivilegeEscalation</code></dd>
+<dt>message</dt><dd>allowPrivilegeEscalation is not set to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-003">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-003 <code>KS-WL-003</code> Capabilities not dropped (drop: [ALL] missing)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/capabilities</code></dd>
+<dt>message</dt><dd>capabilities.drop does not contain ALL</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-005">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-005 <code>KS-WL-005</code> /dev/shm from hostPath (or hostPath /dev)</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/volumes/1</code></dd>
+<dt>message</dt><dd>volume &#34;shm&#34; mounts hostPath /dev/shm</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-wl-008">
+<h3><span class="verdict v-warn">WARN</span> NIS2-K8S-007 <code>KS-WL-008</code> Root filesystem writable</h3>
+<p class="meta">severity warn | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/readOnlyRootFilesystem</code></dd>
+<dt>message</dt><dd>readOnlyRootFilesystem is not set to true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-009">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-008 <code>KS-WL-009</code> No seccompProfile: RuntimeDefault</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/securityContext/seccompProfile</code></dd>
+<dt>message</dt><dd>seccompProfile is not set: the container runs without a seccomp profile</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-010">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-009 <code>KS-WL-010</code> Service account token auto-mounted</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 11.2.2(a)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>assign and revoke access rights based on the principles of need-to-know, least privilege and separation of duties;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/automountServiceAccountToken</code></dd>
+<dt>message</dt><dd>automountServiceAccountToken is not false on the pod, and ServiceAccount &#34;default&#34; in namespace &#34;ai-inference&#34; does not set it to false</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-wl-012">
+<h3><span class="verdict v-warn">WARN</span> NIS2-K8S-011 <code>KS-WL-012</code> Image not pinned by digest</h3>
+<p class="meta">severity warn | fix: manual (kshield checks explain KS-WL-012)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(e)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>security in network and information systems acquisition, development and maintenance, including vulnerability handling and disclosure;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.6.1(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>security patches come from trusted sources and are checked for integrity;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;qdrant/qdrant:v1.19.2&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;vllm/vllm-openai:v0.31.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0-gpu&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/image</code></dd>
+<dt>message</dt><dd>image &#34;rayproject/ray:2.50.0&#34; has no @sha256: digest</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-wl-014">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-012 <code>KS-WL-014</code> GPU access via hostPath /dev/nvidia* or privileged, not device plugin</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-WL-014)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/volumes/0</code></dd>
+<dt>message</dt><dd>volume &#34;nvidia0&#34; mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits)</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-001">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-013 <code>KS-AI-001</code> vLLM API without auth (--api-key / VLLM_API_KEY unset)</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-001)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 11.1.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>ensure that access is only granted to users that have been adequately authenticated.</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-002">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-014 <code>KS-AI-002</code> vLLM --trust-remote-code set</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(e)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>security in network and information systems acquisition, development and maintenance, including vulnerability handling and disclosure;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.9.1</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>The relevant entities shall protect their network and information systems against malicious and unauthorised software.</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>vLLM runs with --trust-remote-code: it executes code from the model repository</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-ai-003">
+<h3><span class="verdict v-warn">WARN</span> NIS2-K8S-015 <code>KS-AI-003</code> Model load may use pickle</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(e)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>security in network and information systems acquisition, development and maintenance, including vulnerability handling and disclosure;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.9.1</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>The relevant entities shall protect their network and information systems against malicious and unauthorised software.</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>container</dt><dd>vllm</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/args</code></dd>
+<dt>message</dt><dd>no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors)</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-004">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-016 <code>KS-AI-004</code> Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-004)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.7.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>configure controls to prevent accesses and network communication not required for the operation of the relevant entities;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 11.1.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>ensure that access is only granted to users that have been adequately authenticated.</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Service/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/spec/type</code></dd>
+<dt>message</dt><dd>Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:43</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-005">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-017 <code>KS-AI-005</code> Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP</h3>
+<p class="meta">severity fail | fix: workload patch (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.7.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>configure controls to prevent accesses and network communication not required for the operation of the relevant entities;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 11.1.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>ensure that access is only granted to users that have been adequately authenticated.</blockquote>
+</div>
+<h4>Findings (1)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/serviceType</code></dd>
+<dt>message</dt><dd>head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-006">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-018 <code>KS-AI-006</code> Ray TLS off (RAY_USE_TLS not 1)</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-006)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(h)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>policies and procedures regarding the use of cryptography and, where appropriate, encryption;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 9.2(a)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>in accordance with the relevant entities’ classification of assets, the type, strength and quality of the cryptographic measures required to protect the relevant entities’ assets, including data at rest and data in transit;</blockquote>
+</div>
+<h4>Findings (3)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/0/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>container</dt><dd>ray-worker</dd>
+<dt>path</dt><dd><code>/spec/workerGroupSpecs/1/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>container</dt><dd>ray-head</dd>
+<dt>path</dt><dd><code>/spec/headGroupSpec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>RAY_USE_TLS is not set: Ray traffic is not encrypted</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-ai-008">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-020 <code>KS-AI-008</code> Qdrant without API key or TLS</h3>
+<p class="meta">severity fail | fix: manual (kshield checks explain KS-AI-008)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(h)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>policies and procedures regarding the use of cryptography and, where appropriate, encryption;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 11.1.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>ensure that access is only granted to users that have been adequately authenticated.</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 9.2(a)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>in accordance with the relevant entities’ classification of assets, the type, strength and quality of the cryptographic measures required to protect the relevant entities’ assets, including data at rest and data in transit;</blockquote>
+</div>
+<h4>Findings (2)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>container</dt><dd>qdrant</dd>
+<dt>path</dt><dd><code>/spec/template/spec/containers/0/env</code></dd>
+<dt>message</dt><dd>Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-net-001">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-022 <code>KS-NET-001</code> AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.7.2(c)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>configure controls to prevent accesses and network communication not required for the operation of the relevant entities;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.8.2(e)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>restrict access and communications between and within zones to those necessary for the operation of the relevant entities or for safety;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy puts this workload under egress default-deny</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-001">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-025 <code>KS-RT-001</code> No runtime shell-exec guard on AI namespace (Tetragon)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(b)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>incident handling;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 3.2.1</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>The relevant entities shall lay down procedures and use tools to monitor and log activities on their network and information systems to detect events that could be considered as incidents and respond accordingly to mitigate the impact.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon shell-exec guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-002">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-026 <code>KS-RT-002</code> No runtime egress-connect guard on AI namespace (Tetragon)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(b)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>incident handling;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 3.2.1</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>The relevant entities shall lay down procedures and use tools to monitor and log activities on their network and information systems to detect events that could be considered as incidents and respond accordingly to mitigate the impact.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no Tetragon egress-connect guard covers this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-fail" id="ks-rt-003">
+<h3><span class="verdict v-fail">FAIL</span> NIS2-K8S-027 <code>KS-RT-003</code> No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)</h3>
+<p class="meta">severity fail | fix: guardrail policy (kshield remediate)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.3.2(b)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-fail">FAIL</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no kshield admission guard (Kyverno) covers this namespace</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+<article class="check v-warn" id="ks-net-004">
+<h3><span class="verdict v-warn">WARN</span> NIS2-K8S-037 <code>KS-NET-004</code> AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)</h3>
+<p class="meta">severity warn | fix: manual (kshield checks explain KS-NET-004)</p>
+<h4>Supports evidence for</h4>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(i)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>human resources security, access control policies and asset management;</blockquote>
+</div>
+<div class="ref">
+<p><b>NIS2 Art. 21(2)(g)</b> - NIS2, CELEX 32022L2555, <a href="https://eur-lex.europa.eu/eli/dir/2022/2555/oj">https://eur-lex.europa.eu/eli/dir/2022/2555/oj</a></p>
+<blockquote>basic cyber hygiene practices and cybersecurity training;</blockquote>
+</div>
+<div class="ref">
+<p><b>CIR (EU) 2024/2690 Annex 6.8.2(e)</b> - CIR (EU) 2024/2690, CELEX 32024R2690, <a href="https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj">https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj</a></p>
+<blockquote>restrict access and communications between and within zones to those necessary for the operation of the relevant entities or for safety;</blockquote>
+</div>
+<h4>Findings (5)</h4>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/qdrant</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:57</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>Deployment/ai-inference/vllm</code>
+<dl>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:1</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>cpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>gpu</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+<div class="finding">
+<span class="verdict v-warn">WARN</span> <code>RayCluster/ai-inference/rc</code>
+<dl>
+<dt>group</dt><dd>head</dd>
+<dt>path</dt><dd><code>/metadata/namespace</code></dd>
+<dt>message</dt><dd>no NetworkPolicy or Cilium policy restricts ingress to this workload</dd>
+<dt>source</dt><dd><code>test/corpus/baseline/toxic/input.yaml:107</code></dd>
+</dl>
+</div>
+</article>
+</section>
+<section id="errors">
+<h2>Errors</h2>
+<p>No errors.</p>
+</section>
+</body>
+</html>

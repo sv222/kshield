@@ -1,0 +1,135 @@
+kshield 0.0.0-deterministic | profile nis2 v1 | manifest scan | 5 objects, 5 AI workloads
+
+[FAIL] NIS2-K8S-001 KS-WL-001 Container may run as root (no runAsNonRoot: true, or UID 0)
+       FAIL Deployment/ai-inference/qdrant container=qdrant: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL Deployment/ai-inference/vllm container=vllm: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: container may run as root: runAsNonRoot is not true and runAsUser is not set
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[FAIL] NIS2-K8S-002 KS-WL-002 privileged: true or allowPrivilegeEscalation not false
+       FAIL Deployment/ai-inference/qdrant container=qdrant: allowPrivilegeEscalation is not set to false
+       FAIL Deployment/ai-inference/vllm container=vllm: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: allowPrivilegeEscalation is not set to false
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: allowPrivilegeEscalation is not set to false
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[FAIL] NIS2-K8S-003 KS-WL-003 Capabilities not dropped (drop: [ALL] missing)
+       FAIL Deployment/ai-inference/qdrant container=qdrant: capabilities.drop does not contain ALL
+       FAIL Deployment/ai-inference/vllm container=vllm: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: capabilities.drop does not contain ALL
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: capabilities.drop does not contain ALL
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[PASS] NIS2-K8S-004 KS-WL-004 hostIPC, hostPID or hostNetwork true
+[FAIL] NIS2-K8S-005 KS-WL-005 /dev/shm from hostPath (or hostPath /dev)
+       FAIL Deployment/ai-inference/vllm: volume "shm" mounts hostPath /dev/shm
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g)
+[PASS] NIS2-K8S-006 KS-WL-007 shareProcessNamespace: true on AI workload
+[WARN] NIS2-K8S-007 KS-WL-008 Root filesystem writable
+       WARN Deployment/ai-inference/qdrant container=qdrant: readOnlyRootFilesystem is not set to true
+       WARN Deployment/ai-inference/vllm container=vllm: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=cpu container=ray-worker: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=gpu container=ray-worker: readOnlyRootFilesystem is not set to true
+       WARN RayCluster/ai-inference/rc group=head container=ray-head: readOnlyRootFilesystem is not set to true
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[FAIL] NIS2-K8S-008 KS-WL-009 No seccompProfile: RuntimeDefault
+       FAIL Deployment/ai-inference/qdrant container=qdrant: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL Deployment/ai-inference/vllm container=vllm: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: seccompProfile is not set: the container runs without a seccomp profile
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: seccompProfile is not set: the container runs without a seccomp profile
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[FAIL] NIS2-K8S-009 KS-WL-010 Service account token auto-mounted
+       FAIL Deployment/ai-inference/qdrant: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL Deployment/ai-inference/vllm: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=cpu: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=gpu: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       FAIL RayCluster/ai-inference/rc group=head: automountServiceAccountToken is not false on the pod, and ServiceAccount "default" in namespace "ai-inference" does not set it to false
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), CIR (EU) 2024/2690 Annex 11.2.2(a)
+[PASS] NIS2-K8S-010 KS-WL-011 Secret values in plain env (HF_TOKEN, API keys)
+[WARN] NIS2-K8S-011 KS-WL-012 Image not pinned by digest
+       WARN Deployment/ai-inference/qdrant container=qdrant: image "qdrant/qdrant:v1.19.2" has no @sha256: digest
+       WARN Deployment/ai-inference/vllm container=vllm: image "vllm/vllm-openai:v0.31.0" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=cpu container=ray-worker: image "rayproject/ray:2.50.0" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=gpu container=ray-worker: image "rayproject/ray:2.50.0-gpu" has no @sha256: digest
+       WARN RayCluster/ai-inference/rc group=head container=ray-head: image "rayproject/ray:2.50.0" has no @sha256: digest
+       fix: manual (kshield checks explain KS-WL-012) | supports evidence for: NIS2 Art. 21(2)(e), CIR (EU) 2024/2690 Annex 6.6.1(c)
+[FAIL] NIS2-K8S-012 KS-WL-014 GPU access via hostPath /dev/nvidia* or privileged, not device plugin
+       FAIL RayCluster/ai-inference/rc group=gpu: volume "nvidia0" mounts hostPath /dev/nvidia0 (request GPUs through the device plugin with nvidia.com/gpu limits)
+       fix: manual (kshield checks explain KS-WL-014) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g)
+[FAIL] NIS2-K8S-013 KS-AI-001 vLLM API without auth (--api-key / VLLM_API_KEY unset)
+       FAIL Deployment/ai-inference/vllm container=vllm: vLLM serves without authentication: neither --api-key nor the VLLM_API_KEY env var is set
+       fix: manual (kshield checks explain KS-AI-001) | supports evidence for: NIS2 Art. 21(2)(i), CIR (EU) 2024/2690 Annex 11.1.2(c)
+[FAIL] NIS2-K8S-014 KS-AI-002 vLLM --trust-remote-code set
+       FAIL Deployment/ai-inference/vllm container=vllm: vLLM runs with --trust-remote-code: it executes code from the model repository
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(e), CIR (EU) 2024/2690 Annex 6.9.1
+[WARN] NIS2-K8S-015 KS-AI-003 Model load may use pickle
+       WARN Deployment/ai-inference/vllm container=vllm: no --load-format: vLLM falls back to .bin and .pt files when the model has no safetensors weights (set --load-format safetensors)
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(e), CIR (EU) 2024/2690 Annex 6.9.1
+[FAIL] NIS2-K8S-016 KS-AI-004 Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth
+       FAIL Service/ai-inference/vllm: Service type NodePort exposes Deployment/ai-inference/vllm outside the cluster: vLLM container vllm has no --api-key and no VLLM_API_KEY
+       fix: manual (kshield checks explain KS-AI-004) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.7.2(c), CIR (EU) 2024/2690 Annex 11.1.2(c)
+[FAIL] NIS2-K8S-017 KS-AI-005 Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP
+       FAIL RayCluster/ai-inference/rc group=head: head serviceType is NodePort: Ray GCS 6379, client 10001 and dashboard 8265 are reachable outside the cluster
+       fix: workload patch (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.7.2(c), CIR (EU) 2024/2690 Annex 11.1.2(c)
+[FAIL] NIS2-K8S-018 KS-AI-006 Ray TLS off (RAY_USE_TLS not 1)
+       FAIL RayCluster/ai-inference/rc group=cpu container=ray-worker: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       FAIL RayCluster/ai-inference/rc group=gpu container=ray-worker: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       FAIL RayCluster/ai-inference/rc group=head container=ray-head: RAY_USE_TLS is not set: Ray traffic is not encrypted
+       fix: manual (kshield checks explain KS-AI-006) | supports evidence for: NIS2 Art. 21(2)(h), CIR (EU) 2024/2690 Annex 9.2(a)
+[PASS] NIS2-K8S-019 KS-AI-007 Ollama 11434 exposed without an auth proxy
+[FAIL] NIS2-K8S-020 KS-AI-008 Qdrant without API key or TLS
+       FAIL Deployment/ai-inference/qdrant container=qdrant: Qdrant has no API key: QDRANT__SERVICE__API_KEY is not set and no mounted ConfigMap or Secret sets service.api_key
+       FAIL Deployment/ai-inference/qdrant container=qdrant: Qdrant serves without TLS: QDRANT__SERVICE__ENABLE_TLS is not true and no mounted ConfigMap or Secret sets service.enable_tls: true
+       fix: manual (kshield checks explain KS-AI-008) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(h), CIR (EU) 2024/2690 Annex 11.1.2(c), CIR (EU) 2024/2690 Annex 9.2(a)
+[PASS] NIS2-K8S-021 KS-AI-009 Milvus authorization disabled
+[FAIL] NIS2-K8S-022 KS-NET-001 AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)
+       FAIL Deployment/ai-inference/qdrant: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL Deployment/ai-inference/vllm: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=cpu: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=gpu: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       FAIL RayCluster/ai-inference/rc group=head: no NetworkPolicy or Cilium policy puts this workload under egress default-deny
+       fix: guardrail policy (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.7.2(c), CIR (EU) 2024/2690 Annex 6.8.2(e)
+[PASS] NIS2-K8S-023 KS-NET-002 Egress allow-list too broad (world, 0.0.0.0/0)
+[N/A]  NIS2-K8S-024 KS-NET-003 Pod-to-pod encryption off (Cilium WireGuard/IPsec)
+[FAIL] NIS2-K8S-025 KS-RT-001 No runtime shell-exec guard on AI namespace (Tetragon)
+       FAIL Deployment/ai-inference/qdrant: no Tetragon shell-exec guard covers this workload
+       FAIL Deployment/ai-inference/vllm: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=cpu: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=gpu: no Tetragon shell-exec guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=head: no Tetragon shell-exec guard covers this workload
+       fix: guardrail policy (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(b), CIR (EU) 2024/2690 Annex 3.2.1
+[FAIL] NIS2-K8S-026 KS-RT-002 No runtime egress-connect guard on AI namespace (Tetragon)
+       FAIL Deployment/ai-inference/qdrant: no Tetragon egress-connect guard covers this workload
+       FAIL Deployment/ai-inference/vllm: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=cpu: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=gpu: no Tetragon egress-connect guard covers this workload
+       FAIL RayCluster/ai-inference/rc group=head: no Tetragon egress-connect guard covers this workload
+       fix: guardrail policy (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(b), CIR (EU) 2024/2690 Annex 3.2.1
+[FAIL] NIS2-K8S-027 KS-RT-003 No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)
+       FAIL Deployment/ai-inference/qdrant: no kshield admission guard (Kyverno) covers this namespace
+       FAIL Deployment/ai-inference/vllm: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=cpu: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=gpu: no kshield admission guard (Kyverno) covers this namespace
+       FAIL RayCluster/ai-inference/rc group=head: no kshield admission guard (Kyverno) covers this namespace
+       fix: guardrail policy (kshield remediate) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.3.2(b)
+[N/A]  NIS2-K8S-028 KS-PRE-001 Tetragon missing or unhealthy
+[N/A]  NIS2-K8S-029 KS-PRE-002 CNI is not Cilium (L7/FQDN egress not possible)
+[N/A]  NIS2-K8S-030 KS-PRE-003 Kyverno missing or unhealthy
+[N/A]  NIS2-K8S-031 KS-PRE-004 Node kernel lacks BPF LSM (--node-probe)
+[PASS] NIS2-K8S-032 KS-WL-015 hostPath volume outside /dev, /dev/shm and GPU devices
+[PASS] NIS2-K8S-033 KS-WL-016 hostPort on an AI container
+[PASS] NIS2-K8S-034 KS-AI-010 Inference engine other than vLLM without API key or gateway auth evidence
+[PASS] NIS2-K8S-035 KS-AI-011 Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
+[PASS] NIS2-K8S-036 KS-AI-012 Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
+[WARN] NIS2-K8S-037 KS-NET-004 AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)
+       WARN Deployment/ai-inference/qdrant: no NetworkPolicy or Cilium policy restricts ingress to this workload
+       WARN Deployment/ai-inference/vllm: no NetworkPolicy or Cilium policy restricts ingress to this workload
+       WARN RayCluster/ai-inference/rc group=cpu: no NetworkPolicy or Cilium policy restricts ingress to this workload
+       WARN RayCluster/ai-inference/rc group=gpu: no NetworkPolicy or Cilium policy restricts ingress to this workload
+       WARN RayCluster/ai-inference/rc group=head: no NetworkPolicy or Cilium policy restricts ingress to this workload
+       fix: manual (kshield checks explain KS-NET-004) | supports evidence for: NIS2 Art. 21(2)(i), NIS2 Art. 21(2)(g), CIR (EU) 2024/2690 Annex 6.8.2(e)
+[PASS] NIS2-K8S-038 KS-AI-013 HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)
+
+Summary: 17 FAIL, 4 WARN, 12 PASS, 0 INFO, 5 N/A
