@@ -45,7 +45,7 @@ func CheckProfile(id string) error {
 	if err != nil {
 		return err
 	}
-	return validate(p, check.All())
+	return validate(p, profileChecks(p, check.All()))
 }
 
 func Cluster(ctx context.Context, opt ClusterOptions) (*report.Report, []load.Object, error) {
@@ -101,7 +101,7 @@ func ClusterObjectsInput(objs []load.Object, facts *check.ClusterFacts, opt Clus
 	if err != nil {
 		return nil, nil, err
 	}
-	return clusterObjectsInput(objs, facts, opt, p, check.All())
+	return clusterObjectsInput(objs, facts, opt, p, profileChecks(p, check.All()))
 }
 
 func clusterObjects(objs []load.Object, facts *check.ClusterFacts, opt ClusterOptions, p *profile.Profile, checks []check.Check) (*report.Report, error) {

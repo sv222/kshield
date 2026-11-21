@@ -338,9 +338,13 @@ func TestManifestProfileValidation(t *testing.T) {
 	path := writeFile(t, t.TempDir(), "in.yaml", configMap)
 	noop := func(*check.Input) check.Result { return check.Result{Applicable: true} }
 
-	missing := []check.Check{{ID: "KS-T-099", Title: "x", Tier: check.Manifest, Fix: check.FixPatch, Run: noop}}
-	if _, err := manifest(Options{Inputs: []string{path}}, testProfile(t), missing); err == nil || !strings.Contains(err.Error(), "KS-T-099") {
-		t.Errorf("check without profile entry: %v", err)
+	missing := []check.Check{
+		{ID: "KS-T-099", Title: "x", Tier: check.Manifest, Fix: check.FixPatch, Run: noop},
+		{ID: "KS-T-001", Title: "y", Tier: check.Manifest, Fix: check.FixPatch, Run: noop},
+	}
+	got := profileChecks(testProfile(t), missing)
+	if len(got) != 1 || got[0].ID != "KS-T-001" {
+		t.Errorf("profileChecks = %+v, want only KS-T-001", got)
 	}
 
 	badRef, err := profile.Parse([]byte("id: bad\nversion: 1\ntitle: t\nchecks:\n  KS-T-001: {display: D, severity: fail, refs: [no-such-excerpt]}\n"))

@@ -42,7 +42,17 @@ func ManifestInput(opt Options) (*report.Report, *check.Input, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return manifestInput(opt, p, check.All())
+	return manifestInput(opt, p, profileChecks(p, check.All()))
+}
+
+func profileChecks(p *profile.Profile, checks []check.Check) []check.Check {
+	out := make([]check.Check, 0, len(checks))
+	for _, c := range checks {
+		if _, ok := p.Checks[c.ID]; ok {
+			out = append(out, c)
+		}
+	}
+	return out
 }
 
 func manifest(opt Options, p *profile.Profile, checks []check.Check) (*report.Report, error) {
