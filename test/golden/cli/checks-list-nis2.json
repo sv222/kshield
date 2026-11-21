@@ -1,0 +1,501 @@
+[
+  {
+    "id": "KS-WL-001",
+    "display": "NIS2-K8S-001",
+    "title": "Container may run as root (no runAsNonRoot: true, or UID 0)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-002",
+    "display": "NIS2-K8S-002",
+    "title": "privileged: true or allowPrivilegeEscalation not false",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-003",
+    "display": "NIS2-K8S-003",
+    "title": "Capabilities not dropped (drop: [ALL] missing)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-004",
+    "display": "NIS2-K8S-004",
+    "title": "hostIPC, hostPID or hostNetwork true",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-8-1"
+    ]
+  },
+  {
+    "id": "KS-WL-005",
+    "display": "NIS2-K8S-005",
+    "title": "/dev/shm from hostPath (or hostPath /dev)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g"
+    ]
+  },
+  {
+    "id": "KS-WL-006",
+    "display": "-",
+    "title": "Memory emptyDir for shm without sizeLimit",
+    "severity": "-",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": []
+  },
+  {
+    "id": "KS-WL-007",
+    "display": "NIS2-K8S-006",
+    "title": "shareProcessNamespace: true on AI workload",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g"
+    ]
+  },
+  {
+    "id": "KS-WL-008",
+    "display": "NIS2-K8S-007",
+    "title": "Root filesystem writable",
+    "severity": "warn",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-009",
+    "display": "NIS2-K8S-008",
+    "title": "No seccompProfile: RuntimeDefault",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-WL-010",
+    "display": "NIS2-K8S-009",
+    "title": "Service account token auto-mounted",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "cir-annex-11-2-2-a"
+    ]
+  },
+  {
+    "id": "KS-WL-011",
+    "display": "NIS2-K8S-010",
+    "title": "Secret values in plain env (HF_TOKEN, API keys)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "cir-annex-11-2-2-a"
+    ]
+  },
+  {
+    "id": "KS-WL-012",
+    "display": "NIS2-K8S-011",
+    "title": "Image not pinned by digest",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-e",
+      "cir-annex-6-6-1-c"
+    ]
+  },
+  {
+    "id": "KS-WL-013",
+    "display": "-",
+    "title": "No memory limit on AI workload",
+    "severity": "-",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": []
+  },
+  {
+    "id": "KS-WL-014",
+    "display": "NIS2-K8S-012",
+    "title": "GPU access via hostPath /dev/nvidia* or privileged, not device plugin",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g"
+    ]
+  },
+  {
+    "id": "KS-AI-001",
+    "display": "NIS2-K8S-013",
+    "title": "vLLM API without auth (--api-key / VLLM_API_KEY unset)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-002",
+    "display": "NIS2-K8S-014",
+    "title": "vLLM --trust-remote-code set",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-e",
+      "cir-annex-6-9-1"
+    ]
+  },
+  {
+    "id": "KS-AI-003",
+    "display": "NIS2-K8S-015",
+    "title": "Model load may use pickle",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-e",
+      "cir-annex-6-9-1"
+    ]
+  },
+  {
+    "id": "KS-AI-004",
+    "display": "NIS2-K8S-016",
+    "title": "Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-005",
+    "display": "NIS2-K8S-017",
+    "title": "Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-006",
+    "display": "NIS2-K8S-018",
+    "title": "Ray TLS off (RAY_USE_TLS not 1)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-h",
+      "cir-annex-9-2-a"
+    ]
+  },
+  {
+    "id": "KS-AI-007",
+    "display": "NIS2-K8S-019",
+    "title": "Ollama 11434 exposed without an auth proxy",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-008",
+    "display": "NIS2-K8S-020",
+    "title": "Qdrant without API key or TLS",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-h",
+      "cir-annex-11-1-2-c",
+      "cir-annex-9-2-a"
+    ]
+  },
+  {
+    "id": "KS-AI-009",
+    "display": "NIS2-K8S-021",
+    "title": "Milvus authorization disabled",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-NET-001",
+    "display": "NIS2-K8S-022",
+    "title": "AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c",
+      "cir-annex-6-8-2-e"
+    ]
+  },
+  {
+    "id": "KS-NET-002",
+    "display": "NIS2-K8S-023",
+    "title": "Egress allow-list too broad (world, 0.0.0.0/0)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-8-2-e"
+    ]
+  },
+  {
+    "id": "KS-NET-003",
+    "display": "NIS2-K8S-024",
+    "title": "Pod-to-pod encryption off (Cilium WireGuard/IPsec)",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-h",
+      "cir-annex-9-2-a"
+    ]
+  },
+  {
+    "id": "KS-RT-001",
+    "display": "NIS2-K8S-025",
+    "title": "No runtime shell-exec guard on AI namespace (Tetragon)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "nis2-art21-2-b",
+      "cir-annex-3-2-1"
+    ]
+  },
+  {
+    "id": "KS-RT-002",
+    "display": "NIS2-K8S-026",
+    "title": "No runtime egress-connect guard on AI namespace (Tetragon)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "nis2-art21-2-b",
+      "cir-annex-3-2-1"
+    ]
+  },
+  {
+    "id": "KS-RT-003",
+    "display": "NIS2-K8S-027",
+    "title": "No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "policy",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-PRE-001",
+    "display": "NIS2-K8S-028",
+    "title": "Tetragon missing or unhealthy",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-b",
+      "cir-annex-3-2-1"
+    ]
+  },
+  {
+    "id": "KS-PRE-002",
+    "display": "NIS2-K8S-029",
+    "title": "CNI is not Cilium (L7/FQDN egress not possible)",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-8-1"
+    ]
+  },
+  {
+    "id": "KS-PRE-003",
+    "display": "NIS2-K8S-030",
+    "title": "Kyverno missing or unhealthy",
+    "severity": "fail",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-b"
+    ]
+  },
+  {
+    "id": "KS-PRE-004",
+    "display": "NIS2-K8S-031",
+    "title": "Node kernel lacks BPF LSM (--node-probe)",
+    "severity": "warn",
+    "tier": "cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-b",
+      "cir-annex-3-2-1"
+    ]
+  },
+  {
+    "id": "KS-WL-015",
+    "display": "NIS2-K8S-032",
+    "title": "hostPath volume outside /dev, /dev/shm and GPU devices",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g"
+    ]
+  },
+  {
+    "id": "KS-WL-016",
+    "display": "NIS2-K8S-033",
+    "title": "hostPort on an AI container",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "patch",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-010",
+    "display": "NIS2-K8S-034",
+    "title": "Inference engine other than vLLM without API key or gateway auth evidence",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "cir-annex-11-1-2-c"
+    ]
+  },
+  {
+    "id": "KS-AI-011",
+    "display": "NIS2-K8S-035",
+    "title": "Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)",
+    "severity": "warn",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-3-2-a"
+    ]
+  },
+  {
+    "id": "KS-AI-012",
+    "display": "NIS2-K8S-036",
+    "title": "Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)",
+    "severity": "fail",
+    "tier": "manifest",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-d",
+      "nis2-art21-2-e"
+    ]
+  },
+  {
+    "id": "KS-NET-004",
+    "display": "NIS2-K8S-037",
+    "title": "AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)",
+    "severity": "warn",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-8-2-e"
+    ]
+  },
+  {
+    "id": "KS-AI-013",
+    "display": "NIS2-K8S-038",
+    "title": "HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)",
+    "severity": "fail",
+    "tier": "manifest+cluster",
+    "fix": "manual",
+    "refs": [
+      "nis2-art21-2-i",
+      "nis2-art21-2-g",
+      "cir-annex-6-7-2-c",
+      "cir-annex-11-1-2-c"
+    ]
+  }
+]

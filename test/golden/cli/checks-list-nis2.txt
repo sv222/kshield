@@ -1,0 +1,41 @@
+DISPLAY       CHECK       SEVERITY  TIER              FIX     TITLE
+NIS2-K8S-001  KS-WL-001   fail      manifest+cluster  patch   Container may run as root (no runAsNonRoot: true, or UID 0)
+NIS2-K8S-002  KS-WL-002   fail      manifest+cluster  patch   privileged: true or allowPrivilegeEscalation not false
+NIS2-K8S-003  KS-WL-003   fail      manifest+cluster  patch   Capabilities not dropped (drop: [ALL] missing)
+NIS2-K8S-004  KS-WL-004   fail      manifest+cluster  patch   hostIPC, hostPID or hostNetwork true
+NIS2-K8S-005  KS-WL-005   fail      manifest+cluster  patch   /dev/shm from hostPath (or hostPath /dev)
+-             KS-WL-006   -         manifest+cluster  patch   Memory emptyDir for shm without sizeLimit
+NIS2-K8S-006  KS-WL-007   fail      manifest+cluster  patch   shareProcessNamespace: true on AI workload
+NIS2-K8S-007  KS-WL-008   warn      manifest+cluster  patch   Root filesystem writable
+NIS2-K8S-008  KS-WL-009   fail      manifest+cluster  patch   No seccompProfile: RuntimeDefault
+NIS2-K8S-009  KS-WL-010   fail      manifest+cluster  patch   Service account token auto-mounted
+NIS2-K8S-010  KS-WL-011   fail      manifest          manual  Secret values in plain env (HF_TOKEN, API keys)
+NIS2-K8S-011  KS-WL-012   warn      manifest          manual  Image not pinned by digest
+-             KS-WL-013   -         manifest          manual  No memory limit on AI workload
+NIS2-K8S-012  KS-WL-014   fail      manifest+cluster  manual  GPU access via hostPath /dev/nvidia* or privileged, not device plugin
+NIS2-K8S-013  KS-AI-001   fail      manifest          manual  vLLM API without auth (--api-key / VLLM_API_KEY unset)
+NIS2-K8S-014  KS-AI-002   fail      manifest          patch   vLLM --trust-remote-code set
+NIS2-K8S-015  KS-AI-003   fail      manifest          patch   Model load may use pickle
+NIS2-K8S-016  KS-AI-004   fail      manifest+cluster  manual  Inference API exposed outside cluster (Service LoadBalancer/NodePort, Ingress) without auth
+NIS2-K8S-017  KS-AI-005   fail      manifest+cluster  patch   Ray GCS 6379, client 10001 or dashboard 8265 exposed beyond ClusterIP
+NIS2-K8S-018  KS-AI-006   fail      manifest+cluster  manual  Ray TLS off (RAY_USE_TLS not 1)
+NIS2-K8S-019  KS-AI-007   fail      manifest+cluster  manual  Ollama 11434 exposed without an auth proxy
+NIS2-K8S-020  KS-AI-008   fail      manifest+cluster  manual  Qdrant without API key or TLS
+NIS2-K8S-021  KS-AI-009   fail      manifest+cluster  manual  Milvus authorization disabled
+NIS2-K8S-022  KS-NET-001  fail      manifest+cluster  policy  AI namespace has no default-deny egress (no CNP/NetworkPolicy in input or cluster)
+NIS2-K8S-023  KS-NET-002  fail      manifest+cluster  policy  Egress allow-list too broad (world, 0.0.0.0/0)
+NIS2-K8S-024  KS-NET-003  fail      cluster           manual  Pod-to-pod encryption off (Cilium WireGuard/IPsec)
+NIS2-K8S-025  KS-RT-001   fail      manifest+cluster  policy  No runtime shell-exec guard on AI namespace (Tetragon)
+NIS2-K8S-026  KS-RT-002   fail      manifest+cluster  policy  No runtime egress-connect guard on AI namespace (Tetragon)
+NIS2-K8S-027  KS-RT-003   fail      manifest+cluster  policy  No admission guard for root, host namespaces, shm hostPath, pickle load (Kyverno)
+NIS2-K8S-028  KS-PRE-001  fail      cluster           manual  Tetragon missing or unhealthy
+NIS2-K8S-029  KS-PRE-002  fail      cluster           manual  CNI is not Cilium (L7/FQDN egress not possible)
+NIS2-K8S-030  KS-PRE-003  fail      cluster           manual  Kyverno missing or unhealthy
+NIS2-K8S-031  KS-PRE-004  warn      cluster           manual  Node kernel lacks BPF LSM (--node-probe)
+NIS2-K8S-032  KS-WL-015   fail      manifest+cluster  manual  hostPath volume outside /dev, /dev/shm and GPU devices
+NIS2-K8S-033  KS-WL-016   fail      manifest+cluster  patch   hostPort on an AI container
+NIS2-K8S-034  KS-AI-010   warn      manifest          manual  Inference engine other than vLLM without API key or gateway auth evidence
+NIS2-K8S-035  KS-AI-011   warn      manifest          manual  Debug or insecure flags on an inference engine (--debug, --allow-http, OLLAMA_DEBUG, OLLAMA_ORIGINS *)
+NIS2-K8S-036  KS-AI-012   fail      manifest          manual  Unsafe model source or format on an inference engine (--trust-remote-code, pickle or Keras file, s3:// or gs:// source)
+NIS2-K8S-037  KS-NET-004  warn      manifest+cluster  manual  AI workload has no ingress isolation (no NetworkPolicy or Cilium policy restricts ingress)
+NIS2-K8S-038  KS-AI-013   fail      manifest+cluster  manual  HTTPRoute exposes an AI engine Service without auth evidence (Envoy Gateway SecurityPolicy, Istio, Kong, auth filter)

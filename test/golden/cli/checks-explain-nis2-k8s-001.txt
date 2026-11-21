@@ -1,0 +1,26 @@
+KS-WL-001 (NIS2-K8S-001)
+Title:    Container may run as root (no runAsNonRoot: true, or UID 0)
+Tier:     manifest+cluster
+Fix:      patch
+Severity: fail
+Profile:  nis2 v1
+Note:     NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive).
+
+This report supports evidence for the requirements it cites. It is not an audit and does not state compliance with any regulation.
+
+References:
+
+NIS2 Art. 21(2)(i)
+Source: NIS2, CELEX 32022L2555
+URL: https://eur-lex.europa.eu/eli/dir/2022/2555/oj
+  human resources security, access control policies and asset management;
+
+NIS2 Art. 21(2)(g)
+Source: NIS2, CELEX 32022L2555
+URL: https://eur-lex.europa.eu/eli/dir/2022/2555/oj
+  basic cyber hygiene practices and cybersecurity training;
+
+CIR (EU) 2024/2690 Annex 6.3.2(b)
+Source: CIR (EU) 2024/2690, CELEX 32024R2690
+URL: https://eur-lex.europa.eu/eli/reg_impl/2024/2690/oj
+  lay down and implement processes and tools to enforce the laid down secure configurations for hardware, software, services and networks, for newly installed systems as well as for systems in operation over their lifetime.

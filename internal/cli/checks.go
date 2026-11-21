@@ -222,6 +222,9 @@ func writeExplain(w *bytes.Buffer, p *profile.Profile, c check.Check) error {
 	fmt.Fprintf(w, "%-10s%s\n", "Fix:", c.Fix)
 	fmt.Fprintf(w, "%-10s%s\n", "Severity:", severity)
 	fmt.Fprintf(w, "%-10s%s v%d\n", "Profile:", p.ID, p.Version)
+	if p.Note != "" {
+		fmt.Fprintf(w, "%-10s%s\n", "Note:", p.Note)
+	}
 	fmt.Fprintf(w, "\n%s\n", report.Disclaimer)
 	if len(e.Refs) == 0 {
 		w.WriteString("\nReferences: none in this profile\n")
