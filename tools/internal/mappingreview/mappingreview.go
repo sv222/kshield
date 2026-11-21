@@ -25,9 +25,16 @@ const (
 	signOffCells   = 5
 	defaultTail    = "\n\n" + signOffHeading + "\n\n" + TableHeader + "\n" + tableSeparator + "\n"
 	dateLayout     = "2006-01-02"
-	decisionYes    = "approved"
+	decisionYes    = "author review"
 	decisionNo     = "rejected"
 )
+
+var excludedReasons = map[string]map[string]string{
+	"nis2": {
+		"KS-WL-006": "No point of NIS2 Art. 21 and no point of the Annex of CIR (EU) 2024/2690 covers emptyDir size limits.",
+		"KS-WL-013": "No point of NIS2 Art. 21 and no point of the Annex of CIR (EU) 2024/2690 covers memory limits or quotas.",
+	},
+}
 
 var hashRe = regexp.MustCompile(`^[0-9a-f]{64}$`)
 
@@ -42,8 +49,16 @@ type SignOff struct {
 
 func Render(p *profile.Profile) (string, error) {
 	catalog := check.All()
-	ids := make([]string, 0, len(catalog))
+	var inProfile, excluded []check.Check
 	for _, c := range catalog {
+		if _, ok := p.Checks[c.ID]; ok {
+			inProfile = append(inProfile, c)
+		} else {
+			excluded = append(excluded, c)
+		}
+	}
+	ids := make([]string, 0, len(inProfile))
+	for _, c := range inProfile {
 		ids = append(ids, c.ID)
 	}
 	if err := p.Validate(ids, regtext.Has); err != nil {
@@ -54,7 +69,11 @@ func Render(p *profile.Profile) (string, error) {
 	fmt.Fprintf(&b, "- Profile: `%s`\n", p.ID)
 	fmt.Fprintf(&b, "- Version: %d\n", p.Version)
 	fmt.Fprintf(&b, "- Profile sha256: `%s`\n", p.SHA256)
-	fmt.Fprintf(&b, "- Checks: %d\n\n", len(catalog))
+	fmt.Fprintf(&b, "- Checks: %d\n", len(p.Checks))
+	if len(excluded) > 0 {
+		fmt.Fprintf(&b, "- Checks left out: %d\n", len(excluded))
+	}
+	b.WriteString("\n")
 	b.WriteString("This file lists each check of the profile in catalog order, with the regulation text that the check is mapped to. ")
 	b.WriteString("A mapping means that the check supports evidence for the cited requirement. ")
 	b.WriteString("It is not an audit and does not state compliance with any regulation.\n\n")
@@ -62,10 +81,11 @@ func Render(p *profile.Profile) (string, error) {
 	b.WriteString("`go run ./tools/mappingreview` writes everything above the sign-off marker. Do not edit that part by hand. ")
 	b.WriteString("The generator keeps everything from the marker line down as it is.\n\n")
 	b.WriteString("To sign off, read every mapping and add one row to the table under Sign-off: ")
-	b.WriteString("the date (YYYY-MM-DD), your name, the profile sha256 above, and the decision `approved` or `rejected`. ")
+	b.WriteString("the date (YYYY-MM-DD), your name, the profile sha256 above, and the decision `author review` or `rejected`. ")
 	b.WriteString("The row also carries the review sha256 that `go run ./tools/mappingreview` prints. ")
-	b.WriteString("A change to the profile file changes its sha256, so it needs a new sign-off.\n\n")
-	for _, c := range catalog {
+	b.WriteString("A change to the profile file changes its sha256, so it needs a new sign-off. ")
+	b.WriteString("Author review is not a legal or compliance review.\n\n")
+	for _, c := range inProfile {
 		e := p.Checks[c.ID]
 		fmt.Fprintf(&b, "## %s (%s)\n\n", e.Display, c.ID)
 		fmt.Fprintf(&b, "- Check: `%s`\n", c.ID)
@@ -85,6 +105,18 @@ func Render(p *profile.Profile) (string, error) {
 			b.WriteString(quote(ex.Text))
 			b.WriteString("\n")
 		}
+	}
+	if len(excluded) > 0 {
+		b.WriteString("## Checks left out of this profile\n\n")
+		b.WriteString("These registered checks have no fitting requirement in the sources of this profile and are not part of it.\n\n")
+		for _, c := range excluded {
+			reason, ok := excludedReasons[p.ID][c.ID]
+			if !ok {
+				return "", fmt.Errorf("%s: excluded from profile %s but no reason is documented", c.ID, p.ID)
+			}
+			fmt.Fprintf(&b, "- `%s`: %s\n", c.ID, reason)
+		}
+		b.WriteString("\n")
 	}
 	return b.String(), nil
 }

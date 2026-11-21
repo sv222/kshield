@@ -143,6 +143,43 @@ func TestRenderNamesReviewSHA(t *testing.T) {
 	}
 }
 
+func TestRenderNis2Excluded(t *testing.T) {
+	p, err := profile.Load("nis2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	head, err := Render(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{
+		"- Checks: 38\n",
+		"- Checks left out: 2\n",
+		"## Checks left out of this profile\n\n",
+		"`KS-WL-006`: No point of NIS2 Art. 21",
+		"`KS-WL-013`: No point of NIS2 Art. 21",
+		"Author review is not a legal or compliance review.",
+	} {
+		if !strings.Contains(head, want) {
+			t.Errorf("head has no %q", want)
+		}
+	}
+	if strings.Contains(head, "##  (KS-WL-006)") {
+		t.Error("head renders an empty section for an excluded check")
+	}
+}
+
+func TestRenderExcludedNeedsReason(t *testing.T) {
+	p, err := profile.Load("nis2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	delete(p.Checks, "KS-NET-004")
+	if _, err := Render(p); err == nil || !strings.Contains(err.Error(), "KS-NET-004") {
+		t.Fatalf("err = %v, want error naming KS-NET-004", err)
+	}
+}
+
 func TestNewFile(t *testing.T) {
 	head := renderDora(t)
 	out := filepath.Join(t.TempDir(), "MAPPING-REVIEW.md")
@@ -275,7 +312,7 @@ func TestParseSignOffCommitted(t *testing.T) {
 
 func TestParseSignOffRows(t *testing.T) {
 	tail := tailWith(
-		row("2026-10-17", "Stanislav", hashA, hashB, "approved"),
+		row("2026-10-17", "Stanislav", hashA, hashB, "author review"),
 		"\nNote line that is not a row.\n",
 		row("2026-10-18", "Owner Two", hashB, hashA, "rejected"),
 	)
@@ -284,7 +321,7 @@ func TestParseSignOffRows(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := []SignOff{
-		{Line: 7, Date: "2026-10-17", Name: "Stanislav", ProfileSHA256: hashA, ReviewSHA256: hashB, Decision: "approved"},
+		{Line: 7, Date: "2026-10-17", Name: "Stanislav", ProfileSHA256: hashA, ReviewSHA256: hashB, Decision: "author review"},
 		{Line: 10, Date: "2026-10-18", Name: "Owner Two", ProfileSHA256: hashB, ReviewSHA256: hashA, Decision: "rejected"},
 	}
 	if len(rows) != len(want) {
@@ -298,7 +335,7 @@ func TestParseSignOffRows(t *testing.T) {
 }
 
 func TestParseSignOffCRLF(t *testing.T) {
-	tail := strings.ReplaceAll(tailWith(row("2026-10-17", "Owner", hashA, hashB, "approved")), "\n", "\r\n")
+	tail := strings.ReplaceAll(tailWith(row("2026-10-17", "Owner", hashA, hashB, "author review")), "\n", "\r\n")
 	rows, err := ParseSignOff(tail)
 	if err != nil || len(rows) != 1 {
 		t.Fatalf("rows %v err %v", rows, err)
@@ -306,7 +343,7 @@ func TestParseSignOffCRLF(t *testing.T) {
 }
 
 func TestParseSignOffBad(t *testing.T) {
-	good := row("2026-10-17", "Owner", hashA, hashB, "approved")
+	good := row("2026-10-17", "Owner", hashA, hashB, "author review")
 	cases := []struct {
 		name string
 		tail string
@@ -316,13 +353,14 @@ func TestParseSignOffBad(t *testing.T) {
 		{"6 cells", tailWith("| 2026-10-17 | Owner | " + hashA + " | " + hashB + " | approved | x |\n"), "line 7"},
 		{"Approved", tailWith(row("2026-10-17", "Owner", hashA, hashB, "Approved")), "line 7"},
 		{"approve", tailWith(row("2026-10-17", "Owner", hashA, hashB, "approve")), "line 7"},
-		{"month 13", tailWith(row("2026-13-01", "Owner", hashA, hashB, "approved")), "line 7"},
-		{"day 30 of Feb", tailWith(row("2026-02-30", "Owner", hashA, hashB, "approved")), "line 7"},
-		{"short date", tailWith(row("2026-1-1", "Owner", hashA, hashB, "approved")), "line 7"},
-		{"short profile hash", tailWith(row("2026-10-17", "Owner", hashA[:63], hashB, "approved")), "line 7"},
-		{"short review hash", tailWith(good, row("2026-10-17", "Owner", hashA, hashB[:10], "approved")), "line 8"},
-		{"upper case hash", tailWith(row("2026-10-17", "Owner", strings.ToUpper(hashA), hashB, "approved")), "line 7"},
-		{"empty name", tailWith(row("2026-10-17", "", hashA, hashB, "approved")), "line 7"},
+		{"approved", tailWith(row("2026-10-17", "Owner", hashA, hashB, "approved")), "line 7"},
+		{"month 13", tailWith(row("2026-13-01", "Owner", hashA, hashB, "author review")), "line 7"},
+		{"day 30 of Feb", tailWith(row("2026-02-30", "Owner", hashA, hashB, "author review")), "line 7"},
+		{"short date", tailWith(row("2026-1-1", "Owner", hashA, hashB, "author review")), "line 7"},
+		{"short profile hash", tailWith(row("2026-10-17", "Owner", hashA[:63], hashB, "author review")), "line 7"},
+		{"short review hash", tailWith(good, row("2026-10-17", "Owner", hashA, hashB[:10], "author review")), "line 8"},
+		{"upper case hash", tailWith(row("2026-10-17", "Owner", strings.ToUpper(hashA), hashB, "author review")), "line 7"},
+		{"empty name", tailWith(row("2026-10-17", "", hashA, hashB, "author review")), "line 7"},
 		{"no closing pipe", tailWith("| 2026-10-17 | Owner | " + hashA + " | " + hashB + " | approved\n"), "line 7"},
 		{"no heading", Marker + "\n\n" + TableHeader + "\n|---|---|---|---|---|\n", "Sign-off"},
 		{"second heading", tailWith(good) + "\n## Sign-off\n\n" + TableHeader + "\n|---|---|---|---|---|\n", "second"},

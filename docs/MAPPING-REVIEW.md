@@ -9,7 +9,7 @@ This file lists each check of the profile in catalog order, with the regulation 
 
 The quotes are verbatim excerpts from `internal/regtext/sources`. `go run ./tools/mappingreview` writes everything above the sign-off marker. Do not edit that part by hand. The generator keeps everything from the marker line down as it is.
 
-To sign off, read every mapping and add one row to the table under Sign-off: the date (YYYY-MM-DD), your name, the profile sha256 above, and the decision `approved` or `rejected`. The row also carries the review sha256 that `go run ./tools/mappingreview` prints. A change to the profile file changes its sha256, so it needs a new sign-off.
+To sign off, read every mapping and add one row to the table under Sign-off: the date (YYYY-MM-DD), your name, the profile sha256 above, and the decision `author review` or `rejected`. The row also carries the review sha256 that `go run ./tools/mappingreview` prints. A change to the profile file changes its sha256, so it needs a new sign-off. Author review is not a legal or compliance review.
 
 ## DORA-CH2-001 (KS-WL-001)
 
@@ -845,6 +845,5 @@ To sign off, read every mapping and add one row to the table under Sign-off: the
 
 | Date | Name | Profile sha256 | Review sha256 | Decision |
 |---|---|---|---|---|
-| 2026-10-18 | Stanislav | a4c816e97c89586b6edfb2bce79c2e18d351b41c350879466df41fb6785c3a90 | f4af4a8037239c86080c98483525cd588e1b4997a1aee63db7d4412a5614f2a8 | approved |
 
 Pending owner sign-off for the profile sha256 at the top of this file: the owner adds the row.
