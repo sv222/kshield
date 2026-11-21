@@ -5,14 +5,14 @@
   </picture>
 </p>
 
-# kshield - Kubernetes AI workload scanner with DORA evidence reports
+# kshield - Kubernetes AI workload scanner with DORA and NIS2 evidence reports
 
 [![CI](https://github.com/sv222/kshield/actions/workflows/ci.yml/badge.svg)](https://github.com/sv222/kshield/actions/workflows/ci.yml)
 [![Go version](https://img.shields.io/github/go-mod/go-version/sv222/kshield)](go.mod)
 [![License](https://img.shields.io/github/license/sv222/kshield)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/sv222/kshield?include_prereleases&sort=semver)](https://github.com/sv222/kshield/releases)
 
-kshield is an open source Go CLI that scans Kubernetes manifests and live clusters that run AI and LLM workloads (vLLM, Ollama, Triton, Text Generation Inference, Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy, TensorRT-LLM, KubeRay, KServe, Qdrant, Milvus). It finds security misconfigurations such as root containers, unauthenticated inference APIs, `--trust-remote-code`, pickle model loading, hostPath and hostPort use, open Ray ports and missing ingress, egress or runtime guards. Each finding cites the verbatim text of the DORA requirement (Regulation (EU) 2022/2554 and RTS (EU) 2024/1774) that it supports evidence for. Reports come as text, JSON, HTML, PDF and SARIF, and can be packed into a signed evidence bundle. `kshield remediate` writes a kustomize bundle with workload patches and Cilium, Tetragon and Kyverno policies, and changes the cluster only when you add `--apply`.
+kshield is an open source Go CLI that scans Kubernetes manifests and live clusters that run AI and LLM workloads (vLLM, Ollama, Triton, Text Generation Inference, Text Embeddings Inference, LocalAI, SGLang, llama.cpp, lmdeploy, TensorRT-LLM, KubeRay, KServe, Qdrant, Milvus). It finds security misconfigurations such as root containers, unauthenticated inference APIs, `--trust-remote-code`, pickle model loading, hostPath and hostPort use, open Ray ports and missing ingress, egress or runtime guards. Each finding cites the verbatim text of the requirement of the profile that it supports evidence for: DORA (Regulation (EU) 2022/2554 and RTS (EU) 2024/1774) or NIS2 (Directive (EU) 2022/2555 and CIR (EU) 2024/2690). Reports come as text, JSON, HTML, PDF and SARIF, and can be packed into a signed evidence bundle. `kshield remediate` writes a kustomize bundle with workload patches and Cilium, Tetragon and Kyverno policies, and changes the cluster only when you add `--apply`.
 
 > kshield reports support evidence for the requirements they cite. They are not an audit and do not state compliance with any regulation.
 
@@ -80,11 +80,26 @@ Scan your own cluster. Scans are read-only:
 kshield scan cluster -n ai-inference --format html --out report.html
 ```
 
+An organisation that falls under NIS2 scans with the `nis2` profile and gets NIS2 display IDs and NIS2 references:
+
+```bash
+kshield scan manifest -f app.yaml --profile nis2
+```
+
 ## Features
+
+### Profiles
+
+| id | regulation | who it applies to | checks |
+|---|---|---|---|
+| `dora` | Regulation (EU) 2022/2554 Chapter II and RTS (EU) 2024/1774 | financial entities under DORA | 40 |
+| `nis2` | Article 21 of Directive (EU) 2022/2555 and CIR (EU) 2024/2690 | essential and important entities under NIS2 | 38 |
+
+NIS2 applies to essential and important entities; for financial entities DORA is lex specialis (Art. 4 of the Directive). The default profile is `dora`; runs without `--profile` do not change. KS-WL-006 and KS-WL-013 stay out of the `nis2` profile because no point of NIS2 Art. 21 or of the Annex of CIR (EU) 2024/2690 fits them. The check by check mappings are in [docs/MAPPING-REVIEW.md](docs/MAPPING-REVIEW.md) and [docs/MAPPING-REVIEW-nis2.md](docs/MAPPING-REVIEW-nis2.md).
 
 ### Checks
 
-40 checks in the `dora` profile. List them with `kshield checks list` and read one with `kshield checks explain KS-AI-002`.
+List the checks of a profile with `kshield checks list --profile dora` (or `--profile nis2`) and read one with `kshield checks explain KS-AI-002`.
 
 | Group | Checks | Examples |
 |---|---|---|
@@ -211,7 +226,7 @@ kshield remediate --from scan.json -f app.yaml --out fix --apply
 
 ## DORA mapping
 
-Each check maps to articles of DORA Chapter II (ICT risk management, Regulation (EU) 2022/2554) and of RTS (EU) 2024/1774. The report quotes the regulation text verbatim from excerpts committed in [`internal/regtext`](internal/regtext). The full mapping, check by check, is in [docs/MAPPING-REVIEW.md](docs/MAPPING-REVIEW.md).
+Each check of the `dora` profile maps to articles of DORA Chapter II (ICT risk management, Regulation (EU) 2022/2554) and of RTS (EU) 2024/1774. The `nis2` profile maps to Article 21 of Directive (EU) 2022/2555 and to the Annex of Commission Implementing Regulation (EU) 2024/2690, with the same article choices as k8s-remediate-nis2 for the same controls. The report quotes the regulation text verbatim from excerpts committed in [`internal/regtext`](internal/regtext). The full mapping, check by check, is in [docs/MAPPING-REVIEW.md](docs/MAPPING-REVIEW.md) and [docs/MAPPING-REVIEW-nis2.md](docs/MAPPING-REVIEW-nis2.md).
 
 What this means and what it does not:
 
@@ -264,7 +279,7 @@ The scanner has no network access other than the Kubernetes API, no telemetry an
 - The enforce-mode shell guard still kills exec probes and lifecycle hooks that run a shell, and a bare `ray start` pod without the KubeRay `ray.io/cluster` label. The pods of a KubeRay RayCluster (head, worker, driver) are exempt.
 - The overhead of the runtime guards is not measured.
 - The Ollama root-mount move is unit-tested and corpus-verified, but it has not been verified on a cluster running the stock `ollama/ollama` image.
-- Only the `dora` profile exists today.
+- Only the `dora` and `nis2` profiles exist today.
 
 ## Migrating from ai-guard-k8s
 
@@ -318,7 +333,7 @@ What is different:
 
 - Signed release binaries.
 - More AI serving stacks and checks.
-- More profiles beyond DORA.
+- More profiles beyond DORA and NIS2.
 
 Ideas and votes are welcome in [issues](https://github.com/sv222/kshield/issues).
 
